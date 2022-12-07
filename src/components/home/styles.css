@@ -1,0 +1,32 @@
+.home-col{
+    height: 500px;
+}
+
+li{
+    font-size: 1.5rem;
+    margin: 2% 0 2% 0;
+}
+
+i{
+    margin-right: 5%;
+    font-size: 2rem;
+}
+
+.home-head-div{
+    background-color: #FEFCF3;
+    font-family: 'Exo 2' , sans-serif;
+    font-weight: lighter;
+}
+
+.home-top-div{
+    background-color: #F5EBE0;
+    font-family: 'Kanit' , sans-serif;
+}
+
+.home-bottom-div{
+    background-color: #F0DBDB;
+}
+
+.home-btn{
+    font-size: 1.2rem;
+}
