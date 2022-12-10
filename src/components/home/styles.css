@@ -19,14 +19,27 @@ i{
 }
 
 .home-top-div{
-    background-color: #F5EBE0;
+    /* background-color: #F5EBE0; */
     font-family: 'Kanit' , sans-serif;
 }
 
 .home-bottom-div{
-    background-color: #F0DBDB;
+    /* background-color: #F0DBDB; */
+    font-family: 'Kanit' , sans-serif;
 }
 
 .home-btn{
     font-size: 1.2rem;
+}
+
+.home-row,.row{
+    margin: 0;
+}
+
+.home-col-1-content{
+    background: #5800FFD9;
+    padding: 5%;
+    border-radius: 10px;
+    color: white;
+    box-shadow: 9px 9px 8px #5800FF69;
 }

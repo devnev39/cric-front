@@ -1,0 +1,11 @@
+.root-navbar{
+    font-family: 'Kanit' , sans-serif;
+    font-size: 1.5rem;
+    background-color: #0096FF;
+    padding: 1% 0 1% 10%;
+}
+
+.root-navbar-brand{
+    font-family: 'Exo 2' , sans-serif;
+    font-size: 2rem;
+}

@@ -1,5 +1,5 @@
 import "./styles.css"
-export default function Headmid() {
+export default function Homemid() {
     return (
         <div className="home-mid-div p-5">
                 <div className="d-flex justify-content-center p-3">
