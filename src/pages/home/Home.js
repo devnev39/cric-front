@@ -1,8 +1,8 @@
+// Home page
+
 import React from "react"
 import Hometop from "../../components/home/home-top"
-import Headhome from "../../components/home/home-head"
 import Homebottom from "../../components/home/home-bottom"
-// import Head from "../../components/home/head-bottom"
 import "./styles.css"
 
 function Home() {

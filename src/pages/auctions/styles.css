@@ -1,0 +1,11 @@
+.auctionRowContent{
+    border-bottom: 1px solid;
+}
+.auctionRowContent:hover,.newAuctionButtonDiv:hover{
+    box-shadow: 10px 8px 8px 5px grey;
+    transform: scale(1.03);
+}
+.newAuctionButtonDiv,.auctionRowContent{
+    transition: all 0.2s ease;
+    cursor: pointer;
+}

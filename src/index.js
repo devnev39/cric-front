@@ -1,7 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import {Navbar, Nav} from "react-bootstrap";
 import "./styles.css"
 import s1 from "./resources/s1.svg";
@@ -20,5 +20,12 @@ root.render(
             </Nav>
         </Navbar>
         <App />
+        
+        <footer className="pt-5 pb-2">
+            <div className="d-flex justify-content-center">
+                @devnev
+            </div>
+            
+        </footer>
     </BrowserRouter>
 );
