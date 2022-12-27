@@ -23,17 +23,17 @@ function Auctions(){
     const createAuctionStack = () => {
         return auctions.map(auction => {
             return (
-                <div className="row mb-4 shadow-sm rounded h5 auctionRowContent" onClick={() => {navigate(`/auction/${auction._id}`)}}>
-                    <div className="col-1 d-flex justify-content-center" style={{"border-right" : `2px dotted ${auction.Status}`}}>
+                <div key={`${auction._id}}`} className="row mb-4 shadow-sm rounded h5 auctionRowContent" onClick={() => {navigate(`/auction/${auction._id}`,{state : {auction : auction}})}}>
+                    <div className="col-1 d-flex justify-content-center" style={{"borderRight" : `2px dotted ${auction.Status}`}}>
                         {auction.No}
                     </div>
-                    <div className="col-8 d-flex justify-content-center" style={{"border-right" : `2px dotted`}}>
+                    <div className="col-8 d-flex justify-content-center" style={{"borderRight" : `2px dotted`}}>
                         {auction.Name}
                     </div>
                     <div className="col-2 d-flex justify-content-center">
                         {auction.MaxBudget}
                     </div>
-                    <div className="col-1 d-flex justify-content-center" style={{"border-left" : `2px dotted ${auction.Status}`}}>
+                    <div className="col-1 d-flex justify-content-center" style={{"borderLeft" : `2px dotted ${auction.Status}`}}>
                         <i style={{"color" : auction.Status}} className="fa-solid fa-circle p-2"></i>
                     </div>
                 </div>   
@@ -42,6 +42,7 @@ function Auctions(){
     }
     const getAuctions = async () => {
         const response = await (await fetch("/auction")).json();
+        if(response.status === 601) {navigate(`/auction/${response.data}`,{state : {auction : {_id : response.data}}});return;}
         if(response.status !== 200) {alert(response.data);return;}
         setAuctions(response.data);
     }

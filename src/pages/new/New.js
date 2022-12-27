@@ -1,29 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"
 import InputForm from "../../components/new/InputForm";
-import CryptoJS from "crypto-js";
+import encrypt from "../../components/common/Encrypt";
+import fetchModel from "../../helpers/fetchModel";
 
 function New() {
     const {model} = useParams();
     const [modelJson,setModelJson] = useState(null);
     const navigate = useNavigate();
-    const fetchModelData = async () => {
-        const res = await (await fetch(`/wimodels/${model}`)).json();
-        if(res.status !== 200){alert(`${res.status} ${res.data}`);navigate(-1);}
-        else setModelJson(res.data);
-    }
-
     useEffect(() => {
         const run = async () => {
-            await fetchModelData();
+            await fetchModel(`/wimodels/${model}`,setModelJson);
         }
         run();
     },[]);
-
-    const encrypt = (key) => {
-        console.log(process.env.REACT_APP_ENKEY);
-        return CryptoJS.AES.encrypt(key,process.env.REACT_APP_ENKEY).toString();
-    }
 
     const clearInputs = () => {
         if(modelJson){
@@ -55,6 +45,7 @@ function New() {
             else alert(res.data);
         });
         clearInputs();
+        navigate("/auctions");
     }
 
     return (
