@@ -1,0 +1,44 @@
+.newTeamDivButton:hover{
+    cursor: pointer;
+    transform: scale(1.05);
+}
+/* 
+.optionContainerRoot{
+    z-index: 1;
+} */
+
+.blurBackground {
+    -webkit-filter: blur(5px);
+    -moz-filter: blur(5px);
+    -o-filter: blur(5px);
+    -ms-filter: blur(5px);
+    filter: blur(5px);
+}
+
+#submitForm {
+    position: fixed;
+    width: 100%;
+    top : 30%;
+    left: 10%;
+}
+
+.openFormDisplay {
+    display: block;
+    opacity: 0;
+}
+
+.closeFormDisplay {
+    display: none;
+}
+
+.openForm {
+    transition: opacity 0.1s linear;
+    transform:translate(0);
+    opacity: 1;
+}
+
+.closeForm{
+    transition: opacity 0.1s linear;
+    transform: translate(0);
+    opacity: 0;
+}

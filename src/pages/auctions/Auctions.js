@@ -42,7 +42,7 @@ function Auctions(){
     }
     const getAuctions = async () => {
         const response = await (await fetch("/auction")).json();
-        if(response.status === 601) {navigate(`/auction/${response.data}`,{state : {auction : {_id : response.data}}});return;}
+        if(response.status === 601) {navigate(`/auction/${response.data._id}`,{state : {auction : response.data}});return;}
         if(response.status !== 200) {alert(response.data);return;}
         setAuctions(response.data);
     }

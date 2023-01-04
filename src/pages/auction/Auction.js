@@ -9,10 +9,19 @@ import Players from "../../components/auction/Players";
 import "./styles.css";
 
 function Auction() {
+    /*
+    state               :   Clicked auction information from /Auctions page
+    auctionId           :   auctionId in the browser addressbar to crosscheck browser state
+    auctionData         :   Full auction data fetched from server after auth
+    currentComponent    :   Currently active component in sidebar
+    trigger             :   Trigger to fetch updated info from server 
+    */
     const {state} = useLocation();
     const {auctionId} = useParams();
     const [auctionData,setAuctionData] = useState(null);
     const [currentComponent,setCurrentComponent] = useState("Options");
+    const [trigger,setTrigger] = useState(false);
+    const toggleTrigger = () => {setTrigger(!trigger)};
     const navigate = useNavigate();
     if(!state) {
         alert("Cannot identify the route !");
@@ -24,8 +33,7 @@ function Auction() {
         if(response.status !== 200){
             alert(response.data);
             if(response.status > 500 && response.status < 600) {
-                let key = prompt(`Enter password for ${state.auction.Name} : `);
-                key = encrypt(key);
+                let key = encrypt(prompt(`Enter password for ${state.auction.Name} : `));
                 const authenticate = await authenticateResponse(response,{_id : state.auction._id,Password : key});
                 if(authenticate) window.location.reload();
                 else{alert(authenticate.data);navigate(-1);}
@@ -34,17 +42,37 @@ function Auction() {
     }
 
     const onSelect = async (selection) => {
-        Array.prototype.slice.call(document.getElementsByClassName("activeItem")).forEach(element => {
-            element.classList.remove("activeItem");
-        });
-        selection.target.classList.add("activeItem");
         if(selection.target.innerText === 'Logout'){
             if(window.confirm("Do you want to logout ?")){
                 const res = await (await fetch("/logout")).json();
                 if(res.status === 200) {alert("Logged out !"); navigate("/auctions");return;}
                 else alert(res.data);
-            }
+                return;
+            }else return;
         }
+        if(selection.target.innerText === 'Delete'){
+            if(window.confirm("Do you want to delete this auction ?")){
+                const res = await (await fetch(`/auction/${auctionData._id}`,{
+                    method : "DELETE",
+                    headers : {
+                        "Content-Type" : "application/json"
+                    },
+                    body : JSON.stringify({auction : auctionData})
+                })).json();
+                if(res.status === 200){
+                    const r = await (await fetch("/logout")).json();
+                    if(r.status === 200) navigate("/auctions");
+                    else alert(r.data);
+                    return;
+                }
+                else alert(res.data);
+                return;
+            }else return;
+        }
+        Array.prototype.slice.call(document.getElementsByClassName("activeItem")).forEach(element => {
+            element.classList.remove("activeItem");
+        });
+        selection.target.classList.add("activeItem");
         setCurrentComponent(selection.target.innerText);
     }
 
@@ -53,7 +81,7 @@ function Auction() {
             await fetchAuctionData();
         }
         run();
-    },[]);
+    },[trigger]);
     return (
         <div className="auctionRoot">
             <div className="row">
@@ -76,18 +104,23 @@ function Auction() {
                             Auction
                         </div>
                         <div className="nav-item" onClick={e => {onSelect(e)}}>
-                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <i className="fa-solid fa-right-from-bracket text-danger"></i>
                             Logout
+                        </div>
+                        <div className="nav-item" onClick={e => {onSelect(e)}}>
+                            <i className="fa-solid fa-trash-can text-danger"></i>
+                            Delete
                         </div>
                     </div>
                     
                 </div>
+                {auctionData ? 
                 <div className="col-10">
-                    {currentComponent === "Options" ? <Option auctionObj = {auctionData} /> : null}
-                    {currentComponent === "Teams" ? <Teams auctionObj = {auctionData} /> : null}
-                    {currentComponent === "Players" ? <Players auctionObj = {auctionData} /> : null}
-                    {currentComponent === "Auction" ? <AuctionComponent auctionObj = {auctionData} /> : null}
-                </div>
+                    {currentComponent === "Options" ? <Option auctionObj = {auctionData} trigger = {toggleTrigger} /> : null}
+                    {currentComponent === "Teams" ? <Teams auctionObj = {auctionData} trigger = {toggleTrigger}  /> : null}
+                    {currentComponent === "Players" ? <Players auctionObj = {auctionData} trigger = {toggleTrigger}  /> : null}
+                    {currentComponent === "Auction" ? <AuctionComponent auctionObj = {auctionData} trigger = {toggleTrigger}  /> : null}
+                </div> : null}
             </div>
         </div>
     )

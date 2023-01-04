@@ -15,7 +15,8 @@ function InputForm(props) {
         )
     }
     const makeInputRows = (dataSchema,neglects) => {
-        return Object.keys(dataSchema).map(key => makeRow(key,dataSchema[key]));
+        if(!neglects) neglects = [];
+        return Object.keys(dataSchema).map(key => {if(neglects.indexOf(key) === -1) return makeRow(key,dataSchema[key]);return null;});
     }
     return (
         <>
