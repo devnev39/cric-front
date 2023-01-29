@@ -10,5 +10,6 @@ export default function queryBuiler(){
     this.sort = (qobj) => {return pushreturnwrapper(this,{$sort : qobj})}
     this.limit = (qobj) => {return pushreturnwrapper(this,{$limit : qobj})}
     this.project = (qobj) => {return pushreturnwrapper(this,{$project : qobj})}
+    this.count = (qobj) => {return pushreturnwrapper(this,{$count : qobj})}
     this.clear = () => {this.queries = [];return this;}
 }

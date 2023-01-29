@@ -28,10 +28,6 @@ export default function Homebottom() {
         requestData();
     },[]);
 
-    useEffect(() => {
-        
-    },[tb1Data,tb2Data]);
-
     const tb1 = {
         BasePrice : Number,
         Country : String,
