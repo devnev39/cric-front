@@ -34,6 +34,7 @@ function LineBarChart(props) {
     }
     const option = {
         indexAxis : props.option.indexAxis ? props.option.indexAxis : 'x',
+        aspectRatio : props.option.aspectRatio,
         scales : {
             y : {
                 suggestedMax : max()+10,
@@ -49,7 +50,7 @@ function LineBarChart(props) {
             x : {
                 title: {
                     display: true,
-                    text: props.option.xkey,
+                    text: props.option.xlabel,
                     font : {
                         weight : 500
                     },

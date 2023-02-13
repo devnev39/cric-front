@@ -9,7 +9,7 @@ import s1 from "./resources/s1.svg";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     <BrowserRouter>
-        <Navbar className="root-navbar">
+        <Navbar className="root-navbar" id="mainNavBar">
             <Navbar.Brand className="root-navbar-brand" href="/"><img className="pr-3" src={s1} alt="" />CRIC</Navbar.Brand>
             <Nav className="p-2" style={{"margin" : "0 0 0 40%"}}>
                 <Nav.Link className="mr-3" href="/">Home</Nav.Link>

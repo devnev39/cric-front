@@ -28,6 +28,7 @@ function Players(props) {
         xkey : "Name",
         ylinekey : "AuctionedPrice",
         ybarkey : "BasePrice",
+        xlabel : "Name",
         ylinelabel : "AuctionedPrice",
         ybarlabel : "BasePrice",
     }
@@ -377,14 +378,14 @@ function Players(props) {
                 <div className="row">
                     <div className="col-10">
                         <div className="border shadow rounded players-table-container">
-                        <table className="table table-striped table-bordered">
-                            <thead className="table-head">
-                                {mPlayers ? setTableHead() : null}
-                            </thead>
-                            <tbody id="tableBody">
-                                {mPlayers ? setTableBody() : null}
-                            </tbody>
-                        </table>
+                            <table className="table table-striped table-bordered">
+                                <thead className="table-head">
+                                    {mPlayers ? setTableHead() : null}
+                                </thead>
+                                <tbody id="tableBody">
+                                    {mPlayers ? setTableBody() : null}
+                                </tbody>
+                            </table>
                         </div>
                         <div className="d-flex justify-content-center mt-3">
                             <button className="btn btn-success" onClick={() => toggleSubmitForm("newPlayerForm")}>Add Player</button>

@@ -6,6 +6,7 @@ import Option from "../../components/auction/Option";
 import Teams from "../../components/auction/Teams";
 import {Auction as AuctionComponent} from "../../components/auction/Auction";
 import Players from "../../components/auction/Players";
+import LiveStats from "../../components/auction/LiveStats";
 import "./styles.css";
 
 function Auction() {
@@ -76,6 +77,52 @@ function Auction() {
         setCurrentComponent(selection.target.innerText);
     }
 
+    const sideNavItems = [
+        {
+            text : "Options",
+            iconClassName : "fa-solid fa-gear"
+        },
+        {
+            text : "Teams",
+            iconClassName : "fa-solid fa-user-group"
+        },
+        {
+            text : "Players",
+            iconClassName : "fa-solid fa-user-pen"
+        },
+        {
+            text : "Auction",
+            iconClassName : "fa-solid fa-gavel"
+        },
+        {
+            text : "Live Stats",
+            iconClassName : "fa-solid fa-wave-square"
+        },
+        {
+            text : "Logout",
+            iconClassName : "fa-solid fa-right-from-bracket text-danger"
+        },
+        {
+            text : "Delete",
+            iconClassName : "fa-solid fa-trash-can text-danger"
+        }
+    ]
+
+    const makeSideNavItem = (item,active) => {
+        return (
+            <div key={`${item.iconClassName}`} className={`nav-item ${active ? "activeItem" : ""}`} onClick={e => {onSelect(e)}}>
+                <i className={`${item.iconClassName}`}></i>
+                {item.text}
+            </div>
+        )
+    }
+
+    const makeSideNavBar = () => {
+        return sideNavItems.map(item => {
+            return makeSideNavItem(item,sideNavItems.indexOf(item) === 0 ? true : false);
+        })
+    }
+
     useEffect(() => {
         const run = async () => {
             await fetchAuctionData();
@@ -87,30 +134,7 @@ function Auction() {
             <div className="row">
                 <div className="col-2 border-right vh-100">
                     <div className="menuContainer">
-                        <div className="nav-item activeItem" onClick={e => {onSelect(e)}}>
-                            <i className="fa-solid fa-gear"></i>
-                            Options
-                        </div>
-                        <div className="nav-item" onClick={e => {onSelect(e)}}>
-                            <i className="fa-solid fa-user-group"></i>
-                            Teams
-                        </div>
-                        <div className="nav-item" onClick={e => {onSelect(e)}}>
-                            <i className="fa-solid fa-user-pen"></i>
-                            Players
-                        </div>
-                        <div className="nav-item" onClick={e => {onSelect(e)}}>
-                            <i className="fa-solid fa-gavel"></i>
-                            Auction
-                        </div>
-                        <div className="nav-item" onClick={e => {onSelect(e)}}>
-                            <i className="fa-solid fa-right-from-bracket text-danger"></i>
-                            Logout
-                        </div>
-                        <div className="nav-item" onClick={e => {onSelect(e)}}>
-                            <i className="fa-solid fa-trash-can text-danger"></i>
-                            Delete
-                        </div>
+                        {makeSideNavBar()}
                     </div>
                     
                 </div>
@@ -120,6 +144,7 @@ function Auction() {
                     {currentComponent === "Teams" ? <Teams auctionObj = {auctionData} trigger = {toggleTrigger}  /> : null}
                     {currentComponent === "Players" ? <Players auctionObj = {auctionData} trigger = {toggleTrigger}  /> : null}
                     {currentComponent === "Auction" ? <AuctionComponent auctionObj = {auctionData} trigger = {toggleTrigger}  /> : null}
+                    {currentComponent === "Live Stats" ? <LiveStats auctionObj = {auctionData} trigger = {toggleTrigger}  /> : null}
                 </div> : null}
             </div>
         </div>
