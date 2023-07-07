@@ -37,7 +37,7 @@ function BidConsole(props) {
             for(let field of tableFields) {
                 tds.push(<td key={`${team.Name}${tableFields.indexOf(field)}`}>{team[field]}</td>);
             }
-            trs.push(<tr key={`${team.Name}${team.Budget}`} onClick={() => setSelectedTeam(team)} className={per}>{tds}</tr>);
+            trs.push(<tr key={`${team.Name}${team.Budget}`} onClick={() => setSelectedTeam(team)} className={`${per} team-row`}>{tds}</tr>);
         }
         return trs;
     }

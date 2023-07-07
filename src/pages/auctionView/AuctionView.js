@@ -29,7 +29,9 @@ function AuctionView() {
         if(response.status !== 200) {
             alert(response.data);
             if(response.status > 500 && response.status < 600) navigate(-1);
-        } else setAuctionData(response.data);
+        } else {
+            setAuctionData(response.data);
+        }
     }
 
     useEffect(() => {
@@ -97,6 +99,25 @@ function AuctionView() {
             e.classList.toggle("openForm");
             // setTimeout(() => {e.classList.toggle("openForm");},100);
             document.getElementById("auctionViewDivRoot").classList.toggle("blurBackground");
+        }
+    }
+
+    const cancelBid = async () => {
+        if(!currentPlayer) return;
+        const obj = {
+            player : currentPlayer
+        }
+        const resp = await (await fetch(`/auction/${auctionData._id}/bid`,{
+            method : "DELETE",
+            body : JSON.stringify(obj),
+            headers : {
+                "Content-Type" : "application/json"
+            }
+        })).json()
+        if(resp.status !== 200) alert(`${resp.status} ${resp.data}`)
+        else{
+            alert("Success !")
+            setFlag(!flag);
         }
     }
 
@@ -176,7 +197,13 @@ function AuctionView() {
                     </div>
                     <div className="col-3">
                         <div className="d-flex justify-content-center">
-                            <button className="btn btn-success" onClick={() => showBidConsole()}>Bid</button>
+                            {
+                                currentPlayer ? !currentPlayer.SOLD ? 
+                                <button className="btn btn-success" onClick={() => showBidConsole()}>Bid</button>    
+                                : <button className="btn btn-danger" onClick={() => cancelBid()}>Cancel Bid</button>
+                                :false
+                            }
+                            
                         </div>  
                     </div>
                     <div className="col-3">
