@@ -140,7 +140,7 @@ function Auction() {
                 </div>
                 {auctionData ? 
                 <div className="col-10">
-                    {currentComponent === "Options" ? <Option auctionObj = {auctionData} trigger = {toggleTrigger} /> : null}
+                    {currentComponent === "Options" ? <Option auctionObj = {auctionData} setAuctionObj = {setAuctionData} trigger = {toggleTrigger} /> : null}
                     {currentComponent === "Teams" ? <Teams auctionObj = {auctionData} trigger = {toggleTrigger}  /> : null}
                     {currentComponent === "Players" ? <Players auctionObj = {auctionData} trigger = {toggleTrigger}  /> : null}
                     {currentComponent === "Auction" ? <AuctionComponent auctionObj = {auctionData} trigger = {toggleTrigger}  /> : null}

@@ -90,7 +90,7 @@ function AuctionView() {
             e.classList.toggle("openFormDisplay");
             e.classList.toggle("closeFormDisplay");
             // setTimeout(() => {e.classList.toggle("closeFormDisplay")},500);
-            document.getElementById("auctionViewDivRoot").classList.toggle("blurBackground");
+            document.getElementById("auctionRoot").classList.toggle("blurBackground");
         }else{
             e.classList.toggle("display");
             e.classList.toggle("closeForm");
@@ -98,7 +98,7 @@ function AuctionView() {
             e.classList.toggle("closeFormDisplay");
             e.classList.toggle("openForm");
             // setTimeout(() => {e.classList.toggle("openForm");},100);
-            document.getElementById("auctionViewDivRoot").classList.toggle("blurBackground");
+            document.getElementById("auctionRoot").classList.toggle("blurBackground");
         }
     }
 
