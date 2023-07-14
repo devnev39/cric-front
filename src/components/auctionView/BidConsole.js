@@ -1,3 +1,4 @@
+import settings from "../../config/settings.json";
 import { useState } from "react";
 import fetchData from "../../helpers/fetchData";
 
@@ -52,7 +53,7 @@ function BidConsole(props) {
             player : props.player,
             team : selectedTeam
         };
-        const resp = await fetchData(`/auction/${props.auctionId}/bid`,{bid : bidObj});
+        const resp = await fetchData(`${settings.BaseUrl}/auction/${props.auctionId}/bid`,{bid : bidObj});
         if(resp.status !== 200) alert(`${resp.status} ${resp.data}`);
         else{
             alert("Success !");

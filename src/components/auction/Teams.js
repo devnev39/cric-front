@@ -1,3 +1,4 @@
+import settings from "../../config/settings.json";
 import { useEffect, useState } from "react";
 import SubmitForm from "../common/SubmitForm";
 import "./styles.css";
@@ -38,8 +39,9 @@ function Teams(props) {
 
     const deleteTeam = async (teamId) => {
         if(! window.confirm("Do you want do delete this team ?")) return;
-        const resp = await (await fetch(`/auction/${props.auctionObj._id}/teams/${teamId}`,{
-            method : "DELETE"
+        const resp = await (await fetch(`${settings.BaseUrl}/auction/${props.auctionObj._id}/teams/${teamId}`,{
+            method : "DELETE",
+            credentials : "include"
         })).json();
         if(resp.status === 200){alert("Success !"); props.trigger();}
         else alert(`${resp.status} ${resp.data}`);

@@ -1,3 +1,4 @@
+import settings from "../../config/settings.json";
 import { useEffect, useState } from "react"
 import {Row,Col} from "react-bootstrap"
 import fetchData from "../../helpers/fetchData";
@@ -11,11 +12,11 @@ export default function Homebottom() {
     const requestHomeData = async () => {
         const query = new queryBuiler();
 
-        let res = await fetchData("/player/query",{query : query.sort({"BasePrice" : -1}).limit(5).queries});
+        let res = await fetchData(`${settings.BaseUrl}/player/query`,{query : query.sort({"BasePrice" : -1}).limit(5).queries});
         if(res.status !== 200) alert(`${res.status} ${res.data}`);
         else setTb1Data(res.data);
 
-        res = await fetchData("/player/query",{query : query.clear().group({_id : "$IPL2022Team",TotalBid : {$sum : "$AuctionedPrice"}})
+        res = await fetchData(`${settings.BaseUrl}/player/query`,{query : query.clear().group({_id : "$IPL2022Team",TotalBid : {$sum : "$AuctionedPrice"}})
         .project({_id : 0,Name : "$_id",TotalBid : "$TotalBid"})
         .sort({"TotalBid" : -1}).limit(5).queries})
         if(res.status !== 200) alert(`${res.status} ${res.data}`);

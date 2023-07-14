@@ -1,3 +1,4 @@
+import settings from "../../config/settings.json";
 import { useEffect, useState } from "react";
 import fetchData from "../../helpers/fetchData";
 import fetchModel from "../../helpers/fetchModel";
@@ -48,7 +49,7 @@ function Players(props) {
     const tableFields = ["SRNO","Name","Country","BasePrice","AuctionedPrice","Action"];
 
     const requestAndSetData = async (queries,setObject) => {
-        let res = await fetchData("/player/query",{
+        let res = await fetchData(`${settings.settings.BaseUrl}/player/query`,{
             query : queries
         });
         if(res.status !== 200) alert(`${res.status} ${res.data}`);
@@ -70,7 +71,7 @@ function Players(props) {
         requestAndSetData(query.group({_id : "$CUA",Count : {$sum : 1}}).project({_id : 0, CUA : "$_id",Count : 1}).queries,setCUACount);
         query.clear();
 
-        const players = await (await fetch(`/auction/${props.auctionObj._id}/players`)).json();        
+        const players = await (await fetch(`${settings.settings.BaseUrl}/auction/${props.auctionObj._id}/players`)).json();        
         setMplayers(players.data.Main);
         setAplayers(players.data.Add);
         setRplayers(players.data.Rmv);
@@ -120,7 +121,7 @@ function Players(props) {
         // player -> player object
         const method = src || dest ? "PATCH"  : "DELETE";
         console.log(props.auctionObj);
-        const resp = await (await fetch(`/auction/${props.auctionObj._id}/players`,{
+        const resp = await (await fetch(`${settings.settings.BaseUrl}/auction/${props.auctionObj._id}/players`,{
             method : method,
             headers : {
                 "Content-Type" : "application/json"
@@ -225,7 +226,7 @@ function Players(props) {
             },
             body : JSON.stringify({auction : props.auctionObj})
         };
-        const resp = await (await fetch(`/auction/${props.auctionObj._id}`,req)).json();
+        const resp = await (await fetch(`${settings.settings.BaseUrl}/auction/${props.auctionObj._id}`,req)).json();
         if(resp.status === 200) {alert("Success !");setShowUploadDiv(state);}
         else alert(`${resp.status} ${resp.data}`);
         props.trigger();
@@ -243,12 +244,12 @@ function Players(props) {
       
           reader.readAsText(file);
         })
-    }      
+    }
 
     const uploadDataset = async () => {
         try {
 	        let model = null;
-	        await fetchModel("/wimodels/player",(res) => {model = res});
+	        await fetchModel(`${settings.settings.BaseUrl}/wimodels/player`,(res) => {model = res});
 	        alert(`The data should be in following format : ${JSON.stringify(model)}`);
 	        let file = document.getElementById("datasetFileInput").files[0];
 	        let data = await readFileAsync(file);
@@ -261,7 +262,7 @@ function Players(props) {
                     },
                     body : JSON.stringify({players : data})
                 }
-                const resp = await (await fetch(`/auction/${props.auctionObj._id}/players`,Req)).json();
+                const resp = await (await fetch(`${settings.settings.BaseUrl}/auction/${props.auctionObj._id}/players`,Req)).json();
                 if(resp.status === 200) {alert("Success !");props.trigger();}
                 else alert(`${resp.status} ${resp.data}`);
             }else throw new Error("Array not detected or empty array !");

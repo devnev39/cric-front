@@ -1,3 +1,4 @@
+import settings from "../../config/settings.json";
 import { useEffect, useState } from "react";
 import fetchModel from "../../helpers/fetchModel";
 import UpdateForm from "../common/UpdateForm";
@@ -9,8 +10,8 @@ function Option(props) {
     
     useEffect(() => {
         const run = async () => {
-            await fetchModel("/wimodels/auction",setModelJson);
-            await fetchModel("/wimodels/PlayerRuleModel", setwiModel);
+            await fetchModel(`${settings.BaseUrl}/wimodels/auction`,setModelJson);
+            await fetchModel(`${settings.BaseUrl}/wimodels/PlayerRuleModel`, setwiModel);
         }
         run();
     },[]);
@@ -19,7 +20,7 @@ function Option(props) {
     },[wiModel])
     const captureWiModel = async () => {
         const ele = document.getElementById("wimodelSelection").value;
-        await fetchModel(`/wimodels/${ele}RuleModel`, setwiModel);
+        await fetchModel(`${settings.BaseUrl}/wimodels/${ele}RuleModel`, setwiModel);
     }
 
     const showRuleConsole = () => {
@@ -66,13 +67,14 @@ function Option(props) {
             rule : rule_check,
             type : type
         }
-        const resp = await (await fetch(`/auction/${props.auctionObj._id}/rule`,
+        const resp = await (await fetch(`${settings.BaseUrl}/auction/${props.auctionObj._id}/rule`,
         {
             method : "POST",
             body : JSON.stringify({"rule" : Rule}),
             headers : {
                 "Content-Type" : "application/json"
-            }
+            },
+            credentials : "include"
         })).json()
         if(resp.status !== 200) alert(`${resp.status} ${resp.data}`);
         else{
@@ -84,13 +86,14 @@ function Option(props) {
 
     const deleteRule = async (rule) => {
         if(!window.confirm("Delete rule ?")) return;
-        const resp = await(await fetch(`/auction/${props.auctionObj._id}/rule`,
+        const resp = await(await fetch(`${settings.BaseUrl}/auction/${props.auctionObj._id}/rule`,
         {
             method : "DELETE",
             body : JSON.stringify({rule : rule}),
             headers : {
                 "Content-Type" : "application/json"
-            }
+            },
+            credentials : "include"
         })).json()
         if(resp.status !== 200) alert(`${resp.status} ${resp.data}`);
         else{

@@ -1,3 +1,4 @@
+import settings from "../../config/settings.json"
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css"
@@ -41,7 +42,7 @@ function Auctions(){
         });
     }
     const getAuctions = async () => {
-        const response = await (await fetch("/auction")).json();
+        const response = await (await fetch(`${settings.BaseUrl}/auction`,{credentials : "include"})).json();
         if(response.status === 601) {navigate(`/auction/${response.data._id}`,{state : {auction : response.data}});return;}
         if(response.status !== 200) {alert(response.data);return;}
         setAuctions(response.data);
