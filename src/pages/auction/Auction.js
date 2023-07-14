@@ -1,3 +1,4 @@
+import settings from "../../config/settings.json"
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import encrypt from "../../components/common/Encrypt";
@@ -30,7 +31,7 @@ function Auction() {
     }
     const fetchAuctionData = async () => {
         if(state.auction._id !== auctionId){alert("Invalid id !");return;}
-        const response = await (await fetch(`/auction/${state.auction._id}`)).json();
+        const response = await (await fetch(`${settings.BaseUrl}/auction/${state.auction._id}`,{credentials : "include"})).json();
         if(response.status !== 200){
             alert(response.data);
             if(response.status > 500 && response.status < 600) {
@@ -45,7 +46,7 @@ function Auction() {
     const onSelect = async (selection) => {
         if(selection.target.innerText === 'Logout'){
             if(window.confirm("Do you want to logout ?")){
-                const res = await (await fetch("/logout")).json();
+                const res = await (await fetch("/logout",{credentials : "include"})).json();
                 if(res.status === 200) {alert("Logged out !"); navigate("/auctions");return;}
                 else alert(res.data);
                 return;
@@ -53,15 +54,16 @@ function Auction() {
         }
         if(selection.target.innerText === 'Delete'){
             if(window.confirm("Do you want to delete this auction ?")){
-                const res = await (await fetch(`/auction/${auctionData._id}`,{
+                const res = await (await fetch(`${settings.BaseUrl}/auction/${auctionData._id}`,{
                     method : "DELETE",
                     headers : {
                         "Content-Type" : "application/json"
                     },
-                    body : JSON.stringify({auction : auctionData})
+                    body : JSON.stringify({auction : auctionData}),
+                    credentials : "include"
                 })).json();
                 if(res.status === 200){
-                    const r = await (await fetch("/logout")).json();
+                    const r = await (await fetch("/logout",{credentials : "include"})).json();
                     if(r.status === 200) navigate("/auctions");
                     else alert(r.data);
                     return;

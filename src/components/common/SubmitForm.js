@@ -1,3 +1,4 @@
+import settings from "../../config/settings.json";
 import { useEffect, useState } from "react"
 import fetchModel from "../../helpers/fetchModel";
 import InputForm from "./InputForm";
@@ -16,7 +17,7 @@ function SubmitForm(props) {
     const [modelJson,setModelJson] = useState(null);
     const navigate = useNavigate();
     useEffect(() => {
-        const run = async () => await fetchModel(`/wimodels/${props.modelKey}`,setModelJson);
+        const run = async () => await fetchModel(`${settings.BaseUrl}/wimodels/${props.modelKey}`,setModelJson);
         run();
     },[]);
 
@@ -45,9 +46,10 @@ function SubmitForm(props) {
             headers : {
                 "Content-Type" : "application/json"
             },
-            body : JSON.stringify(a)
+            body : JSON.stringify(a),
+            credentials : "include",
         }
-        const res = await (await fetch(props.postUrl,response)).json();
+        const res = await (await fetch(`${settings.BaseUrl}${props.postUrl}`,response)).json();
         if(res.status === 200) {alert("Success !");}
         else {alert(res.data);return;}
         clearInputs();

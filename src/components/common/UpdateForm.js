@@ -1,3 +1,4 @@
+import settings from "../../config/settings.json";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import fetchModel from "../../helpers/fetchModel";
@@ -28,7 +29,8 @@ function UpdateForm(props) {
             headers : {
                 "Content-Type" : "application/json"
             },
-            body : JSON.stringify(obj)
+            body : JSON.stringify(obj),
+            credentials : "include"
         };
         console.log("Clicked !");
         let url = props.postUrl ? props.postUrl : `/${props.modelKey}/${props.model._id}`;
@@ -49,7 +51,7 @@ function UpdateForm(props) {
     }
 
     useEffect(() => {    
-        const run = async () => {await fetchModel(`/wimodels/${props.modelKey}`,setModelJson)}
+        const run = async () => {await fetchModel(`${settings.BaseUrl}/wimodels/${props.modelKey}`,setModelJson)}
         run();
     },[]);
 

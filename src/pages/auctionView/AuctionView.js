@@ -1,3 +1,4 @@
+import settings from "../../config/settings.json";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BidConsole from "../../components/auctionView/BidConsole";
@@ -25,7 +26,7 @@ function AuctionView() {
     });
 
     const fetchAuctionData = async () => {
-        const response = await (await fetch(`/auction/${auctionId}`)).json();
+        const response = await (await fetch(`${settings.BaseUrl}/auction/${auctionId}`,{credentials : "include"})).json();
         if(response.status !== 200) {
             alert(response.data);
             if(response.status > 500 && response.status < 600) navigate(-1);
@@ -107,12 +108,13 @@ function AuctionView() {
         const obj = {
             player : currentPlayer
         }
-        const resp = await (await fetch(`/auction/${auctionData._id}/bid`,{
+        const resp = await (await fetch(`${settings.BaseUrl}/auction/${auctionData._id}/bid`,{
             method : "DELETE",
             body : JSON.stringify(obj),
             headers : {
                 "Content-Type" : "application/json"
-            }
+            },
+            credentials : "include"
         })).json()
         if(resp.status !== 200) alert(`${resp.status} ${resp.data}`)
         else{

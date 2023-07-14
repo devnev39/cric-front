@@ -1,3 +1,4 @@
+import settings from "../../config/settings.json";
 import {useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
 import { simplify, number, fraction, round } from 'mathjs'
@@ -16,8 +17,8 @@ function LiveStats (props) {
 
   useEffect(() => {
     const runMe = async () => {
-      await fetchModel('/wimodels/TeamRuleModel', setTeamModel)
-      await fetchModel('/wimodels/PlayerRuleModel', setPlayerModel)
+      await fetchModel(`${settings.BaseUrl}/wimodels/TeamRuleModel`, setTeamModel)
+      await fetchModel(`${settings.BaseUrl}/wimodels/PlayerRuleModel`, setPlayerModel)
     }
     const sck = io('/')
     sck.on('connect', () => {
