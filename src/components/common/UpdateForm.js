@@ -33,7 +33,7 @@ function UpdateForm(props) {
             credentials : "include"
         };
         console.log("Clicked !");
-        let url = props.postUrl ? props.postUrl : `/${props.modelKey}/${props.model._id}`;
+        let url = props.postUrl ? props.postUrl : `${settings.BaseUrl}/${props.modelKey}/${props.model._id}`;
         fetch(url,resp).then(res => res.json()).then(res => {
             if(res.status === 200) {
                 if(props.navigate){
