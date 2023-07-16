@@ -20,7 +20,9 @@ function LiveStats (props) {
       await fetchModel(`${settings.BaseUrl}/wimodels/TeamRuleModel`, setTeamModel)
       await fetchModel(`${settings.BaseUrl}/wimodels/PlayerRuleModel`, setPlayerModel)
     }
-    const sck = io('/')
+    const sck = io(`${settings.BaseUrl}`,{
+      withCredentials : true
+    })
     sck.on('connect', () => {
       setSocket(sck)
     })
