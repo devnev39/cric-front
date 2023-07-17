@@ -34,7 +34,8 @@ function LiveStats (props) {
     if (!socket.connected) return
     console.log('Listening for data !')
     socket.on(`${props.auctionObj._id}`, data => {
-      console.log('Auction data received !')
+      console.log('Auction data received !');
+      console.log(data);
       setAuctionData(data)
     })
   }, [socket])
