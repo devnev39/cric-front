@@ -1,4 +1,5 @@
 import settings from "../../config/settings.json";
+import _ from "lodash";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BidConsole from "../../components/auctionView/BidConsole";
@@ -8,6 +9,7 @@ import "./styles.css";
 function AuctionView() {
     const {auctionId} = useParams();
     const [auctionData,setAuctionData] = useState(null);
+    const [countryCodes, setCountryCodes] = useState(null);
     const navigate = useNavigate();
     const [currentPlayer,setCurrentPlayer] = useState(null);
     const [prevPlayer,setPrevPlayer] = useState(null);
@@ -25,6 +27,15 @@ function AuctionView() {
         xlabel : "Name"
     });
 
+    const fetchCountryCodes = async () => {
+        let data = await (await fetch("https://flagcdn.com/en/codes.json")).json();
+        if(!data) return;
+        data = Object.entries(data).map(([key, val]) => [val, key]);
+        data = Object.fromEntries(data);
+        console.log(data);
+        setCountryCodes(data);
+    }
+
     const fetchAuctionData = async () => {
         const response = await (await fetch(`${settings.BaseUrl}/auction/${auctionId}`,{credentials : "include"})).json();
         if(response.status !== 200) {
@@ -39,7 +50,7 @@ function AuctionView() {
         const ele = document.getElementById("mainNavBar");
         ele.style.display = "none";
 
-        const run = async () => {await fetchAuctionData();}
+        const run = async () => {await fetchAuctionData(); await fetchCountryCodes();}
         run();
     },[]);
 
@@ -56,6 +67,11 @@ function AuctionView() {
 
     useEffect(() => {
         if(!currentPlayer) setCurrentPlayer(pooledPlayerDataset ? pooledPlayerDataset[0] : null);
+        else {
+            setCurrentPlayer(player => {
+                return _.find(pooledPlayerDataset ,p => p._id === player._id);
+            })
+        }
     },[pooledPlayerDataset]);
 
     const nextPlayer = () => {
@@ -170,7 +186,8 @@ function AuctionView() {
                             {currentPlayer ? <img src={currentPlayer.IMGURL} className="img-thumbnail shadow p-3 playerImage" alt="" /> : null}
                         </div>
                         <div className="d-flex justify-content-center pt-3">
-                            {currentPlayer ? <img crossOrigin="anonymous" src={`https://countryflagsapi.com/svg/${currentPlayer.Country}`} className="img-thumbnail shadow flag-image" alt="" /> : null}
+                            {currentPlayer ? countryCodes ? <img crossOrigin="anonymous" src={`https://flagcdn.com/32x24/${countryCodes[currentPlayer.Country]}.png`} className="flag-image" alt="" /> : null : null}
+                            {/* { currentPlayer ? <i className={`flag flag-${currentPlayer.Country}`}></i> : null } */}
                         </div>
                         <div className="d-flex justify-content-center py-4 text-danger h4">
                             {currentPlayer ? currentPlayer.SOLD ? `SOLD to ${currentPlayer.SOLD}` : null : null}
