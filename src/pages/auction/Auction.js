@@ -46,7 +46,7 @@ function Auction() {
     const onSelect = async (selection) => {
         if(selection.target.innerText === 'Logout'){
             if(window.confirm("Do you want to logout ?")){
-                const res = await (await fetch("/logout",{credentials : "include"})).json();
+                const res = await (await fetch(`${settings.BaseUrl}/logout`,{credentials : "include"})).json();
                 if(res.status === 200) {alert("Logged out !"); navigate("/auctions");return;}
                 else alert(res.data);
                 return;
@@ -63,7 +63,7 @@ function Auction() {
                     credentials : "include"
                 })).json();
                 if(res.status === 200){
-                    const r = await (await fetch("/logout",{credentials : "include"})).json();
+                    const r = await (await fetch(`${settings.BaseUrl}/logout`,{credentials : "include"})).json();
                     if(r.status === 200) navigate("/auctions");
                     else alert(r.data);
                     return;

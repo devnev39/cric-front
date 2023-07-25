@@ -48,6 +48,18 @@ function Auctions(){
         setAuctions(response.data);
     }
 
+    const createLoadingDiv = () => {
+        return (
+            <div className="d-flex justify-content-center m-5">
+                <div class="spinner-grow" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                Loading.....Please wait !
+            </div>
+            
+        )
+    }
+
     useEffect(() => {
         const run = async () => {await getAuctions()}
         run();
@@ -69,7 +81,7 @@ function Auctions(){
             </div>            
             <div className="d-flex justify-content-center mt-5">
                 <div className="auctionsContainer w-50">
-                    {auctions ? createAuctionStack() : null}
+                    {auctions ? createAuctionStack() : createLoadingDiv()}
                 </div>
             </div>
             <div className="d-flex justify-content-center">

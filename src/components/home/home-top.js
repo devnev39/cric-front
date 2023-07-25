@@ -4,16 +4,21 @@ import {SVGS} from "../../resources/index";
 import { useNavigate } from "react-router-dom";
 export default function Hometop() {
     const navigate = useNavigate();
-    const svgs = [SVGS.hmanage,SVGS.hstat,SVGS.hcustom,SVGS.hshare];
+    const svgs = [
+        {url : SVGS.hmanage, tag : "See your auctions anytime, anywhere !"},
+        {url : SVGS.hstat, tag : "Store and analyse the stats based on your rules !"},
+        {url : SVGS.hcustom, tag : "Tight protection !"},
+        {url : SVGS.hshare, tag : "See realtime updates anywhere anytime with full control !"}
+    ];
     const createSvgBanner = (src) => {
         return (
-            <li key={`${src}`}>
-                <div className="row">
+            <li key={`${src.url}`}>
+                <div className="row mt-2">
                     <div className="col-2">
-                        <img src={src} className="side-svg" alt="" />
+                        <img src={src.url} className="side-svg" alt="" />
                     </div>
                     <div className="col-10">
-                        See your auction stats in real time
+                        {src.tag}
                     </div>
                 </div>
                                     
