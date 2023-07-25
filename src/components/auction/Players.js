@@ -414,7 +414,7 @@ function Players(props) {
             <SubmitForm postUrl={`/auction/${props.auctionObj._id}/players`} modelKey={"player"} neglects={[]} closeFunc={() => toggleSubmitForm("newPlayerForm")} parentKey={"newPlayer1"} navigate={props.trigger} />
         </div>
         <div className="closeForm closeFormDisplay" id="updatePlayerForm">
-            {currentPlayer ? <UpdateForm modelKey={"player"} neglects={[]} model={currentPlayer} postUrl={`/auction/${props.auctionObj._id}/players`} closeFunc={() => toggleSubmitForm("updatePlayerForm")} parentKey={"update2"} navigate={props.trigger} /> : null}
+            {currentPlayer ? <UpdateForm modelKey={"player"} neglects={[]} model={currentPlayer} postUrl={`${settings.BaseUrl}/auction/${props.auctionObj._id}/players`} closeFunc={() => toggleSubmitForm("updatePlayerForm")} parentKey={"update2"} navigate={props.trigger} /> : null}
         </div>
         </>
         )

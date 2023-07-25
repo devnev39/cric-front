@@ -50,13 +50,16 @@ function Auctions(){
 
     const createLoadingDiv = () => {
         return (
-            <div className="d-flex justify-content-center m-5">
-                <div class="spinner-grow" role="status">
-                    <span class="sr-only">Loading...</span>
+            <div className="mx-5">
+                <div className="d-flex justify-content-center m-5">
+                    <div class="spinner-grow text-success" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
                 </div>
-                Loading.....Please wait !
+                <div className="d-flex justify-content-center h2">
+                    Loading.....Please wait !
+                </div>
             </div>
-            
         )
     }
 
