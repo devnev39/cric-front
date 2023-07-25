@@ -44,3 +44,24 @@ li{
     border-radius: 5px;
     box-shadow: 5px 5px 4px #b7efc5;
 }
+
+.openFormDisplay {
+    display: block;
+    opacity: 0;
+}
+
+.closeFormDisplay {
+    display: none;
+}
+
+.openForm {
+    transition: opacity 0.1s linear;
+    transform:translate(0);
+    opacity: 1;
+}
+
+.closeForm{
+    transition: opacity 0.1s linear;
+    transform: translate(0);
+    opacity: 0;
+}

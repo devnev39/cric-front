@@ -63,6 +63,7 @@ function LiveStats (props) {
         }
       }
     }
+    console.log(auctionData.Teams);
     for (let team of auctionData.Teams) {
       for (let rule of auctionData.Rules) {
         const c_rule = JSON.parse(JSON.stringify(rule))

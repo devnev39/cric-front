@@ -1,8 +1,8 @@
 import settings from "../../config/settings.json";
 import { useEffect, useState } from "react";
 import SubmitForm from "../common/SubmitForm";
-import "./styles.css";
 import UpdateForm from "../common/UpdateForm";
+import "./styles.css";
 /**
  * 
  * @param {Object} props.auctionObj Auction Data

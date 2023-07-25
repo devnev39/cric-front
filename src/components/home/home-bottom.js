@@ -4,10 +4,13 @@ import {Row,Col} from "react-bootstrap"
 import fetchData from "../../helpers/fetchData";
 import queryBuiler from "../../helpers/queryBuilder";
 import BarChart from "../common/BarChart";
+import "./styles.css";
 
 export default function Homebottom() {
-    const [tb1Data,setTb1Data] = useState();
-    const [tb2Data,setTb2Data] = useState();
+    const [tb1Data,setTb1Data] = useState(null);
+    const [tb2Data,setTb2Data] = useState(null);
+
+    const [timer, setTimer] = useState(null);
 
     const requestHomeData = async () => {
         const query = new queryBuiler();
@@ -26,8 +29,37 @@ export default function Homebottom() {
         const requestData = async () => {
             await requestHomeData();
         }
-        requestData();
+        const timer = setInterval(async () => {
+            await requestData();
+        },1000);
+        setTimer(timer);
     },[]);
+
+    useEffect(() => {
+        if(tb1Data && tb2Data) {
+            clearInterval(timer);
+            toogleLoader("loadingScreen");
+        }
+    },[tb1Data,tb2Data])
+
+    const toogleLoader = (formId) => {
+        const e = document.getElementById(formId);
+        if(e.classList.contains("display")){
+            e.classList.toggle("display");
+            e.classList.toggle("openForm");
+            e.classList.toggle("closeForm");
+            e.classList.toggle("openFormDisplay");
+            setTimeout(() => {e.classList.toggle("closeFormDisplay")},500);
+            document.getElementById("mainHomeContainer").classList.toggle("blurBackground");
+        }else{
+            e.classList.toggle("display");
+            e.classList.toggle("closeForm");
+            e.classList.toggle("openFormDisplay");
+            e.classList.toggle("closeFormDisplay");
+            setTimeout(() => {e.classList.toggle("openForm");},100);
+            document.getElementById("mainHomeContainer").classList.toggle("blurBackground");
+        }
+    }
 
     const tb1 = {
         BasePrice : Number,
@@ -59,6 +91,7 @@ export default function Homebottom() {
     };
 
     return (
+        <>
         <div className="home-bottom-div pt-5 pl-2">
             <Row>
                 <Col xs={6} className="border-dark border-right">
@@ -85,5 +118,6 @@ export default function Homebottom() {
                 </Col>
             </Row>
         </div>
+        </>
     )
 }
