@@ -26,4 +26,4 @@ jobs :
         context : .
         file : ./Dockerfile
         push : true
-        tags : ${{ secrets.DOCKER_USERNAME }}/cric-front@latest
+        tags : ${{ secrets.DOCKER_USERNAME }}/cric-front:latest
