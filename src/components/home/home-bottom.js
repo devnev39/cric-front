@@ -9,7 +9,7 @@ import "./styles.css";
 export default function Homebottom() {
     const [tb1Data,setTb1Data] = useState(null);
     const [tb2Data,setTb2Data] = useState(null);
-
+    const [pageLoaded, setPageLoaded] = useState(false);    
     const [timer, setTimer] = useState(null);
 
     const requestHomeData = async () => {
@@ -36,9 +36,10 @@ export default function Homebottom() {
     },[]);
 
     useEffect(() => {
-        if(tb1Data && tb2Data) {
+        if(tb1Data && tb2Data && !pageLoaded) {
             clearInterval(timer);
             toogleLoader("loadingScreen");
+            setPageLoaded(true);
         }
     },[tb1Data,tb2Data])
 
