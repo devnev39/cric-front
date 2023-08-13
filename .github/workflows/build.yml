@@ -29,4 +29,6 @@ jobs :
         push : true
         tags : ${{ secrets.DOCKER_USERNAME }}/cric-front:latest
 
-    DEPLOY_URL
+    - name : Deploy latest build
+      run : curl ${{ secrets.DEPLOY_URL }}
+      
