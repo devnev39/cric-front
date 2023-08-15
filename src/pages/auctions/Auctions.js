@@ -77,7 +77,7 @@ function Auctions(){
                     <h1 className="ml-5">Auctions</h1>
                 </div>
                 <div className="col-3">
-                     <div className="indicatorContainer shadow w-50">
+                     <div className="rounded p-3 indicatorContainer shadow w-50">
                         {statusLightsGenerator()}
                     </div>
                 </div>
