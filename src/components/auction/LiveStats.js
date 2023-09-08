@@ -9,7 +9,7 @@ import PolarAreaChart from '../common/PolarArea';
 function LiveStats (props) {
   const [socket, setSocket] = useState(null)
   const [auctionData, setAuctionData] = useState(
-    props.auctionObj ? props.auctionObj : null
+    props.auctionObj || null
   )
   const [teamModel, setTeamModel] = useState(null)
   const [playerModel, setPlayerModel] = useState(null)
@@ -30,23 +30,31 @@ function LiveStats (props) {
   }, [])
 
   useEffect(() => {
-    if (!socket) return
-    if (!socket.connected) return
+    if (!socket) {
+      return
+    }
+    if (!socket.connected) {
+      return
+    }
     console.log('Listening for data !')
     socket.on(`${props.auctionObj._id}`, data => {
       console.log('Auction data received !');
-      console.log(data);
       setAuctionData(data)
     })
   }, [socket])
 
   useEffect(() => {
-    if (!teamModel || !playerModel) return
-    if (!auctionData) return
+    if (!teamModel || !playerModel) {
+      return
+    }
+    if (!auctionData) {
+      return
+    }
     if (auctionData.Teams.length) {
       for (let team of auctionData.Teams) {
         if (team.Players.length) {
           team.Players = team.Players.map(player => {
+            if(!player){return null}
             if (Object.keys(player).length < 3) {
               player = _.find(
                 auctionData.poolingMethod === 'Composite'
@@ -63,10 +71,9 @@ function LiveStats (props) {
         }
       }
     }
-    console.log(auctionData.Teams);
     for (let team of auctionData.Teams) {
       for (let rule of auctionData.Rules) {
-        const c_rule = JSON.parse(JSON.stringify(rule))
+        let c_rule = JSON.parse(JSON.stringify(rule))
         if (c_rule.type === 'Team') {
           for (let key of Object.keys(teamModel)) {
             const re = new RegExp(`\\b${key}\\b`, 'g')
@@ -83,6 +90,8 @@ function LiveStats (props) {
         if (c_rule.type === 'Player') {
           let ruleAvg = 0;
           for (let player of team.Players) {
+            if(!player) {console.log(auctionData);continue;}
+            let c_rule_holder = JSON.parse(JSON.stringify(c_rule));
             for (let key of Object.keys(playerModel)) {
               const re = new RegExp(`\\b${key}\\b`, 'g')
               while (c_rule.rule.match(re)) {
@@ -95,6 +104,7 @@ function LiveStats (props) {
             }
             player[rule.ruleName] = round(number(fraction(c_rule.rule)),2);
             ruleAvg += player[rule.ruleName];
+            c_rule = c_rule_holder;
           }
           team[`${c_rule.ruleName}avg`] = round(ruleAvg / team.Players.length,2)
         }
@@ -124,10 +134,16 @@ function LiveStats (props) {
         {auctionData
           ? auctionData.Teams
             ? auctionData.Teams.map(team => {
-                if (!auctionData.Rules) return null;
+                if (!auctionData.Rules) {
+                  return null;
+                }
                 for(let team of auctionData.Teams){
                   for(let player of team.Players){
-                    if(Object.keys(player).length < 3) return null;
+                    if(player){
+                      if (Object.keys(player).length < 3) {
+                        return null;
+                      }
+                    }
                   }
                 }
 
@@ -143,7 +159,9 @@ function LiveStats (props) {
                 
                 let tableHeads = ['Name', 'Current', 'Budget', 'AuctionMaxBudget']
                 auctionData.Rules.forEach(rule => {
-                  if (rule.type === 'Team') tableHeads.push(rule.ruleName)
+                  if (rule.type === 'Team') {
+                    tableHeads.push(rule.ruleName)
+                  }
                 })
                 let teamheads = tableHeads.map(head => {
                   return <th key={`${head}`}>{head}</th>
@@ -167,7 +185,9 @@ function LiveStats (props) {
                 let ruleAvgs = [];
 
                 auctionData.Rules.forEach(rule => {
-                  if(rule.type === 'Team') return;
+                  if (rule.type === 'Team') {
+                    return;
+                  }
                   ruleAvgs.push(
                     <div key={`${rule.ruleName}$avg`} className='text-danger h5'>
                       {rule.ruleName}<sub>avg</sub> : {team[`${rule.ruleName}avg`]}
@@ -181,15 +201,14 @@ function LiveStats (props) {
                 theads = <tr key={`${team.Name}`}>{theads}</tr>
 
                 let tbody = team.Players.map(player => {
+                  if(!player){return null}
                   let tds = theads_props.map(prop => {
                     if(isNaN(player[prop])){
-                      console.log(prop);
-                      console.log(player);
                     }
                     return (
                       // !isNaN(player[prop]) ?
                       <td key={`${player.Name}${prop}`}>
-                        {player[prop] ? player[prop] : NaN}
+                        {player[prop] || NaN}
                       </td> 
                       // : null
                     )

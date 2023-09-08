@@ -70,3 +70,107 @@
   .submit-button:hover {
     background-color: #0056b3;
   }
+
+  .newTeamDivButton:hover{
+    cursor: pointer;
+    transform: scale(1.05);
+}
+/* 
+.optionContainerRoot{
+    z-index: 1;
+} */
+
+.blurBackground {
+    -webkit-filter: blur(5px);
+    -moz-filter: blur(5px);
+    -o-filter: blur(5px);
+    -ms-filter: blur(5px);
+    filter: blur(5px);
+}
+
+#submitForm,#updateForm {
+    position: absolute;
+    width: 100%;
+    /* top : 25%; */
+    /* left: 5%; */
+}
+
+#newPlayerForm,#updatePlayerForm {
+    position: fixed;
+    width: 100%;
+    top : 3%;
+    left: 30%;
+    height: 100vh;
+    overflow: scroll;
+}
+
+.openFormDisplay {
+    display: block;
+    opacity: 0;
+}
+
+.closeFormDisplay {
+    display: none;
+}
+
+.openForm {
+    transition: opacity 0.1s linear;
+    transform:translate(0);
+    opacity: 1;
+}
+
+.closeForm{
+    transition: opacity 0.1s linear;
+    transform: translate(0);
+    opacity: 0;
+}
+
+.teams-container{
+    width: 70%;
+}
+
+.team-items-container{
+    height: 450px;
+    overflow: scroll;
+}
+
+.players-table-container {
+    height: 70vh;
+    overflow: scroll;
+    max-width: fit-content;
+}
+
+.players-table-container thead th {
+    position: sticky;
+    top: 0px;
+    z-index: 1;
+    background-color: white;
+    border-bottom: solid grey;
+    /* padding: 1rem; */
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+table {
+    max-width: fit-content;
+}
+
+.circleAround {
+    border-radius: 50%;
+    border: #00b4d8 solid 10px;
+    text-align: center;
+    padding: 10px;
+    width: 50%;
+}
+
+.circleAround2 {
+    border-radius: 50%;
+    width: 100%;
+    padding: 15px;
+
+    background: #fff;
+    border: 10px solid #00b4d8;
+    text-align: center;
+    font-size: large;
+    font-weight: 500;
+}
