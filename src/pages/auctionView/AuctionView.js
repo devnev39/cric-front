@@ -29,7 +29,9 @@ function AuctionView() {
 
     const fetchCountryCodes = async () => {
         let data = await (await fetch("https://flagcdn.com/en/codes.json")).json();
-        if(!data) return;
+        if (!data) {
+          return;
+        }
         data = Object.entries(data).map(([key, val]) => [val, key]);
         data = Object.fromEntries(data);
         console.log(data);
@@ -40,7 +42,9 @@ function AuctionView() {
         const response = await (await fetch(`${settings.BaseUrl}/auction/${auctionId}`,{credentials : "include"})).json();
         if(response.status !== 200) {
             alert(response.data);
-            if(response.status > 500 && response.status < 600) navigate(-1);
+            if (response.status > 500 && response.status < 600) {
+              navigate(-1);
+            }
         } else {
             setAuctionData(response.data);
         }
@@ -60,14 +64,17 @@ function AuctionView() {
     },[flag]);
 
     useEffect(() => {
-        if(! auctionData) return;
+        if (! auctionData) {
+          return;
+        }
         setPooledPlayerDatset(auctionData.poolingMethod === "Composite" ? auctionData.dPlayers.concat(auctionData.Add) : auctionData.cPlayers.concat(auctionData.Add));
         setChartData(auctionData.Teams);
     },[auctionData]);
 
     useEffect(() => {
-        if(!currentPlayer) setCurrentPlayer(pooledPlayerDataset ? pooledPlayerDataset[0] : null);
-        else {
+        if (!currentPlayer) {
+            setCurrentPlayer(pooledPlayerDataset ? pooledPlayerDataset[0] : null);
+        } else {
             setCurrentPlayer(player => {
                 return _.find(pooledPlayerDataset ,p => p._id === player._id);
             })
@@ -76,8 +83,9 @@ function AuctionView() {
 
     const nextPlayer = () => {
         setCurrentPlayer((current) => {
-            if(pooledPlayerDataset.indexOf(current)+1 === pooledPlayerDataset.length) alert("No players found further !");
-            else{
+            if (pooledPlayerDataset.indexOf(current)+1 === pooledPlayerDataset.length) {
+                alert("No players found further !");
+            } else {
                 setPrevPlayer(currentPlayer);
                 return pooledPlayerDataset[pooledPlayerDataset.indexOf(current) + 1];
             }
@@ -86,15 +94,19 @@ function AuctionView() {
 
     const previousPlayer = () => {
         setCurrentPlayer(current => {
-            if(prevPlayer) {
-                const player = prevPlayer;
-                setPrevPlayer(prev => {
-                    if(prev.SRNO > 1) {
-                        return pooledPlayerDataset.find(e => e.SRNO === prev.SRNO-1);
-                    }else return pooledPlayerDataset[0];
-                });
-                return player;
-            } else return current;
+            if (prevPlayer) {
+              const player = prevPlayer;
+              setPrevPlayer(prev => {
+                  if (prev.SRNO > 1) {
+                    return pooledPlayerDataset.find(e => e.SRNO === prev.SRNO-1);
+                  } else {
+                    return pooledPlayerDataset[0];
+                  }
+              });
+              return player;
+            } else {
+                return pooledPlayerDataset.find(e => e.SRNO === current.SRNO-1);
+            }
         })
     }
     
@@ -120,7 +132,9 @@ function AuctionView() {
     }
 
     const cancelBid = async () => {
-        if(!currentPlayer) return;
+        if (!currentPlayer) {
+          return;
+        }
         const obj = {
             player : currentPlayer
         }
@@ -132,11 +146,12 @@ function AuctionView() {
             },
             credentials : "include"
         })).json()
-        if(resp.status !== 200) alert(`${resp.status} ${resp.data}`)
-        else{
-            alert("Success !")
-            setFlag(!flag);
-        }
+        if (resp.status !== 200) {
+          alert(`${resp.status} ${resp.data}`)
+        } else {
+                    alert("Success !")
+                    setFlag(!flag);
+                }
     }
 
     const jumpPlayer = () => {
@@ -217,9 +232,7 @@ function AuctionView() {
                     <div className="col-3">
                         <div className="d-flex justify-content-center">
                             {
-                                currentPlayer ? !currentPlayer.SOLD ? 
-                                <button className="btn btn-success" onClick={() => showBidConsole()}>Bid</button>    
-                                : <button className="btn btn-danger" onClick={() => cancelBid()}>Cancel Bid</button>
+                                currentPlayer ? currentPlayer.SOLD ? <button className="btn btn-danger" onClick={() => cancelBid()}>Cancel Bid</button> : <button className="btn btn-success" onClick={() => showBidConsole()}>Bid</button>
                                 :false
                             }
                             

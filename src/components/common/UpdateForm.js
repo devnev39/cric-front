@@ -12,6 +12,7 @@ import InputForm from "./InputForm";
  * @param {Function} props.closeFunc Close to trigger if splash view is used
  * @param {String} props.parentKey Parent componet key
  * @param {Object} props.navigate Function (trigger) or route to navigate after 200 status
+ * @param {Function} props.setFunc Function to set the data
  * @abstract This doen't have wimodels caller
  */
 function UpdateForm(props) {
@@ -33,20 +34,28 @@ function UpdateForm(props) {
             credentials : "include"
         };
         console.log("Clicked !");
-        let url = props.postUrl ? props.postUrl : `${settings.BaseUrl}/${props.modelKey}/${props.model._id}`;
+        let url = props.postUrl ? `${settings.BaseUrl}${props.postUrl}` : `${settings.BaseUrl}/${props.modelKey}/${props.model._id}`;
         fetch(url,resp).then(res => res.json()).then(res => {
-            if(res.status === 200) {
-                if(props.navigate){
-                    if(typeof(props.navigate) === 'function'){
-                        if(props.closeFunc) {props.navigate();props.closeFunc();}
-                        else props.navigate();
+            if (res.status === 200) {
+              if(props.setFunc){
+                props.setFunc(res.data);
+              }
+              if(props.navigate){
+                  if (typeof(props.navigate) === 'function') {
+                    if (props.closeFunc) {
+                      props.navigate();props.closeFunc();
+                    } else {
+                      props.navigate();
                     }
-                    else navigate(props.navigate);
-                }else{
-                    !props.closeFunc ? window.location.reload() : props.closeFunc()
-                }
+                  } else {
+                    navigate(props.navigate);
+                  }
+              }else{
+                  props.closeFunc ? props.closeFunc() : window.location.reload()
+              }
+            } else {
+              alert(`${res.status} ${res.data}`);
             }
-            else alert(`${res.status} ${res.data}`);
         });
     }
 
@@ -57,12 +66,20 @@ function UpdateForm(props) {
 
     useEffect(() => {
         for(let key of Object.keys(modelJson)){
-            if(props.neglects.indexOf(key) !== -1) continue;
+            if (props.neglects.indexOf(key) !== -1) {
+              continue;
+            }
             document.getElementById(`input-${key}-${props.parentKey}`).addEventListener("input",() => {
                 setState(model => {
                     if(model[key] !== document.getElementById(`input-${key}-${props.parentKey}`).value){
-                        if(modelJson[key] === 'number') model[key] = +document.getElementById(`input-${key}-${props.parentKey}`).value;
-                        else model[key] = document.getElementById(`input-${key}-${props.parentKey}`).value;
+                        if (modelJson[key] === 'number') {
+                          model[key] = +document.getElementById(`input-${key}-${props.parentKey}`).value;
+                        } else
+                        if (modelJson[key] === "checkbox") {
+                          model[key] = document.getElementById(`input-${key}-${props.parentKey}`).checked;
+                        }else {
+                          model[key] = document.getElementById(`input-${key}-${props.parentKey}`).value;
+                        }
                     }
                     return model;
                 });
@@ -73,15 +90,25 @@ function UpdateForm(props) {
 
     useEffect(() => {
         for(let key of Object.keys(modelJson)){
-            if(props.neglects.indexOf(key) !== -1) continue;
+            if (props.neglects.indexOf(key) !== -1) {
+              continue;
+            }
             document.getElementById(`input-${key}-${props.parentKey}`).disabled = !updateState;
-            document.getElementById(`input-${key}-${props.parentKey}`).value = props.model[key];
+            if (modelJson[key] === "checkbox") {
+              document.getElementById(`input-${key}-${props.parentKey}`).checked = props.model[key];
+            }else {
+              document.getElementById(`input-${key}-${props.parentKey}`).value = props.model[key];
+            }
+            
         }
     },[updateState,modelJson]);
 
     useEffect(() => {
-        if(JSON.stringify(props.model) !== JSON.stringify(state)) document.getElementById("saveBtn").disabled = false;
-        else document.getElementById("saveBtn").disabled = true;
+        if (JSON.stringify(props.model) !== JSON.stringify(state)) {
+          document.getElementById("saveBtn").disabled = false;
+        } else {
+          document.getElementById("saveBtn").disabled = true;
+        }
         setChanged(false);
     },[changed, props.model, state]);
 

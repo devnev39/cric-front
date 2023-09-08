@@ -7,6 +7,5 @@ export default async function fetchData(uri,body){
         body : JSON.stringify(body),
         credentials : "include"
     }
-    const res = await (await fetch(uri,req)).json();
-    return res;
+    return await (await fetch(uri,req)).json();
 }
