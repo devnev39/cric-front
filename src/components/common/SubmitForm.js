@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
  * @param {Object} props.navigate Function (trigger) or route to navigate after 200 status
  * @param {Function} props.closeFunc Close function to trigger if splash view is used
  * @param {String} props.parentKey Parent component key
+ * @param {Function} props.setFunc Function to set the incomming data
  * @returns
  */
 function SubmitForm(props) {
@@ -33,11 +34,21 @@ function SubmitForm(props) {
         let obj = {};
         if(!modelJson){alert("No model !");return;}
         Object.keys(modelJson).forEach(key => {
-            let value = document.getElementById(`input-${key}-${props.parentKey}`).value;
-            if(modelJson[key] === 'number') value = +value;
-            else if(modelJson[key] === 'password') value = encrypt(value);
-            if(!value) alert("No value !");
-            else obj[key] = value;
+            if (props.neglects.indexOf(key) === -1) {
+                let {value} = document.getElementById(`input-${key}-${props.parentKey}`);
+                if (modelJson[key] === 'number') {
+                value = +value;
+                } else
+                if (modelJson[key] === 'password') {
+                    value = encrypt(value);
+                }
+
+                if (!value) {
+                alert("No value !");
+                } else {
+                obj[key] = value;
+                }
+            }
         });
         let a = {};
         a[props.modelKey] = obj;
@@ -50,12 +61,20 @@ function SubmitForm(props) {
             credentials : "include",
         }
         const res = await (await fetch(`${settings.BaseUrl}${props.postUrl}`,response)).json();
-        if(res.status === 200) {alert("Success !");}
+        if(res.status === 200) {
+            alert("Success !");props.closeFunc();
+            if(props.setFunc){
+                props.setFunc(res.data);
+            }
+        }
         else {alert(res.data);return;}
         clearInputs();
         if(props.navigate){
-            if(typeof(props.navigate) === 'function'){props.navigate();props.closeFunc();}
-            else navigate(props.navigate);
+            if (typeof(props.navigate) === 'function') {
+              props.navigate();props.closeFunc();
+            } else {
+              navigate(props.navigate);
+            }
         }
     }
 

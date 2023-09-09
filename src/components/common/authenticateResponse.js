@@ -9,7 +9,9 @@ const authenticateResponse = async (response,obj) => {
         credentials : "include"
     };
     const resp = await (await fetch(`${settings.BaseUrl}${response.POST}`,postResp)).json();
-    if(resp === 200) return true;
+    if (resp === 200) {
+      return true;
+    }
     return resp;
 }
 

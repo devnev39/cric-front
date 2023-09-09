@@ -33,7 +33,7 @@ function LineBarChart(props) {
         return m1 > m2 ? m1 : m2;
     }
     const option = {
-        indexAxis : props.option.indexAxis ? props.option.indexAxis : 'x',
+        indexAxis : props.option.indexAxis || 'x',
         aspectRatio : props.option.aspectRatio,
         scales : {
             y : {

@@ -16,14 +16,18 @@ function InputForm(props) {
                     :
                 </div>
                 <div className="col-6">
-                    <input type={type ? type : 'text'} id={`input-${label}-${props.parentKey}`} className="w-100" />
+                    <input type={type || 'text'} id={`input-${label}-${props.parentKey}`} className="w-100" />
                 </div>
             </div>
         )
     }
     const makeInputRows = (dataSchema,neglects) => {
-        if(!neglects) neglects = [];
-        return Object.keys(dataSchema).map(key => {if(neglects.indexOf(key) === -1) return makeRow(key,dataSchema[key]);return null;});
+        if (!neglects) {
+          neglects = [];
+        }
+        return Object.keys(dataSchema).map(key => {if (neglects.indexOf(key) === -1) {
+                                                     return makeRow(key,dataSchema[key]);
+                                                   }return null;});
     }
     return (
         <>

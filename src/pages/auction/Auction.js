@@ -32,45 +32,60 @@ function Auction() {
     const fetchAuctionData = async () => {
         if(state.auction._id !== auctionId){alert("Invalid id !");return;}
         const response = await (await fetch(`${settings.BaseUrl}/auction/${state.auction._id}`,{credentials : "include"})).json();
-        if(response.status !== 200){
-            alert(response.data);
-            if(response.status > 500 && response.status < 600) {
-                let key = encrypt(prompt(`Enter password for ${state.auction.Name} : `));
-                const authenticate = await authenticateResponse(response,{_id : state.auction._id,Password : key});
-                if(authenticate) window.location.reload();
-                else{alert(authenticate.data);navigate(-1);}
-            }
-        }else setAuctionData(response.data);
+        if (response.status !== 200) {
+          alert(response.data);
+          if(response.status > 500 && response.status < 600) {
+              let key = encrypt(prompt(`Enter password for ${state.auction.Name} : `));
+              const authenticate = await authenticateResponse(response,{_id : state.auction._id,Password : key});
+              if (authenticate) {
+                window.location.reload();
+              } else {alert(authenticate.data);navigate(-1);}
+          }
+        } else {
+          setAuctionData(response.data);
+        }
     }
 
     const onSelect = async (selection) => {
         if(selection.target.innerText === 'Logout'){
-            if(window.confirm("Do you want to logout ?")){
-                const res = await (await fetch(`${settings.BaseUrl}/logout`,{credentials : "include"})).json();
-                if(res.status === 200) {alert("Logged out !"); navigate("/auctions");return;}
-                else alert(res.data);
-                return;
-            }else return;
+            if (window.confirm("Do you want to logout ?")) {
+              const res = await (await fetch(`${settings.BaseUrl}/logout`,{credentials : "include"})).json();
+              if (res.status === 200) {
+                alert("Logged out !"); navigate("/auctions");return;
+              } else {
+                alert(res.data);
+              }
+              return;
+            } else {
+              return;
+            }
         }
         if(selection.target.innerText === 'Delete'){
-            if(window.confirm("Do you want to delete this auction ?")){
+            if (window.confirm("Do you want to delete this auction ?")) {
+                const deleteId = prompt("Enter delelte admin id : ");
                 const res = await (await fetch(`${settings.BaseUrl}/auction/${auctionData._id}`,{
                     method : "DELETE",
                     headers : {
                         "Content-Type" : "application/json"
                     },
-                    body : JSON.stringify({auction : auctionData}),
+                    body : JSON.stringify({auction : auctionData, deleteId: encrypt(deleteId)}),
                     credentials : "include"
-                })).json();
-                if(res.status === 200){
-                    const r = await (await fetch(`${settings.BaseUrl}/logout`,{credentials : "include"})).json();
-                    if(r.status === 200) navigate("/auctions");
-                    else alert(r.data);
-                    return;
+              })).json();
+              if (res.status === 200) {
+                const r = await (await fetch(`${settings.BaseUrl}/logout`,{credentials : "include"})).json();
+                if (r.status === 200) {
+                  navigate("/auctions");
+                } else {
+                  alert(r.data);
                 }
-                else alert(res.data);
                 return;
-            }else return;
+              } else {
+                alert(res.data);
+              }
+              return;
+            } else {
+              return;
+            }
         }
         Array.prototype.slice.call(document.getElementsByClassName("activeItem")).forEach(element => {
             element.classList.remove("activeItem");
@@ -121,7 +136,7 @@ function Auction() {
 
     const makeSideNavBar = () => {
         return sideNavItems.map(item => {
-            return makeSideNavItem(item,sideNavItems.indexOf(item) === 0 ? true : false);
+            return makeSideNavItem(item,!!(sideNavItems.indexOf(item) === 0));
         })
     }
 
@@ -143,8 +158,8 @@ function Auction() {
                 {auctionData ? 
                 <div className="col-10">
                     {currentComponent === "Options" ? <Option auctionObj = {auctionData} setAuctionObj = {setAuctionData} trigger = {toggleTrigger} /> : null}
-                    {currentComponent === "Teams" ? <Teams auctionObj = {auctionData} trigger = {toggleTrigger}  /> : null}
-                    {currentComponent === "Players" ? <Players auctionObj = {auctionData} trigger = {toggleTrigger}  /> : null}
+                    {currentComponent === "Teams" ? <Teams auctionObj = {auctionData} trigger = {toggleTrigger} setAuctionObj = {setAuctionData}  /> : null}
+                    {currentComponent === "Players" ? <Players auctionObj = {auctionData} setAuctionObj = {setAuctionData} trigger = {toggleTrigger}  /> : null}
                     {currentComponent === "Auction" ? <AuctionComponent auctionObj = {auctionData} trigger = {toggleTrigger}  /> : null}
                     {currentComponent === "Live Stats" ? <LiveStats auctionObj = {auctionData} trigger = {toggleTrigger}  /> : null}
                 </div> : null}
