@@ -1,0 +1,36 @@
+/* Center the table on the page */
+.team-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+   
+  }
+  
+  .team-table {
+    width: 100%;
+    max-width: 800px;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .team-table th,
+  .team-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .team-table th {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+
+  @media (max-width: 768px) {
+    .team-table {
+      font-size: 14px;
+    }
+  }
+  

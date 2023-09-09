@@ -6,6 +6,7 @@ import {Routes, Route} from "react-router-dom";
 import Auctions from "./pages/auctions/Auctions";
 import Auction from "./pages/auction/Auction";
 import AuctionView from "./pages/auctionView/AuctionView";
+import Team from "./pages/team/Team";
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/auction/:auctionId" element={<Auction />} />
             <Route path="/auction/view/:auctionId" element={<AuctionView />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/team" element={<Team />} />
         </Routes>
     )
 }
