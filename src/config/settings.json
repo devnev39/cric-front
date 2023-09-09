@@ -1,5 +1,5 @@
 {
-    "BaseUrl" : "http://localhost:8080",
-    "OtherUrl" : "https://cric-render.ddnsking.com"
+    "OtherUrl" : "http://localhost:8080",
+    "BaseUrl" : "https://cric-render.ddnsking.com"
 }
  
