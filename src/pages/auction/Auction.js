@@ -62,13 +62,14 @@ function Auction() {
         }
         if(selection.target.innerText === 'Delete'){
             if (window.confirm("Do you want to delete this auction ?")) {
-              const res = await (await fetch(`${settings.BaseUrl}/auction/${auctionData._id}`,{
-                  method : "DELETE",
-                  headers : {
-                      "Content-Type" : "application/json"
-                  },
-                  body : JSON.stringify({auction : auctionData}),
-                  credentials : "include"
+                const deleteId = prompt("Enter delelte admin id : ");
+                const res = await (await fetch(`${settings.BaseUrl}/auction/${auctionData._id}`,{
+                    method : "DELETE",
+                    headers : {
+                        "Content-Type" : "application/json"
+                    },
+                    body : JSON.stringify({auction : auctionData, deleteId: encrypt(deleteId)}),
+                    credentials : "include"
               })).json();
               if (res.status === 200) {
                 const r = await (await fetch(`${settings.BaseUrl}/logout`,{credentials : "include"})).json();
