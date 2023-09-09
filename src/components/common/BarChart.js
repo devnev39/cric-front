@@ -15,7 +15,7 @@ function BarChart(props){
         }
     }
     const option = {
-        indexAxis : props.option.indexAxis ? props.option.indexAxis : 'x',
+        indexAxis : props.option.indexAxis || 'x',
         plugins : {
             tooltip : props.option.tooltipInfoKeys ? tooltip : {}
         },

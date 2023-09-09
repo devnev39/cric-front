@@ -16,14 +16,20 @@ export default function Homebottom() {
         const query = new queryBuiler();
 
         let res = await fetchData(`${settings.BaseUrl}/player/query`,{query : query.sort({"BasePrice" : -1}).limit(5).queries});
-        if(res.status !== 200) alert(`${res.status} ${res.data}`);
-        else setTb1Data(res.data);
+        if (res.status !== 200) {
+          alert(`${res.status} ${res.data}`);
+        } else {
+          setTb1Data(res.data);
+        }
 
         res = await fetchData(`${settings.BaseUrl}/player/query`,{query : query.clear().group({_id : "$IPL2022Team",TotalBid : {$sum : "$AuctionedPrice"}})
         .project({_id : 0,Name : "$_id",TotalBid : "$TotalBid"})
         .sort({"TotalBid" : -1}).limit(5).queries})
-        if(res.status !== 200) alert(`${res.status} ${res.data}`);
-        else setTb2Data(res.data);
+        if (res.status !== 200) {
+          alert(`${res.status} ${res.data}`);
+        } else {
+          setTb2Data(res.data);
+        }
     }
     useEffect(() => {
         const requestData = async () => {

@@ -61,7 +61,9 @@ function Option(props) {
             }
         }
         rule = rule.match("([A-z])")
-        if(rule) if(rule.length){alert("Rule invalid !");console.log(rule);return;}
+        if (rule && rule.length) {
+              alert("Rule invalid !");console.log(rule);return;
+        }
         const Rule = {
             ruleName : ruleName,
             rule : rule_check,
@@ -76,16 +78,21 @@ function Option(props) {
             },
             credentials : "include"
         })).json()
-        if(resp.status !== 200) alert(`${resp.status} ${resp.data}`);
-        else{
-            alert("Success !");
-            if(resp.data) if(props.setAuctionObj) props.setAuctionObj(resp.data);
-            showRuleConsole();
-        }
+        if (resp.status !== 200) {
+          alert(`${resp.status} ${resp.data}`);
+        } else {
+                    alert("Success !");
+                    if (resp.data && props.setAuctionObj) {
+                          props.setAuctionObj(resp.data);
+                    }
+                    showRuleConsole();
+                }
     }
 
     const deleteRule = async (rule) => {
-        if(!window.confirm("Delete rule ?")) return;
+        if (!window.confirm("Delete rule ?")) {
+          return;
+        }
         const resp = await(await fetch(`${settings.BaseUrl}/auction/${props.auctionObj._id}/rule`,
         {
             method : "DELETE",
@@ -95,11 +102,14 @@ function Option(props) {
             },
             credentials : "include"
         })).json()
-        if(resp.status !== 200) alert(`${resp.status} ${resp.data}`);
-        else{
-            alert("Success !");
-            if(resp.data) if(props.setAuctionObj) props.setAuctionObj(resp.data);
-        }
+        if (resp.status !== 200) {
+          alert(`${resp.status} ${resp.data}`);
+        } else {
+                    alert("Success !");
+                    if (resp.data && props.setAuctionObj) {
+                          props.setAuctionObj(resp.data);
+                    }
+                }
     }
 
     return (
@@ -126,10 +136,10 @@ function Option(props) {
                                                     {rule.ruleName}
                                                 </div>
                                                 <div className="col-2">
-                                                    {rule.type ? rule.type : "<Nan>"}
+                                                    {rule.type || "<Nan>"}
                                                 </div>
                                                 <div className="col-6">
-                                                    {rule.rule ? rule.rule : null}
+                                                    {rule.rule || null}
                                                 </div>
                                                 <div className="col-2">
                                                     <button className="btn btn-danger" onClick={() => deleteRule(rule)}><i className="fa-solid fa-trash-can"></i></button>

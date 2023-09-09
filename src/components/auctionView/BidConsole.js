@@ -28,12 +28,18 @@ function BidConsole(props) {
 
     const setTableBody = () => {
         let trs = [];
-        if(!props.Teams) return;
+        if (!props.Teams) {
+          return;
+        }
         for(let team of props.Teams) {
             let per = (team.Current/team.Budget) * 100;
-            if(per > 66) per = "table-success"
-            else if(per > 40) per = "table-warning"
-            else per = "table-danger";
+            if (per > 66) {
+              per = "table-success"
+            } else if (per > 40) {
+                     per = "table-warning"
+                   } else {
+                     per = "table-danger";
+                   }
             let tds = [];
             for(let field of tableFields) {
                 tds.push(<td key={`${team.Name}${tableFields.indexOf(field)}`}>{team[field]}</td>);
@@ -54,12 +60,13 @@ function BidConsole(props) {
             team : selectedTeam
         };
         const resp = await fetchData(`${settings.BaseUrl}/auction/${props.auctionId}/bid`,{bid : bidObj});
-        if(resp.status !== 200) alert(`${resp.status} ${resp.data}`);
-        else{
-            alert("Success !");
-            props.updateFunc();
-            props.closeFunc();
-        }
+        if (resp.status !== 200) {
+          alert(`${resp.status} ${resp.data}`);
+        } else {
+                    alert("Success !");
+                    props.updateFunc();
+                    props.closeFunc();
+                }
     }
     return (
         <>

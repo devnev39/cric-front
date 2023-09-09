@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import settings from "../../config/settings.json";
 import './styles.css';
+import { useNavigate } from 'react-router';
+import encrypt from '../../components/common/Encrypt';
+
 
 const Admin = () => {
   const [selectedOption, setSelectedOption] = useState('admin');
   const [patValue, setPatValue] = useState('');
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
 
   const handleOptionChange = (option) => {
     setSelectedOption(option);
@@ -13,14 +20,34 @@ const Admin = () => {
     setPatValue(event.target.value);
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-   
-  };
+  const login = async () => {
+    const resp = await (await fetch(`${settings.BaseUrl}/auth/admin`,{
+      method: "POST",
+      headers: {
+        "Content-Type" : "application/json"
+      },
+      body: JSON.stringify({password : encrypt(password)}),
+      credentials: "include"
+    })).json()
+    if (resp.status === 200) {
+      navigate("/view/admin",{state : {fromAdmin: true}})
+    }else{
+      window.alert(`${resp.data}`);
+    }
+  }
+  const load_admin = async () => {
+    const resp = await (await fetch(`${settings.BaseUrl}/admin`,{credentials : "include"})).json()
+    if(resp.status === 601) {
+      navigate("/view/admin", {state : {fromAdmin: true}});
+    }
+  }
+  useEffect(() => {
+    load_admin();
+  },[])
 
   return (
     <div>
-      <form className="admin-form mt-5" onSubmit={handleSubmit}>
+      <form className="admin-form mt-5">
         <div className="admin-options">
           <button
             type="button"
@@ -40,11 +67,8 @@ const Admin = () => {
 
         {selectedOption === 'admin' ? (
           <div>
-            <label htmlFor="username">Username:</label>
-            <input type="text" id="username" />
-
             <label htmlFor="password">Password:</label>
-            <input type="password" id="password" />
+            <input onChange={(e) => setPassword(e.target.value)} type="password" id="password" />
           </div>
         ) : (
           <div>
@@ -58,7 +82,7 @@ const Admin = () => {
           </div>
         )}
 
-        <button type="submit" className="submit-button">
+        <button type="button" onClick={login} className="submit-button">
           Submit
         </button>
       </form>

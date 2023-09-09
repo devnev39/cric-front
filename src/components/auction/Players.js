@@ -52,8 +52,11 @@ function Players(props) {
         let res = await fetchData(`${settings.BaseUrl}/player/query`,{
             query : queries
         });
-        if(res.status !== 200) alert(`${res.status} ${res.data}`);
-        else setObject(res.data);
+        if (res.status !== 200) {
+          alert(`${res.status} ${res.data}`);
+        } else {
+          setObject(res.data);
+        }
     }
 
     const requestData = async () => {
@@ -75,7 +78,7 @@ function Players(props) {
         setMplayers(players.data.Main);
         setAplayers(players.data.Add);
         setRplayers(players.data.Rmv);
-        document.getElementById("customSwitch1").checked = props.auctionObj.poolingMethod === "Custom" ? true : false;
+        document.getElementById("customSwitch1").checked = !!(props.auctionObj.poolingMethod === "Custom");
         setShowUploadDiv(document.getElementById("customSwitch1").checked);
     }
 
@@ -109,10 +112,15 @@ function Players(props) {
     }
 
     const movePlayerAndResponse = async (p,src,dest) => {
-        if(!src && !dest) if(!window.confirm("Do you want to permantly delete this player ? ")) return; 
+        if (!src && !dest && !window.confirm("Do you want to permantly delete this player ? ")) {
+              return;
+        } 
         const res = await movePlayer(p,src,dest);
-        if(res.status === 200) {alert("Success !"); props.trigger();}
-        else alert(`${res.status} ${res.data}`);
+        if (res.status === 200) {
+          alert("Success !"); props.trigger();
+        } else {
+          alert(`${res.status} ${res.data}`);
+        }
     }
 
     const movePlayer = async (p,src,dest) => {
@@ -121,15 +129,14 @@ function Players(props) {
         // player -> player object
         const method = src || dest ? "PATCH"  : "DELETE";
         console.log(props.auctionObj);
-        const resp = await (await fetch(`${settings.BaseUrl}/auction/${props.auctionObj._id}/players`,{
-            method : method,
-            headers : {
-                "Content-Type" : "application/json"
-            },
-            body : JSON.stringify({src : src,dest : dest,player : p}),
-            credentials : "include"
-        })).json();
-        return resp;
+        return await (await fetch(`${settings.BaseUrl}/auction/${props.auctionObj._id}/players`,{
+                    method : method,
+                    headers : {
+                        "Content-Type" : "application/json"
+                    },
+                    body : JSON.stringify({src : src,dest : dest,player : p}),
+                    credentials : "include"
+                })).json();
     }
 
     const updatePlayer = (p) => {
@@ -149,8 +156,11 @@ function Players(props) {
                     fillColumn(field,tds,p,datasetName);
                 }
             }
-            if(!p.Edited || datasetName === "Rmv") trs.push(<tr className={`${color ? color : ""}`} key={`${p.SRNO}`}>{tds}</tr>);
-            else trse.push(<tr className={"table-info"} key={`${p.SRNO}`}>{tds}</tr>)
+            if (!p.Edited || datasetName === "Rmv") {
+              trs.push(<tr className={`${color || ""}`} key={`${p.SRNO}`}>{tds}</tr>);
+            } else {
+              trse.push(<tr className={"table-info"} key={`${p.SRNO}`}>{tds}</tr>)
+            }
         }
         return trs.concat(trse);
     }
@@ -174,20 +184,31 @@ function Players(props) {
         const tbody = document.getElementById("tableBody");
         const trs = tbody.getElementsByTagName("tr");
         for(let tr of trs){
-            if(tr.textContent.toLowerCase().indexOf(val.toLowerCase()) === -1) tr.style.display = "None";
-            else tr.style.display = "";
+            if (tr.textContent.toLowerCase().indexOf(val.toLowerCase()) === -1) {
+              tr.style.display = "None";
+            } else {
+              tr.style.display = "";
+            }
             
             if(val.toLowerCase() === "added" || val.toLowerCase()  === "removed" || val.toLowerCase()  === "edited") {
-                if(tr.classList.contains(commandCorrenspondance[val.toLowerCase()])) tr.style.display = "";
-                else tr.style.display = "None";    
+                if (tr.classList.contains(commandCorrenspondance[val.toLowerCase()])) {
+                  tr.style.display = "";
+                } else {
+                  tr.style.display = "None";
+                }    
             }
             if(val.toLowerCase()  === "$") {
                 let flag = false;
                 Object.values(commandCorrenspondance).forEach(k => {
-                    if(tr.classList.contains(k)) flag = true;
+                    if (tr.classList.contains(k)) {
+                      flag = true;
+                    }
                 })
-                if(flag) tr.style.display = ""
-                else tr.style.display = "None";
+                if (flag) {
+                  tr.style.display = ""
+                } else {
+                  tr.style.display = "None";
+                }
             }
         }
     }
@@ -218,8 +239,11 @@ function Players(props) {
 
     const poolingMethodChanged = async () => {
         const state = document.getElementById("customSwitch1").checked;
-        if(state) props.auctionObj.poolingMethod = "Custom"
-        else props.auctionObj.poolingMethod = "Composite";
+        if (state) {
+          props.auctionObj.poolingMethod = "Custom"
+        } else {
+          props.auctionObj.poolingMethod = "Composite";
+        }
         const req = {
             method : "PUT",
             headers : {
@@ -229,8 +253,11 @@ function Players(props) {
             credentials : "include"
         };
         const resp = await (await fetch(`${settings.BaseUrl}/auction/${props.auctionObj._id}`,req)).json();
-        if(resp.status === 200) {alert("Success !");setShowUploadDiv(state);}
-        else alert(`${resp.status} ${resp.data}`);
+        if (resp.status === 200) {
+          alert("Success !");setShowUploadDiv(state);
+        } else {
+          alert(`${resp.status} ${resp.data}`);
+        }
         props.trigger();
     }
 
@@ -256,19 +283,24 @@ function Players(props) {
 	        let file = document.getElementById("datasetFileInput").files[0];
 	        let data = await readFileAsync(file);
             data = JSON.parse(data);
-            if(data.length) {
-                const Req = {
-                    method : "COPY",
-                    headers : {
-                        "Content-Type" : "application/json"
-                    },
-                    body : JSON.stringify({players : data}),
-                    credentials : "include"
-                }
-                const resp = await (await fetch(`${settings.BaseUrl}/auction/${props.auctionObj._id}/players`,Req)).json();
-                if(resp.status === 200) {alert("Success !");props.trigger();}
-                else alert(`${resp.status} ${resp.data}`);
-            }else throw new Error("Array not detected or empty array !");
+            if (data.length) {
+              const Req = {
+                  method : "COPY",
+                  headers : {
+                      "Content-Type" : "application/json"
+                  },
+                  body : JSON.stringify({players : data}),
+                  credentials : "include"
+              }
+              const resp = await (await fetch(`${settings.BaseUrl}/auction/${props.auctionObj._id}/players`,Req)).json();
+              if (resp.status === 200) {
+                alert("Success !");props.trigger();
+              } else {
+                alert(`${resp.status} ${resp.data}`);
+              }
+            } else {
+              throw new Error("Array not detected or empty array !");
+            }
         } catch (error) {
             alert(error);
         }
@@ -414,7 +446,7 @@ function Players(props) {
             <SubmitForm postUrl={`/auction/${props.auctionObj._id}/players`} modelKey={"player"} neglects={[]} closeFunc={() => toggleSubmitForm("newPlayerForm")} parentKey={"newPlayer1"} navigate={props.trigger} />
         </div>
         <div className="closeForm closeFormDisplay" id="updatePlayerForm">
-            {currentPlayer ? <UpdateForm modelKey={"player"} neglects={[]} model={currentPlayer} postUrl={`${settings.BaseUrl}/auction/${props.auctionObj._id}/players`} closeFunc={() => toggleSubmitForm("updatePlayerForm")} parentKey={"update2"} navigate={props.trigger} /> : null}
+            {currentPlayer ? <UpdateForm modelKey={"player"} neglects={[]} model={currentPlayer} postUrl={`/auction/${props.auctionObj._id}/players`} setFunc={props.setAuctionObj} closeFunc={() => toggleSubmitForm("updatePlayerForm")} parentKey={"update2"} navigate={props.trigger} /> : null}
         </div>
         </>
         )
