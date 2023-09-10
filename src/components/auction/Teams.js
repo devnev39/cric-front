@@ -24,8 +24,11 @@ function Teams(props) {
                     <div className="col-1 d-flex justify-content-center" style={{"borderRight" : `2px dotted`}}>
                         {team.No}
                     </div>
-                    <div className="col-6 d-flex justify-content-center" style={{"borderRight" : `2px dotted`}}>
+                    <div className="col-4 d-flex justify-content-center" style={{"borderRight" : `2px dotted`}}>
                         {team.Name}
+                    </div>
+                    <div className="col-2 d-flex justify-content-center" style={{"borderRight" : `2px dotted`}}>
+                        {team.Key}
                     </div>
                     <div className="col-2 d-flex justify-content-center" style={{"borderRight" : `2px dotted`}}>
                         {team.Budget}
