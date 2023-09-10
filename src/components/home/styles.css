@@ -32,6 +32,7 @@ li{
     border-radius: 10px;
     color: white;
     box-shadow: 9px 9px 8px #F3CCFF;
+    max-height: 65vh;
 }
 
 .side-svg {
