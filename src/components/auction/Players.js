@@ -1,4 +1,5 @@
 import settings from "../../config/settings.json";
+import * as xlsx from "xlsx";
 import { useEffect, useState } from "react";
 import fetchData from "../../helpers/fetchData";
 import fetchModel from "../../helpers/fetchModel";
@@ -237,6 +238,38 @@ function Players(props) {
         // else ele.innerText = '+';
     }
 
+    const downloadDataset = async () => {
+        const mp = JSON.parse(JSON.stringify(mPlayers));
+        const ad = JSON.parse(JSON.stringify(aPlayers));
+        const all = mp.concat(ad);
+        if(!all){
+            window.alert("Not found !");
+        }
+        let vals = Object.keys(all[0])
+        let def_neg = ["team_id","_id","__v","IMGURL","SOLD","SoldPrice"];
+        def_neg.forEach(neg => {
+            const ind = vals.indexOf(neg);
+            if(ind !== 1){
+                vals.splice(ind,1);
+            }
+        })
+        let neglects = window.prompt(`Enter fields to be neglected from below sepearted by comma (,) Fields : ${vals}`);
+        neglects = neglects.split(",");
+        neglects = neglects.concat(def_neg);
+        console.log(neglects);
+        all.forEach(player => {
+            for(let neg of neglects){
+                player[neg] = undefined;
+            }
+            return player;
+        })
+        console.log(all[10]);
+        let ws = xlsx.utils.json_to_sheet(all);
+        let wb = xlsx.utils.book_new();
+        xlsx.utils.book_append_sheet(wb, ws, "Players");
+        xlsx.writeFile(wb,"Players.xlsx");
+    }
+
     const poolingMethodChanged = async () => {
         const state = document.getElementById("customSwitch1").checked;
         if (state) {
@@ -436,6 +469,9 @@ function Players(props) {
                             <label className="form-label" htmlFor="customFile">Select JSON file</label>
                             <input type="file" className="form-control" id="datasetFileInput" accept=".json" />
                             <button onClick={uploadDataset} type="button" className="btn btn-outline-success mt-4" data-mdb-ripple-color="dark">Upload Dataset</button>
+                        </div>
+                        <div className="mt-5">
+                            <button className="btn btn-info" onClick={downloadDataset}>Download Dataset</button>
                         </div>
                     </div>
                 </div>
