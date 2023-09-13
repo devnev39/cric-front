@@ -238,10 +238,16 @@ function Players(props) {
         // else ele.innerText = '+';
     }
 
-    const downloadDataset = async () => {
+    const downloadDataset = async (removed) => {
         const mp = JSON.parse(JSON.stringify(mPlayers));
         const ad = JSON.parse(JSON.stringify(aPlayers));
-        const all = mp.concat(ad);
+        const rm = JSON.parse(JSON.stringify(rPlayers));
+        let all = null;
+        if(removed){
+            all = rm;
+        }else{
+            all = mp.concat(ad);
+        }
         if(!all){
             window.alert("Not found !");
         }
@@ -423,6 +429,9 @@ function Players(props) {
                                     <div className="col-2 d-flex justify-content-center">
                                         <i className="fa-solid fa-circle text-info"></i>
                                     </div>
+                                    <div className="col-2 d-flex justify-content-center">
+                                        {mPlayers ? `Total Players : ${mPlayers.length + aPlayers.length}` : null}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -432,10 +441,10 @@ function Players(props) {
                         <div className="col-8">
                             <div className="row">
                                 <div className="col-2 d-flex justify-content-center">
-                                    Removed
+                                    {rPlayers ? `Removed : ${rPlayers.length}` : 'Removed'}
                                 </div>
                                 <div className="col-2 d-flex justify-content-center">
-                                    Added
+                                    {aPlayers ? `Added : ${aPlayers.length}` : 'Added'}
                                 </div>
                                 <div className="col-2 d-flex justify-content-center">
                                     Edited
@@ -473,7 +482,8 @@ function Players(props) {
                             <button onClick={uploadDataset} type="button" className="btn btn-outline-success mt-4" data-mdb-ripple-color="dark">Upload Dataset</button>
                         </div>
                         <div className="mt-5">
-                            <button className="btn btn-info" onClick={downloadDataset}>Download Dataset</button>
+                            <button className="btn btn-info mx-3" onClick={downloadDataset}>Download Total Players</button>
+                            <button className="btn btn-info" onClick={() => downloadDataset(true)}>Download Removed Players</button>
                         </div>
                 </div>
                 </div>
