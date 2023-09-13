@@ -47,7 +47,7 @@ function Players(props) {
         ylabel : "Players"
     }
 
-    const tableFields = ["SRNO","Name","Country","BasePrice","AuctionedPrice","Action"];
+    const tableFields = ["SRNO","Name","Country","BasePrice","AuctionedPrice","TotalRuns","BattingAvg","StrikeRate","Action"];
 
     const requestAndSetData = async (queries,setObject) => {
         let res = await fetchData(`${settings.BaseUrl}/player/query`,{
@@ -151,7 +151,7 @@ function Players(props) {
         for(let p of dataset) {
             let tds = [];
             for(let field of tableFields) {
-                if(p[field]){
+                if(field !== "Action"){
                     tds.push(<td key={`${dataset.indexOf(p)}${field}`}>{p[field]}</td>)
                 }else{
                     fillColumn(field,tds,p,datasetName);
@@ -445,7 +445,7 @@ function Players(props) {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-10">
+                    <div className="col-12">
                         <div className="border shadow rounded players-table-container">
                             <table className="table table-striped table-bordered">
                                 <thead className="table-head">
@@ -460,7 +460,9 @@ function Players(props) {
                             <button className="btn btn-success" onClick={() => toggleSubmitForm("newPlayerForm")}>Add Player</button>
                         </div>
                     </div>
-                    <div className="col-2">
+                </div>
+                <div className="d-flex justify-content-center mt-5">
+                    <div>
                         <div className="custom-control custom-switch">
                             <input type="checkbox" className="custom-control-input" id="customSwitch1" onChange={() => poolingMethodChanged()} />
                             <label className="custom-control-label" htmlFor="customSwitch1">Use custom dataset</label>
@@ -473,9 +475,8 @@ function Players(props) {
                         <div className="mt-5">
                             <button className="btn btn-info" onClick={downloadDataset}>Download Dataset</button>
                         </div>
-                    </div>
                 </div>
-                
+                </div>
             </div>
         </div>
         <div className="closeForm closeFormDisplay" id="newPlayerForm">
