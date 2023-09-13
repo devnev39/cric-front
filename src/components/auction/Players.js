@@ -482,7 +482,7 @@ function Players(props) {
                             <button onClick={uploadDataset} type="button" className="btn btn-outline-success mt-4" data-mdb-ripple-color="dark">Upload Dataset</button>
                         </div>
                         <div className="mt-5">
-                            <button className="btn btn-info mx-3" onClick={downloadDataset}>Download Total Players</button>
+                            <button className="btn btn-info mx-3" onClick={() => downloadDataset(false)}>Download Total Players</button>
                             <button className="btn btn-info" onClick={() => downloadDataset(true)}>Download Removed Players</button>
                         </div>
                 </div>
