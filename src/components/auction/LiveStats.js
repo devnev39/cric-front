@@ -1,7 +1,7 @@
 import settings from "../../config/settings.json";
 import {useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
-import { simplify, number, fraction, round } from 'mathjs'
+import { simplify, number, fraction, round, cos } from 'mathjs'
 import fetchModel from '../../helpers/fetchModel'
 import _ from "lodash";
 import PolarAreaChart from '../common/PolarArea';
@@ -11,6 +11,8 @@ function LiveStats (props) {
   const [auctionData, setAuctionData] = useState(
     props.auctionObj || null
   )
+  const [totalPlayers, setTotalSoldPlayers] = useState(0);
+  const [totalUnsoldPlayers, setTotalUnsoldPlayers] = useState(0); 
   const [teamModel, setTeamModel] = useState(null)
   const [playerModel, setPlayerModel] = useState(null)
   const [flag, setFlag] = useState(false)
@@ -39,6 +41,12 @@ function LiveStats (props) {
     console.log('Listening for data !')
     socket.on(`${props.auctionObj._id}`, data => {
       console.log('Auction data received !');
+      data.dPlayers = data.dPlayers.concat(data.Add);
+      let total = 0;
+      for(let team of data.Teams){
+        total += team.Players.length;
+      }
+      setTotalSoldPlayers(total);
       setAuctionData(data)
     })
   }, [socket])
@@ -50,21 +58,35 @@ function LiveStats (props) {
     if (!auctionData) {
       return
     }
+    auctionData.dPlayers = auctionData.dPlayers.concat(auctionData.Add);
+    let total = 0;
+      for(let team of auctionData.Teams){
+        total += team.Players.length;
+      }
+    setTotalSoldPlayers(total);
+    setTotalUnsoldPlayers(auctionData.dPlayers.length - total);
     if (auctionData.Teams.length) {
       for (let team of auctionData.Teams) {
         if (team.Players.length) {
           team.Players = team.Players.map(player => {
-            if(!player){return null}
+            if(!player){console.log(player);return null;}
             if (Object.keys(player).length < 3) {
-              player = _.find(
-                auctionData.poolingMethod === 'Composite'
-                  ? auctionData.dPlayers
-                  : auctionData.cPlayers,
-                p => {
-                  return p._id === player._id
+              let dataset = auctionData.poolingMethod === 'Composite' ? auctionData.dPlayers: auctionData.cPlayers;
+              for(let p of dataset){
+                // console.log(p._id);
+                if(p._id === player._id){
+                  return p;
                 }
-              )
-              return player
+              }
+              // player = _.find(
+              //   auctionData.poolingMethod === 'Composite'
+              //     ? auctionData.dPlayers
+              //     : auctionData.cPlayers,
+              //   p => {
+              //     return p._id === player._id
+              //   }
+              // )
+              // return player
             }
             return player
           })
@@ -85,12 +107,18 @@ function LiveStats (props) {
           while (c_rule.rule.includes(' ')) {
             c_rule.rule = c_rule.rule.replace(' ', '')
           }
-          team[rule.ruleName] = round(number(fraction(c_rule.rule)), 2);
+          try {
+            team[rule.ruleName] = round(number(fraction(c_rule.rule)), 2);  
+          } catch (error) {
+            team[rule.ruleName] = 0
+          }
+          
         }
         if (c_rule.type === 'Player') {
           let ruleAvg = 0;
+          let soldTotal = 0;
           for (let player of team.Players) {
-            if(!player) {console.log(auctionData);continue;}
+            if(!player) {console.log(player);continue;}
             let c_rule_holder = JSON.parse(JSON.stringify(c_rule));
             for (let key of Object.keys(playerModel)) {
               const re = new RegExp(`\\b${key}\\b`, 'g')
@@ -98,15 +126,31 @@ function LiveStats (props) {
                 c_rule.rule = c_rule.rule.replace(re, player[key])
               }
             }
-            c_rule.rule = simplify(c_rule.rule).toString()
+            try {
+              c_rule.rule = simplify(c_rule.rule).toString()  
+            } catch (error) {
+            }
+            
+
             while (c_rule.rule.includes(' ')) {
               c_rule.rule = c_rule.rule.replace(' ', '')
             }
-            player[rule.ruleName] = round(number(fraction(c_rule.rule)),2);
+            try {
+              let ans = round(number(fraction(c_rule.rule)),2);
+              if(isNaN(ans)){
+                player[rule.ruleName] = 0;
+              }else{
+                player[rule.ruleName] = ans;
+              }
+            } catch (error) {
+              player[rule.ruleName] = 0;
+            }
+            soldTotal += player.SoldPrice;
             ruleAvg += player[rule.ruleName];
             c_rule = c_rule_holder;
           }
           team[`${c_rule.ruleName}avg`] = round(ruleAvg / team.Players.length,2)
+          team["totalSoldPrice"] = soldTotal;
         }
       }
     }
@@ -130,6 +174,12 @@ function LiveStats (props) {
       </div>
       
       <div className='d-flex justify-content-center'>
+        <div>
+          Total sold Players : {totalPlayers}
+        </div>
+        <div>
+          Total Unsold Players : {totalUnsoldPlayers}
+        </div> 
         <div style={{"width" : "70%"}}>
         {auctionData
           ? auctionData.Teams
@@ -157,7 +207,7 @@ function LiveStats (props) {
                   )
                 })
                 
-                let tableHeads = ['Name', 'Current', 'Budget', 'AuctionMaxBudget']
+                let tableHeads = ['Name', 'Current', 'Budget', 'AuctionMaxBudget',"TotalPlayers","Remaining"]
                 auctionData.Rules.forEach(rule => {
                   if (rule.type === 'Team') {
                     tableHeads.push(rule.ruleName)
@@ -170,12 +220,23 @@ function LiveStats (props) {
                 let teambody = (
                   <tr>
                     {tableHeads.map(prop => {
-                      return prop === "Name" ? <td className='bg-dark text-white' key={`${team[prop]}${prop}`}>{team[prop]}</td> : <td key={`${team[prop]}${prop}`}>{team[prop]}</td>;
+                      if(prop === "Name") {
+                        return <td className='bg-dark text-white' key={`${team[prop]}${prop}`}>{team[prop]}</td>
+                      }
+                      if(prop === "TotalPlayers") {
+                        // setTotalSoldPlayers(totalPlayers + team.Players.length);
+                        return <td key={`${prop}`}>{team.Players.length}</td> 
+                      }
+                      if(prop === "Remaining"){
+                        return <td key={`${prop}`}>{11 - team.Players.length}</td>  
+                      }
+                      return <td key={`${team[prop]}${prop}`}>{team[prop]}</td>
                     })}
                   </tr>
                 )
 
                 let theads_props = [
+                  'No',
                   'Name',
                   'BasePrice',
                   'AuctionedPrice',
@@ -195,6 +256,11 @@ function LiveStats (props) {
                   )
                   theads_props.push(rule.ruleName)
                 })
+                ruleAvgs.push(
+                  <div key={`SoldTotal`} className='text-danger h5'>
+                    TotalSold : {team[`totalSoldPrice`]}
+                  </div> 
+                )
                 let theads = theads_props.map(head => {
                   return <th key={`${head}`}>{head}</th>
                 })
@@ -203,7 +269,10 @@ function LiveStats (props) {
                 let tbody = team.Players.map(player => {
                   if(!player){return null}
                   let tds = theads_props.map(prop => {
-                    if(isNaN(player[prop])){
+                    if(prop === "No"){
+                      return <td key={`${player.Name}${prop}`}>
+                      {team.Players.indexOf(player)+1}
+                      </td>  
                     }
                     return (
                       // !isNaN(player[prop]) ?
