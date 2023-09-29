@@ -232,10 +232,6 @@ function Players(props) {
             setTimeout(() => {e.classList.toggle("openForm");},100);
             document.getElementById("playersMainDiv").classList.toggle("blurBackground");
         }
-        // if(formId !== 'submitForm') return;
-        // const ele = document.getElementsByClassName("newTeamDivButton")[0];
-        // if(ele.innerText === '+') ele.innerText = '-';
-        // else ele.innerText = '+';
     }
 
     const downloadDataset = async (removed) => {

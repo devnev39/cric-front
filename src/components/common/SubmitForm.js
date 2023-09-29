@@ -32,6 +32,7 @@ function SubmitForm(props) {
 
     const postData = async () => {
         let obj = {};
+        let notProvied = [];
         if(!modelJson){alert("No model !");return;}
         Object.keys(modelJson).forEach(key => {
             if (props.neglects.indexOf(key) === -1) {
@@ -42,14 +43,16 @@ function SubmitForm(props) {
                 if (modelJson[key] === 'password') {
                     value = encrypt(value);
                 }
-
                 if (!value) {
-                alert("No value !");
+                    notProvied.push(key);
                 } else {
                 obj[key] = value;
                 }
             }
         });
+        if(!window.confirm(`${notProvied} fields are not provied ! Do you want to continue ?`)){
+           return;
+        }
         let a = {};
         a[props.modelKey] = obj;
         const response = {
@@ -62,16 +65,20 @@ function SubmitForm(props) {
         }
         const res = await (await fetch(`${settings.BaseUrl}${props.postUrl}`,response)).json();
         if(res.status === 200) {
-            alert("Success !");props.closeFunc();
+            alert("Success !");
             if(props.setFunc){
                 props.setFunc(res.data);
-            }
+            }   
         }
-        else {alert(res.data);return;}
+        else {
+            alert(res.data);
+            return;
+        }
         clearInputs();
+        props.closeFunc();
         if(props.navigate){
             if (typeof(props.navigate) === 'function') {
-              props.navigate();props.closeFunc();
+              props.navigate();
             } else {
               navigate(props.navigate);
             }
