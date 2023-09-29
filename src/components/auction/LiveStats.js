@@ -164,22 +164,16 @@ function LiveStats (props) {
     <div className='w-100'>
       <div className='d-flex justify-content-center mt-5'>
         <h1>Live Stats</h1>
-        {/* <h2>
-          {socket
-            ? socket.connected
-              ? `Connected to socket !`
-              : `Not connected !`
-            : 'Nan'}
-        </h2> */}
       </div>
-      
-      <div className='d-flex justify-content-center'>
-        <div>
-          Total sold Players : {totalPlayers}
+      <div className="d-flex justify-content-evenly mt-5">
+        <div className="h5 rounded border shadow p-2">
+          Total Sold Players : <span className="text-success">{totalPlayers}</span>
         </div>
-        <div>
-          Total Unsold Players : {totalUnsoldPlayers}
-        </div> 
+        <div className="h5 rounded border shadow p-2">
+          Total Remaining : <span className="text-danger">{totalUnsoldPlayers}</span>
+        </div>
+      </div> 
+      <div className='d-flex justify-content-center'> 
         <div style={{"width" : "70%"}}>
         {auctionData
           ? auctionData.Teams
@@ -197,15 +191,15 @@ function LiveStats (props) {
                   }
                 }
 
-                const rules = auctionData.Rules.map(rule => {
-                  return (
-                    <div className='mx-5'>
-                      {rule.type === 'Team'
-                        ? `${rule.ruleName} : ${team[rule.ruleName]}`
-                        : null}
-                    </div>
-                  )
-                })
+                // const rules = auctionData.Rules.map(rule => {
+                //   return (
+                //     <div className='mx-5'>
+                //       {rule.type === 'Team'
+                //         ? `${rule.ruleName} : ${team[rule.ruleName]}`
+                //         : null}
+                //     </div>
+                //   )
+                // })
                 
                 let tableHeads = ['Name', 'Current', 'Budget', 'AuctionMaxBudget',"TotalPlayers","Remaining"]
                 auctionData.Rules.forEach(rule => {
@@ -228,7 +222,7 @@ function LiveStats (props) {
                         return <td key={`${prop}`}>{team.Players.length}</td> 
                       }
                       if(prop === "Remaining"){
-                        return <td key={`${prop}`}>{11 - team.Players.length}</td>  
+                        return <td key={`${prop}`}>{auctionData.MaxPlayers - team.Players.length}</td>  
                       }
                       return <td key={`${team[prop]}${prop}`}>{team[prop]}</td>
                     })}

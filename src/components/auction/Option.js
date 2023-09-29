@@ -116,7 +116,7 @@ function Option(props) {
         <>
         <div className="optionContainerRoot" id="optionMainDiv">
             <div className="mt-5 d-flex justify-content-center" key={"1"}>
-                {modelJson ? <UpdateForm dataSchema = {modelJson} neglects = {["Password"]} model = {props.auctionObj} modelKey = "auction" /> : null}
+                {modelJson ? <UpdateForm dataSchema = {modelJson} neglects = {["Password","Adminid"]} model = {props.auctionObj} modelKey = "auction" /> : null}
             </div>
             <div className="RulesContainerRoot mt-5 d-flex justify-content-center" key={"2"}>
                 <div className="shadow rounded py-3 px-5 w-100">
