@@ -1,4 +1,4 @@
-import settings from "../../config/settings.json"
+import settings from "../../config/settings"
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import encrypt from "../../components/common/Encrypt";

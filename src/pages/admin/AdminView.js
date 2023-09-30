@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
 import SubmitForm from "../../components/common/SubmitForm";
 import UpdateForm from "../../components/common/UpdateForm";
-import settings from "../../config/settings.json";
+import settings from "../../config/settings";
 import "./styles.css";
 
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import settings from "../../config/settings.json";
+import settings from "../../config/settings";
 import './styles.css';
 import { useNavigate } from 'react-router';
 import encrypt from '../../components/common/Encrypt';

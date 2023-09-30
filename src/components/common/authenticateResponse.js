@@ -1,4 +1,4 @@
-import settings from "../../config/settings.json";
+import settings from "../../config/settings";
 const authenticateResponse = async (response,obj) => {
     const postResp = {
         method : "POST",

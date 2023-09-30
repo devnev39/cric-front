@@ -1,4 +1,4 @@
-import settings from "../../config/settings.json";
+import settings from "../../config/settings";
 import * as xlsx from "xlsx";
 import { useEffect, useState } from "react";
 import fetchData from "../../helpers/fetchData";
