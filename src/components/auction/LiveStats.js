@@ -1,7 +1,7 @@
-import settings from "../../config/settings.json";
+import settings from "../../config/settings";
 import {useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
-import { simplify, number, fraction, round, cos } from 'mathjs'
+import { simplify, number, fraction, round} from 'mathjs'
 import fetchModel from '../../helpers/fetchModel'
 import _ from "lodash";
 import PolarAreaChart from '../common/PolarArea';

@@ -1,4 +1,4 @@
-import settings from "../../config/settings.json";
+import settings from "../../config/settings";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import fetchModel from "../../helpers/fetchModel";

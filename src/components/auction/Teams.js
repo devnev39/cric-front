@@ -1,4 +1,4 @@
-import settings from "../../config/settings.json";
+import settings from "../../config/settings";
 import { useEffect, useState } from "react";
 import SubmitForm from "../common/SubmitForm";
 import UpdateForm from "../common/UpdateForm";

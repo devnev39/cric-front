@@ -1,4 +1,4 @@
-import settings from "../../config/settings.json";
+import settings from "../../config/settings";
 import React, { useState } from "react";
 import "./styles.css";
 import { io } from "socket.io-client";

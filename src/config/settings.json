@@ -1,5 +1,4 @@
 {
-    "BaseUrl__" : "http://localhost:8080",
-    "BaseUrl_" : "http://192.168.137.12:80",
-    "BaseUrl" : "https://cric-render.ddnsking.com" 
+    "BaseUrl" : "https://cric-render.ddnsking.com",
+    "LocalUrl": "http://localhost:8080"   
 }

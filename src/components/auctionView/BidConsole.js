@@ -1,4 +1,4 @@
-import settings from "../../config/settings.json";
+import settings from "../../config/settings";
 import { useState } from "react";
 import fetchData from "../../helpers/fetchData";
 
