@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
  * @param {Function} props.closeFunc Close function to trigger if splash view is used
  * @param {String} props.parentKey Parent component key
  * @param {Function} props.setFunc Function to set the incomming data
+ * @param {Object} props.mergeState Object with {state: currentState}
  * @returns
  */
 function SubmitForm(props) {
@@ -68,7 +69,7 @@ function SubmitForm(props) {
             alert("Success !");
             if(props.setFunc){
                 props.setFunc(res.data);
-            }   
+            }
         }
         else {
             alert(res.data);

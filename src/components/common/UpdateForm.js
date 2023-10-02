@@ -35,6 +35,7 @@ function UpdateForm(props) {
         };
         console.log("Clicked !");
         let url = props.postUrl ? `${settings.BaseUrl}${props.postUrl}` : `${settings.BaseUrl}/${props.modelKey}/${props.model._id}`;
+        console.log(url);
         fetch(url,resp).then(res => res.json()).then(res => {
             if (res.status === 200) {
               if(props.setFunc){
@@ -51,7 +52,7 @@ function UpdateForm(props) {
                     navigate(props.navigate);
                   }
               }else{
-                  props.closeFunc ? props.closeFunc() : window.location.reload()
+                  if(props.closeFunc) props.closeFunc()
               }
             } else {
               alert(`${res.status} ${res.data}`);
