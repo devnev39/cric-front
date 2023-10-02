@@ -6,6 +6,4 @@ RUN npm i -g serve
 RUN npm ci
 COPY . /app
 EXPOSE 8080
-RUN npm run build
-CMD [ "serve" ,"-l","8080","-s", "build"]
-
+CMD ["npm","run","start"]
