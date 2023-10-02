@@ -6,6 +6,7 @@ import "./styles.css";
 
 function Option(props) {
     const [modelJson,setModelJson] = useState(null);
+    const [modelVal, setModelVal] = useState(null);
     const [wiModel, setwiModel] = useState(null);
     
     useEffect(() => {
@@ -18,6 +19,20 @@ function Option(props) {
     useEffect(() => {
         console.log(wiModel);
     },[wiModel])
+
+    useEffect(() => {
+        if(!modelJson) return;
+        let obj = {};
+        Object.keys(modelJson).forEach(key => {
+            if(props.auctionObj[key] !== undefined){
+                obj[key] = props.auctionObj[key]
+            }
+        })
+        obj["_id"] = props.auctionObj._id;
+        setModelVal(obj);
+        console.log(obj);
+    }, [modelJson, props.auctionObj])
+
     const captureWiModel = async () => {
         const ele = document.getElementById("wimodelSelection").value;
         await fetchModel(`${settings.BaseUrl}/wimodels/${ele}RuleModel`, setwiModel);
@@ -81,12 +96,12 @@ function Option(props) {
         if (resp.status !== 200) {
           alert(`${resp.status} ${resp.data}`);
         } else {
-                    alert("Success !");
-                    if (resp.data && props.setAuctionObj) {
-                          props.setAuctionObj(resp.data);
-                    }
-                    showRuleConsole();
-                }
+            alert("Success !");
+            if (resp.data && props.setAuctionObj) {
+                    props.setAuctionObj(resp.data);
+            }
+            showRuleConsole();
+        }
     }
 
     const deleteRule = async (rule) => {
@@ -116,7 +131,9 @@ function Option(props) {
         <>
         <div className="optionContainerRoot" id="optionMainDiv">
             <div className="mt-5 d-flex justify-content-center" key={"1"}>
-                {modelJson ? <UpdateForm dataSchema = {modelJson} neglects = {["Password","Adminid"]} model = {props.auctionObj} modelKey = "auction" /> : null}
+                {
+                    modelJson ? modelVal ? <UpdateForm dataSchema = {modelJson} neglects = {["Password","Adminid"]} model = {modelVal} modelKey = "auction" /> : null : null
+                }
             </div>
             <div className="RulesContainerRoot mt-5 d-flex justify-content-center" key={"2"}>
                 <div className="shadow rounded py-3 px-5 w-100">

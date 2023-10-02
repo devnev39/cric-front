@@ -5,5 +5,5 @@ COPY package*.json /app
 RUN npm i -g serve
 RUN npm ci
 COPY . /app
-EXPOSE 8080
+EXPOSE 3000
 CMD ["npm","run","start"]
