@@ -37,7 +37,7 @@ function Auction() {
           if(response.status > 500 && response.status < 600) {
               let key = encrypt(prompt(`Enter password for ${state.auction.Name} : `));
               const authenticate = await authenticateResponse(response,{_id : state.auction._id,Password : key});
-              if (authenticate) {
+              if (authenticate === true) {
                 window.location.reload();
               } else {alert(authenticate.data);navigate(-1);}
           }

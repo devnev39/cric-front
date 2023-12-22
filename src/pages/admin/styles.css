@@ -104,6 +104,28 @@
     overflow: scroll;
 }
 
+.nav-item{
+  margin-top: 5%;
+  cursor: pointer;
+  padding: 5%;
+}
+.nav-item:not(.activeItem):hover{
+  box-shadow : 5px 5px 5px #adb5bd;
+  transform: scale(1.01);
+}
+.menuContainer{
+  position: relative;
+  top : 20%;
+  margin: 5%;
+  font-size: 1.5rem;
+}
+i{
+  margin-right: 5%;
+}
+.activeItem{
+  box-shadow: 5px 5px 5px grey;
+}
+
 .openFormDisplay {
     display: block;
     opacity: 0;
