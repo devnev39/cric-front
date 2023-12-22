@@ -8,6 +8,7 @@ import Auction from "./pages/auction/Auction";
 import AuctionView from "./pages/auctionView/AuctionView";
 import Team from "./pages/team/Team";
 import AdminView from "./pages/admin/AdminView";
+import About from "./pages/about/About";
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/admin" element={<Admin />} />
             <Route path="/team" element={<Team />} />
             <Route path="/view/admin" element={<AdminView />} />
+            <Route path="/about" element={<About />} />
         </Routes>
     )
 }
