@@ -33,8 +33,7 @@
     "start": "vite start",
     "build": "vite build",
     "test": "vite test",
-    "eject": "vite eject",
-    "prepare": "husky"
+    "eject": "vite eject"
   },
   "eslintConfig": {
     "extends": [
