@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import settings from "../../config/settings";
+import React, {useEffect, useState} from 'react';
+import settings from '../../config/settings';
 import './styles.css';
-import { useNavigate } from 'react-router';
+import {useNavigate} from 'react-router';
 import encrypt from '../../components/common/Encrypt';
 
 
 const Admin = () => {
   const [selectedOption, setSelectedOption] = useState('admin');
   const [patValue, setPatValue] = useState('');
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
 
@@ -21,29 +21,29 @@ const Admin = () => {
   };
 
   const login = async () => {
-    const resp = await (await fetch(`${settings.BaseUrl}/auth/admin`,{
-      method: "POST",
+    const resp = await (await fetch(`${settings.BaseUrl}/auth/admin`, {
+      method: 'POST',
       headers: {
-        "Content-Type" : "application/json"
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({password : encrypt(password)}),
-      credentials: "include"
-    })).json()
+      body: JSON.stringify({password: encrypt(password)}),
+      credentials: 'include',
+    })).json();
     if (resp.status === 200) {
-      navigate("/view/admin",{state : {fromAdmin: true}})
-    }else{
+      navigate('/view/admin', {state: {fromAdmin: true}});
+    } else {
       window.alert(`${resp.data}`);
     }
-  }
-  const load_admin = async () => {
-    const resp = await (await fetch(`${settings.BaseUrl}/admin`,{credentials : "include"})).json()
-    if(resp.status === 601) {
-      navigate("/view/admin", {state : {fromAdmin: true}});
+  };
+  const loadAdmin = async () => {
+    const resp = await (await fetch(`${settings.BaseUrl}/admin`, {credentials: 'include'})).json();
+    if (resp.status === 601) {
+      navigate('/view/admin', {state: {fromAdmin: true}});
     }
-  }
+  };
   useEffect(() => {
-    load_admin();
-  },[])
+    loadAdmin();
+  }, []);
 
   return (
     <div>
