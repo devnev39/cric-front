@@ -1,51 +1,50 @@
-import settings from "../../config/settings";
-import React, { useState } from "react";
-import "./styles.css";
-import { io } from "socket.io-client";
+import settings from '../../config/settings';
+import React, {useState} from 'react';
+import './styles.css';
+import {io} from 'socket.io-client';
 
 const Team = () => {
   const [teamData, setTeamData] = useState(null);
-  const [socket, setSocket] = useState(null);
 
   const connectSocketAndFetchData = async () => {
-    const teamCode = document.getElementById("teamCodeInput").value;
-    if(teamCode === ""){window.alert("Empty team code !");return;}
-    const data = await (await fetch(`${settings.BaseUrl}/teams/${teamCode}`,{credentials: "include"})).json();
-    if(data.status === 200){
+    const teamCode = document.getElementById('teamCodeInput').value;
+    if (teamCode === '') {
+      window.alert('Empty team code !'); return;
+    }
+    const data = await (await fetch(`${settings.BaseUrl}/teams/${teamCode}`, {credentials: 'include'})).json();
+    if (data.status === 200) {
       setTeamData(data.data);
-      let sock = io(settings.BaseUrl,{withCredentials: true});
-      sock.on("connect",() => {
-        setSocket(sock);
+      const sock = io(settings.BaseUrl, {withCredentials: true});
+      sock.on('connect', () => {
         sock.on(teamCode, (data) => {
           setTeamData(data);
-        })
-      })
-    }else{
+        });
+      });
+    } else {
       window.alert(data.data);
     }
-  }
-  
+  };
+
   return (
     <>
-    {
-      !teamData ? 
-        <div className="d-flex justify-content-center align-items-center" style={{height: "50vh"}}>
+      {
+      !teamData ?
+        <div className="d-flex justify-content-center align-items-center" style={{height: '50vh'}}>
           <div className="rounded shadow p-5">
             <div className="row">
               <div className="col-5 h5">
-                Team Code : 
+                Team Code :
               </div>
               <div className="col-7">
                 <input type="text" id="teamCodeInput" placeholder="Team Code"></input>
               </div>
             </div>
             <div className="d-flex justify-content-center mt-5">
-              <button className="btn btn-success" onClick={connectSocketAndFetchData}>Submit</button>  
+              <button className="btn btn-success" onClick={connectSocketAndFetchData}>Submit</button>
             </div>
-            
+
           </div>
-        </div>
-      :
+        </div> :
       <div className="team-container">
         <h1>{teamData.Name}</h1>
         <h3 className="text-success">Total Budget : {teamData.Budget}</h3>
@@ -71,7 +70,7 @@ const Team = () => {
           </tbody>
         </table>
       </div>
-    } 
+      }
     </>
   );
 };
