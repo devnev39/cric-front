@@ -1,4 +1,4 @@
-export default fetchData = async (uri, body) => {
+const fetchData = async (uri, body) => {
   const req = {
     method: 'POST',
     headers: {
@@ -9,3 +9,5 @@ export default fetchData = async (uri, body) => {
   };
   return await (await fetch(uri, req)).json();
 };
+
+export default fetchData;
