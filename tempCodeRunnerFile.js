@@ -1,1 +1,1 @@
-db.collection("auctions").find()
+db.collection('auctions').find();
