@@ -1,80 +1,89 @@
-import settings from "../../config/settings";
-import {useEffect, useState } from 'react'
-import { io } from 'socket.io-client'
-import { simplify, number, fraction, round} from 'mathjs'
-import fetchModel from '../../helpers/fetchModel'
-import _ from "lodash";
+import settings from '../../config/settings';
+import React, {useEffect, useState} from 'react';
+import {io} from 'socket.io-client';
+import {simplify, number, fraction, round} from 'mathjs';
+import fetchModel from '../../helpers/fetchModel';
 import PolarAreaChart from '../common/PolarArea';
 
-function LiveStats (props) {
-  const [socket, setSocket] = useState(null)
-  const [auctionData, setAuctionData] = useState(
-    props.auctionObj || null
-  )
+function LiveStats(props) {
+  const [socket, setSocket] = useState(null);
+  const [auctionData, setAuctionData] = useState(props.auctionObj || null);
   const [totalPlayers, setTotalSoldPlayers] = useState(0);
-  const [totalUnsoldPlayers, setTotalUnsoldPlayers] = useState(0); 
-  const [teamModel, setTeamModel] = useState(null)
-  const [playerModel, setPlayerModel] = useState(null)
-  const [flag, setFlag] = useState(false)
+  const [totalUnsoldPlayers, setTotalUnsoldPlayers] = useState(0);
+  const [teamModel, setTeamModel] = useState(null);
+  const [playerModel, setPlayerModel] = useState(null);
+  const [flag, setFlag] = useState(false);
 
   useEffect(() => {
     const runMe = async () => {
-      await fetchModel(`${settings.BaseUrl}/wimodels/TeamRuleModel`, setTeamModel)
-      await fetchModel(`${settings.BaseUrl}/wimodels/PlayerRuleModel`, setPlayerModel)
-    }
-    const sck = io(`${settings.BaseUrl}`,{
-      withCredentials : true
-    })
+      await fetchModel(
+          `${settings.BaseUrl}/wimodels/TeamRuleModel`,
+          setTeamModel,
+      );
+      await fetchModel(
+          `${settings.BaseUrl}/wimodels/PlayerRuleModel`,
+          setPlayerModel,
+      );
+    };
+    const sck = io(`${settings.BaseUrl}`, {
+      withCredentials: true,
+    });
     sck.on('connect', () => {
-      setSocket(sck)
-    })
-    runMe()
-  }, [])
+      setSocket(sck);
+    });
+    runMe();
+  }, []);
 
   useEffect(() => {
     if (!socket) {
-      return
+      return;
     }
     if (!socket.connected) {
-      return
+      return;
     }
-    console.log('Listening for data !')
-    socket.on(`${props.auctionObj._id}`, data => {
+    console.log('Listening for data !');
+    socket.on(`${props.auctionObj._id}`, (data) => {
       console.log('Auction data received !');
       data.dPlayers = data.dPlayers.concat(data.Add);
       let total = 0;
-      for(let team of data.Teams){
+      for (const team of data.Teams) {
         total += team.Players.length;
       }
       setTotalSoldPlayers(total);
-      setAuctionData(data)
-    })
-  }, [socket])
+      setAuctionData(data);
+    });
+  }, [socket]);
 
   useEffect(() => {
     if (!teamModel || !playerModel) {
-      return
+      return;
     }
     if (!auctionData) {
-      return
+      return;
     }
     auctionData.dPlayers = auctionData.dPlayers.concat(auctionData.Add);
     let total = 0;
-      for(let team of auctionData.Teams){
-        total += team.Players.length;
-      }
+    for (const team of auctionData.Teams) {
+      total += team.Players.length;
+    }
     setTotalSoldPlayers(total);
     setTotalUnsoldPlayers(auctionData.dPlayers.length - total);
     if (auctionData.Teams.length) {
-      for (let team of auctionData.Teams) {
+      for (const team of auctionData.Teams) {
         if (team.Players.length) {
-          team.Players = team.Players.map(player => {
-            if(!player){console.log(player);return null;}
+          team.Players = team.Players.map((player) => {
+            if (!player) {
+              console.log(player);
+              return null;
+            }
             if (Object.keys(player).length < 3) {
-              let dataset = auctionData.poolingMethod === 'Composite' ? auctionData.dPlayers: auctionData.cPlayers;
-              for(let p of dataset){
+              const dataset =
+                auctionData.poolingMethod === 'Composite' ?
+                  auctionData.dPlayers :
+                  auctionData.cPlayers;
+              for (const p of dataset) {
                 // console.log(p._id);
-                if(p._id === player._id){
+                if (p._id === player._id) {
                   return p;
                 }
               }
@@ -88,58 +97,58 @@ function LiveStats (props) {
               // )
               // return player
             }
-            return player
-          })
+            return player;
+          });
         }
       }
     }
-    for (let team of auctionData.Teams) {
-      for (let rule of auctionData.Rules) {
-        let c_rule = JSON.parse(JSON.stringify(rule))
-        if (c_rule.type === 'Team') {
-          for (let key of Object.keys(teamModel)) {
-            const re = new RegExp(`\\b${key}\\b`, 'g')
-            while (c_rule.rule.match(re)) {
-              c_rule.rule = c_rule.rule.replace(re, team[key])
+    for (const team of auctionData.Teams) {
+      for (const rule of auctionData.Rules) {
+        let cRule = JSON.parse(JSON.stringify(rule));
+        if (cRule.type === 'Team') {
+          for (const key of Object.keys(teamModel)) {
+            const re = new RegExp(`\\b${key}\\b`, 'g');
+            while (cRule.rule.match(re)) {
+              cRule.rule = cRule.rule.replace(re, team[key]);
             }
           }
-          c_rule.rule = simplify(c_rule.rule).toString()
-          while (c_rule.rule.includes(' ')) {
-            c_rule.rule = c_rule.rule.replace(' ', '')
+          cRule.rule = simplify(cRule.rule).toString();
+          while (cRule.rule.includes(' ')) {
+            cRule.rule = cRule.rule.replace(' ', '');
           }
           try {
-            team[rule.ruleName] = round(number(fraction(c_rule.rule)), 2);  
+            team[rule.ruleName] = round(number(fraction(cRule.rule)), 2);
           } catch (error) {
-            team[rule.ruleName] = 0
+            team[rule.ruleName] = 0;
           }
-          
         }
-        if (c_rule.type === 'Player') {
+        if (cRule.type === 'Player') {
           let ruleAvg = 0;
           let soldTotal = 0;
-          for (let player of team.Players) {
-            if(!player) {console.log(player);continue;}
-            let c_rule_holder = JSON.parse(JSON.stringify(c_rule));
-            for (let key of Object.keys(playerModel)) {
-              const re = new RegExp(`\\b${key}\\b`, 'g')
-              while (c_rule.rule.match(re)) {
-                c_rule.rule = c_rule.rule.replace(re, player[key])
+          for (const player of team.Players) {
+            if (!player) {
+              console.log(player);
+              continue;
+            }
+            const cRuleHolder = JSON.parse(JSON.stringify(cRule));
+            for (const key of Object.keys(playerModel)) {
+              const re = new RegExp(`\\b${key}\\b`, 'g');
+              while (cRule.rule.match(re)) {
+                cRule.rule = cRule.rule.replace(re, player[key]);
               }
             }
             try {
-              c_rule.rule = simplify(c_rule.rule).toString()  
-            } catch (error) {
-            }
-            
+              cRule.rule = simplify(cRule.rule).toString();
+            } catch (error) {}
 
-            while (c_rule.rule.includes(' ')) {
-              c_rule.rule = c_rule.rule.replace(' ', '')
+            while (cRule.rule.includes(' ')) {
+              cRule.rule = cRule.rule.replace(' ', '');
             }
             try {
-              let ans = round(number(fraction(c_rule.rule)),2);
-              if(isNaN(ans)){
+              const ans = round(number(fraction(cRule.rule)), 2);
+              if (isNaN(ans)) {
                 player[rule.ruleName] = 0;
-              }else{
+              } else {
                 player[rule.ruleName] = ans;
               }
             } catch (error) {
@@ -147,43 +156,48 @@ function LiveStats (props) {
             }
             soldTotal += player.SoldPrice;
             ruleAvg += player[rule.ruleName];
-            c_rule = c_rule_holder;
+            cRule = cRuleHolder;
           }
-          team[`${c_rule.ruleName}avg`] = round(ruleAvg / team.Players.length,2)
-          team["totalSoldPrice"] = soldTotal;
+          team[`${cRule.ruleName}avg`] = round(
+              ruleAvg / team.Players.length,
+              2,
+          );
+          team['totalSoldPrice'] = soldTotal;
         }
       }
     }
-    setFlag(!flag)
-  }, [auctionData, teamModel, playerModel])
+    setFlag(!flag);
+  }, [auctionData, teamModel, playerModel]);
 
   useEffect(() => {
     // For each rule, circular char of each team
-  }, [flag])
+  }, [flag]);
   return (
-    <div className='w-100'>
-      <div className='d-flex justify-content-center mt-5'>
+    <div className="w-100">
+      <div className="d-flex justify-content-center mt-5">
         <h1>Live Stats</h1>
       </div>
       <div className="d-flex justify-content-evenly mt-5">
         <div className="h5 rounded border shadow p-2">
-          Total Sold Players : <span className="text-success">{totalPlayers}</span>
+          Total Sold Players :{' '}
+          <span className="text-success">{totalPlayers}</span>
         </div>
         <div className="h5 rounded border shadow p-2">
-          Total Remaining : <span className="text-danger">{totalUnsoldPlayers}</span>
+          Total Remaining :{' '}
+          <span className="text-danger">{totalUnsoldPlayers}</span>
         </div>
-      </div> 
-      <div className='d-flex justify-content-center'> 
-        <div style={{"width" : "70%"}}>
-        {auctionData
-          ? auctionData.Teams
-            ? auctionData.Teams.map(team => {
+      </div>
+      <div className="d-flex justify-content-center">
+        <div style={{width: '70%'}}>
+          {auctionData ?
+            auctionData.Teams ?
+              auctionData.Teams.map((team) => {
                 if (!auctionData.Rules) {
                   return null;
                 }
-                for(let team of auctionData.Teams){
-                  for(let player of team.Players){
-                    if(player){
+                for (const team of auctionData.Teams) {
+                  for (const player of team.Players) {
+                    if (player) {
                       if (Object.keys(player).length < 3) {
                         return null;
                       }
@@ -191,145 +205,173 @@ function LiveStats (props) {
                   }
                 }
 
-                // const rules = auctionData.Rules.map(rule => {
-                //   return (
-                //     <div className='mx-5'>
-                //       {rule.type === 'Team'
-                //         ? `${rule.ruleName} : ${team[rule.ruleName]}`
-                //         : null}
-                //     </div>
-                //   )
-                // })
-                
-                let tableHeads = ['Name', 'Current', 'Budget', 'AuctionMaxBudget',"TotalPlayers","Remaining"]
-                auctionData.Rules.forEach(rule => {
+                const tableHeads = [
+                  'Name',
+                  'Current',
+                  'Budget',
+                  'AuctionMaxBudget',
+                  'TotalPlayers',
+                  'Remaining',
+                ];
+                auctionData.Rules.forEach((rule) => {
                   if (rule.type === 'Team') {
-                    tableHeads.push(rule.ruleName)
+                    tableHeads.push(rule.ruleName);
                   }
-                })
-                let teamheads = tableHeads.map(head => {
-                  return <th key={`${head}`}>{head}</th>
-                })
-                teamheads = <tr key={`${team.Name}`}>{teamheads}</tr>
-                let teambody = (
+                });
+                let teamheads = tableHeads.map((head) => {
+                  return <th key={`${head}`}>{head}</th>;
+                });
+                teamheads = <tr key={`${team.Name}`}>{teamheads}</tr>;
+                const teambody = (
                   <tr>
-                    {tableHeads.map(prop => {
-                      if(prop === "Name") {
-                        return <td className='bg-dark text-white' key={`${team[prop]}${prop}`}>{team[prop]}</td>
+                    {tableHeads.map((prop) => {
+                      if (prop === 'Name') {
+                        return (
+                          <td
+                            className="bg-dark text-white"
+                            key={`${team[prop]}${prop}`}
+                          >
+                            {team[prop]}
+                          </td>
+                        );
                       }
-                      if(prop === "TotalPlayers") {
+                      if (prop === 'TotalPlayers') {
                         // setTotalSoldPlayers(totalPlayers + team.Players.length);
-                        return <td key={`${prop}`}>{team.Players.length}</td> 
+                        return <td key={`${prop}`}>{team.Players.length}</td>;
                       }
-                      if(prop === "Remaining"){
-                        return <td key={`${prop}`}>{auctionData.MaxPlayers - team.Players.length}</td>  
+                      if (prop === 'Remaining') {
+                        return (
+                          <td key={`${prop}`}>
+                            {auctionData.MaxPlayers - team.Players.length}
+                          </td>
+                        );
                       }
-                      return <td key={`${team[prop]}${prop}`}>{team[prop]}</td>
+                      return (
+                        <td key={`${team[prop]}${prop}`}>{team[prop]}</td>
+                      );
                     })}
                   </tr>
-                )
+                );
 
-                let theads_props = [
+                const theadsProps = [
                   'No',
                   'Name',
                   'BasePrice',
                   'AuctionedPrice',
-                  'SoldPrice'
-                ]
+                  'SoldPrice',
+                ];
 
-                let ruleAvgs = [];
+                const ruleAvgs = [];
 
-                auctionData.Rules.forEach(rule => {
+                auctionData.Rules.forEach((rule) => {
                   if (rule.type === 'Team') {
                     return;
                   }
                   ruleAvgs.push(
-                    <div key={`${rule.ruleName}$avg`} className='text-danger h5'>
-                      {rule.ruleName}<sub>avg</sub> : {team[`${rule.ruleName}avg`]}
-                    </div>
-                  )
-                  theads_props.push(rule.ruleName)
-                })
+                      <div
+                        key={`${rule.ruleName}$avg`}
+                        className="text-danger h5"
+                      >
+                        {rule.ruleName}
+                        <sub>avg</sub> : {team[`${rule.ruleName}avg`]}
+                      </div>,
+                  );
+                  theadsProps.push(rule.ruleName);
+                });
                 ruleAvgs.push(
-                  <div key={`SoldTotal`} className='text-danger h5'>
-                    TotalSold : {team[`totalSoldPrice`]}
-                  </div> 
-                )
-                let theads = theads_props.map(head => {
-                  return <th key={`${head}`}>{head}</th>
-                })
-                theads = <tr key={`${team.Name}`}>{theads}</tr>
+                    <div key={`SoldTotal`} className="text-danger h5">
+                      TotalSold : {team[`totalSoldPrice`]}
+                    </div>,
+                );
+                let theads = theadsProps.map((head) => {
+                  return <th key={`${head}`}>{head}</th>;
+                });
+                theads = <tr key={`${team.Name}`}>{theads}</tr>;
 
-                let tbody = team.Players.map(player => {
-                  if(!player){return null}
-                  let tds = theads_props.map(prop => {
-                    if(prop === "No"){
-                      return <td key={`${player.Name}${prop}`}>
-                      {team.Players.indexOf(player)+1}
-                      </td>  
+                const tbody = team.Players.map((player) => {
+                  if (!player) {
+                    return null;
+                  }
+                  const tds = theadsProps.map((prop) => {
+                    if (prop === 'No') {
+                      return (
+                        <td key={`${player.Name}${prop}`}>
+                          {team.Players.indexOf(player) + 1}
+                        </td>
+                      );
                     }
                     return (
-                      // !isNaN(player[prop]) ?
+                    // !isNaN(player[prop]) ?
                       <td key={`${player.Name}${prop}`}>
                         {player[prop] || NaN}
-                      </td> 
-                      // : null
-                    )
-                  })
-                  return <tr key={`${player.SRNO}`}>{tds}</tr>
-                })
+                      </td>
+                    // : null
+                    );
+                  });
+                  return <tr key={`${player.SRNO}`}>{tds}</tr>;
+                });
 
                 return (
-                    <div className='shadow rounded p-3 mt-5' style={{"width" : "100%"}} key={`${auctionData.Teams.indexOf(team)}${team.Name}`}>
-                        <div className='d-flex justify-content-start'>
-                            <div>
-                                <div className='w-100'>
-                                    <table className='table table-striped table-bordered'>
-                                        <thead className='h6'>{teamheads}</thead>
-                                        <tbody className='h5'>{teambody}</tbody>
-                                    </table>
-                                </div>
-                                <div className='w-100'>
-                                    <table className='table table-striped table-bordered'>
-                                        <thead className='table-head h6'>{theads}</thead>
-                                        <tbody className='h5'>{tbody}</tbody>
-                                    </table>
-                                    <div>
-                                      {ruleAvgs}
-                                    </div>
-                                </div>
+                  <div
+                    className="shadow rounded p-3 mt-5"
+                    style={{width: '100%'}}
+                    key={`${auctionData.Teams.indexOf(team)}${team.Name}`}
+                  >
+                    <div className="d-flex justify-content-start">
+                      <div>
+                        <div className="w-100">
+                          <table className="table table-striped table-bordered">
+                            <thead className="h6">{teamheads}</thead>
+                            <tbody className="h5">{teambody}</tbody>
+                          </table>
                         </div>
+                        <div className="w-100">
+                          <table className="table table-striped table-bordered">
+                            <thead className="table-head h6">{theads}</thead>
+                            <tbody className="h5">{tbody}</tbody>
+                          </table>
+                          <div>{ruleAvgs}</div>
                         </div>
+                      </div>
                     </div>
-                )
-              })
-            : null
-          : null}
-          </div>
-          <div style={{"width" : "30%"}}>
-              {
-                auctionData ? 
-                auctionData.Teams ? 
-                auctionData.Rules.map(rule => {
-                  return (
-                    <div className='shadow rounded p-2 my-2'> 
-                      <PolarAreaChart data={auctionData.Teams} option={{
-                      ykey : rule.type === 'Player' ? `${rule.ruleName}avg` : rule.ruleName,
-                      xkey : "Name",
-                      ylabel : "Value"
-
-                    }} />
-                    <div className='d-flex justify-content-center h5'>
-                      {rule.ruleName}
-                    </div>  
-                    </div>
-                  )
-                }) : null : null
-              }
-          </div>
+                  </div>
+                );
+              }) :
+              null :
+            null}
         </div>
+        <div style={{width: '30%'}}>
+          {auctionData ?
+            auctionData.Teams ?
+              auctionData.Rules.map((rule) => {
+                return (
+                  <div
+                    key={auctionData.Rules.indexOf(rule)}
+                    className="shadow rounded p-2 my-2"
+                  >
+                    <PolarAreaChart
+                      data={auctionData.Teams}
+                      option={{
+                        ykey:
+                            rule.type === 'Player' ?
+                              `${rule.ruleName}avg` :
+                              rule.ruleName,
+                        xkey: 'Name',
+                        ylabel: 'Value',
+                      }}
+                    />
+                    <div className="d-flex justify-content-center h5">
+                      {rule.ruleName}
+                    </div>
+                  </div>
+                );
+              }) :
+              null :
+            null}
+        </div>
+      </div>
     </div>
-  )
+  );
 }
 
-export default LiveStats
+export default LiveStats;
