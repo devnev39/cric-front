@@ -3,7 +3,7 @@ const pushreturnwrapper = (obj, Qobj) => {
   return obj;
 };
 
-export default class queryBuiler {
+export default class QueryBuiler {
   constructor() {
     this.queries = [];
     this.group = (qobj) => {
