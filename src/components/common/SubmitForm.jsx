@@ -1,9 +1,9 @@
 import settings from '../../config/settings';
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import fetchModel from '../../helpers/fetchModel';
 import InputForm from './InputForm';
 import encrypt from './Encrypt';
-import React, {useNavigate} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 /**
  * @param {String} props.postUrl Url to post the request
  * @param {Object} props.modelKey Model key to request
