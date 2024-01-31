@@ -33,18 +33,29 @@ const Auction = () => {
   }
   const fetchAuctionData = async () => {
     if (state.auction._id !== auctionId) {
-      alert('Invalid id !'); return;
+      alert('Invalid id !');
+      return;
     }
-    const response = await (await fetch(`${settings.BaseUrl}/auction/${state.auction._id}`, {credentials: 'include'})).json();
+    const response = await (
+      await fetch(`${settings.BaseUrl}/auction/${state.auction._id}`, {
+        credentials: 'include',
+      })
+    ).json();
     if (response.status !== 200) {
       alert(response.data);
       if (response.status > 500 && response.status < 600) {
-        const key = encrypt(prompt(`Enter password for ${state.auction.Name} : `));
-        const authenticate = await authenticateResponse(response, {_id: state.auction._id, Password: key});
+        const key = encrypt(
+            prompt(`Enter password for ${state.auction.Name} : `),
+        );
+        const authenticate = await authenticateResponse(response, {
+          _id: state.auction._id,
+          Password: key,
+        });
         if (authenticate === true) {
           window.location.reload();
         } else {
-          alert(authenticate.data); navigate(-1);
+          alert(authenticate.data);
+          navigate(-1);
         }
       }
     } else {
@@ -55,9 +66,13 @@ const Auction = () => {
   const onSelect = async (selection) => {
     if (selection.target.innerText === 'Logout') {
       if (window.confirm('Do you want to logout ?')) {
-        const res = await (await fetch(`${settings.BaseUrl}/logout`, {credentials: 'include'})).json();
+        const res = await (
+          await fetch(`${settings.BaseUrl}/logout`, {credentials: 'include'})
+        ).json();
         if (res.status === 200) {
-          alert('Logged out !'); navigate('/auctions'); return;
+          alert('Logged out !');
+          navigate('/auctions');
+          return;
         } else {
           alert(res.data);
         }
@@ -68,17 +83,26 @@ const Auction = () => {
     }
     if (selection.target.innerText === 'Delete') {
       if (window.confirm('Do you want to delete this auction ?')) {
-        const deleteId = prompt('Enter delelte admin id : ');
-        const res = await (await fetch(`${settings.BaseUrl}/auction/${auctionData._id}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({auction: auctionData, deleteId: encrypt(deleteId)}),
-          credentials: 'include',
-        })).json();
+        const deleteId = prompt('Enter delete admin id : ');
+        const res = await (
+          await fetch(`${settings.BaseUrl}/auction/${auctionData._id}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              auction: auctionData,
+              deleteId: encrypt(deleteId),
+            }),
+            credentials: 'include',
+          })
+        ).json();
         if (res.status === 200) {
-          const r = await (await fetch(`${settings.BaseUrl}/logout`, {credentials: 'include'})).json();
+          const r = await (
+            await fetch(`${settings.BaseUrl}/logout`, {
+              credentials: 'include',
+            })
+          ).json();
           if (r.status === 200) {
             navigate('/auctions');
           } else {
@@ -93,9 +117,11 @@ const Auction = () => {
         return;
       }
     }
-    Array.prototype.slice.call(document.getElementsByClassName('activeItem')).forEach((element) => {
-      element.classList.remove('activeItem');
-    });
+    Array.prototype.slice
+        .call(document.getElementsByClassName('activeItem'))
+        .forEach((element) => {
+          element.classList.remove('activeItem');
+        });
     selection.target.classList.add('activeItem');
     setCurrentComponent(selection.target.innerText);
   };
@@ -133,9 +159,13 @@ const Auction = () => {
 
   const makeSideNavItem = (item, active) => {
     return (
-      <div key={`${item.iconClassName}`} className={`nav-item ${active ? 'activeItem' : ''}`} onClick={(e) => {
-        onSelect(e);
-      }}>
+      <div
+        key={`${item.iconClassName}`}
+        className={`nav-item ${active ? 'activeItem' : ''}`}
+        onClick={(e) => {
+          onSelect(e);
+        }}
+      >
         <i className={`${item.iconClassName}`}></i>
         {item.text}
       </div>
@@ -158,19 +188,42 @@ const Auction = () => {
     <div className="auctionRoot">
       <div className="row">
         <div className="col-2 border-right vh-100">
-          <div className="menuContainer">
-            {makeSideNavBar()}
-          </div>
-
+          <div className="menuContainer">{makeSideNavBar()}</div>
         </div>
-        {auctionData ?
-                <div className="col-10">
-                  {currentComponent === 'Options' ? <Option auctionObj = {auctionData} setAuctionObj = {setAuctionData} trigger = {toggleTrigger} /> : null}
-                  {currentComponent === 'Teams' ? <Teams auctionObj = {auctionData} trigger = {toggleTrigger} setAuctionObj = {setAuctionData} /> : null}
-                  {currentComponent === 'Players' ? <Players auctionObj = {auctionData} setAuctionObj = {setAuctionData} trigger = {toggleTrigger} /> : null}
-                  {currentComponent === 'Auction' ? <AuctionComponent auctionObj = {auctionData} trigger = {toggleTrigger} /> : null}
-                  {currentComponent === 'Live Stats' ? <LiveStats auctionObj = {auctionData} trigger = {toggleTrigger} /> : null}
-                </div> : null}
+        {auctionData ? (
+          <div className="col-10">
+            {currentComponent === 'Options' ? (
+              <Option
+                auctionObj={auctionData}
+                setAuctionObj={setAuctionData}
+                trigger={toggleTrigger}
+              />
+            ) : null}
+            {currentComponent === 'Teams' ? (
+              <Teams
+                auctionObj={auctionData}
+                trigger={toggleTrigger}
+                setAuctionObj={setAuctionData}
+              />
+            ) : null}
+            {currentComponent === 'Players' ? (
+              <Players
+                auctionObj={auctionData}
+                setAuctionObj={setAuctionData}
+                trigger={toggleTrigger}
+              />
+            ) : null}
+            {currentComponent === 'Auction' ? (
+              <AuctionComponent
+                auctionObj={auctionData}
+                trigger={toggleTrigger}
+              />
+            ) : null}
+            {currentComponent === 'Live Stats' ? (
+              <LiveStats auctionObj={auctionData} trigger={toggleTrigger} />
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );
