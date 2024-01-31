@@ -30,7 +30,7 @@ export default function Hometop() {
     );
   };
   return (
-    <div className="home-top-div">
+    <div className="home-top-div" style={{marginTop: '10%'}}>
       <Row className="home-row">
         <Col
           className="home-col d-flex align-items-center justify-content-center"
