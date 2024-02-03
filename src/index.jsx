@@ -1,60 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
-import {BrowserRouter} from 'react-router-dom';
-import {Navbar, Nav} from 'react-bootstrap';
-import './styles.css';
-import s1 from './resources/s1.svg';
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-
-const navItems = [
-  {
-    text: 'Home',
-    href: '/',
-  },
-  {
-    text: 'Auctions',
-    href: '/auctions',
-  },
-  {
-    text: 'Players',
-    href: '/players',
-  },
-  {
-    text: 'Teams',
-    href: '/team',
-  },
-  {
-    text: 'Admin',
-    href: '/admin',
-  },
-  {
-    text: 'About',
-    href: '/about',
-  },
-];
+import App from './App';
+import Navbar from './Navbar';
+import {BrowserRouter} from 'react-router-dom';
+import './styles.css';
+import {Chart, registerables} from 'chart.js';
+import {Dropdown, Collapse, initMDB} from 'mdb-ui-kit';
+initMDB({Dropdown, Collapse});
+Chart.register(...registerables);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <>
-      <Navbar
-        className="root-navbar"
-        style={{paddingLeft: '15%'}}
-        id="mainNavBar"
-      >
-        <Navbar.Brand className="root-navbar-brand" href="/">
-          <img className="pr-3" src={s1} alt="" />
-        CRIC
-        </Navbar.Brand>
-        <Nav className="p-2" style={{margin: '0 0 0 40%'}}>
-          {navItems.map((item) => (
-            <Nav.Link key={item.text} className="mx-2" href={item.href}>
-              {item.text}
-            </Nav.Link>
-          ))}
-        </Nav>
-      </Navbar>
+      <Navbar />
       <BrowserRouter>
         <App />
       </BrowserRouter>
