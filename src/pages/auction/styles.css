@@ -1,9 +1,9 @@
-.nav-item{
+.side-nav-item{
     margin-top: 5%;
     cursor: pointer;
     padding: 5%;
 }
-.nav-item:not(.activeItem):hover{
+.side-nav-item:not(.activeItem):hover{
     box-shadow : 5px 5px 5px #adb5bd;
     transform: scale(1.01);
 }

@@ -161,7 +161,7 @@ const Auction = () => {
     return (
       <div
         key={`${item.iconClassName}`}
-        className={`nav-item ${active ? 'activeItem' : ''}`}
+        className={`side-nav-item ${active ? 'activeItem' : ''}`}
         onClick={(e) => {
           onSelect(e);
         }}

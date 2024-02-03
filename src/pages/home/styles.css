@@ -5,3 +5,34 @@
     -ms-filter: blur(5px);
     filter: blur(5px);
 }
+
+#hometop {
+    background-image: url('../../resources/back1.jpg');
+    height: 100vh;
+}
+
+.offset {
+    margin-top: 76px;
+}
+
+.heading-first {
+    margin-top: 20rem;
+    margin-left: 15rem;
+    letter-spacing: 0.1rem;
+}
+
+.top-sentence {
+    margin-left: 16rem;
+    color: white;
+    letter-spacing: 0.2rem;
+}
+
+.top-buttons {
+    margin-left: 16rem;
+}
+
+/* @media (min-width: 992px) { */
+    #hometop {
+      margin-top: -76px;
+    }
+/* } */

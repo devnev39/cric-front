@@ -1,15 +1,13 @@
-.root-navbar{
-    font-family: 'Kanit' , sans-serif;
-    font-size: 1.5rem;
-    background-color: #C3FCF2;
-    padding: 15% 0 1% 10%;
-}
-
-.root-navbar-brand{
-    font-family: 'Exo 2' , sans-serif;
-    font-size: 2rem;
-}
-
 body {
     font-family: Roboto, Helvetica, Arial, sans-serif;
+}
+
+@media (width > 1000px) {
+    .navbar-brand-margin {
+        margin-left: 10rem;
+    }
+
+    .navbar-items-margin {
+        margin-right: 5rem;
+    }
 }
