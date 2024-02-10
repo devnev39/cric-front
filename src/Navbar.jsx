@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   MDBContainer,
   MDBNavbar,
@@ -42,24 +42,8 @@ const navItems = [
 
 export default function Navbar() {
   const [openBasic, setOpenBasic] = useState(false);
-  useEffect(() => {
-    const ele = document.getElementById('hometop');
-    if (ele && openBasic) ele.style.marginTop = '-380px';
-    else if (ele) ele.style.marginTop = '-76px';
-  }, [openBasic]);
-  const isHomeRoute = () => {
-    const split = document.URL.split('/');
-    if (split.length == -1) return false;
-    if (split[split.length - 1] == '') return true;
-  };
   return (
-    <MDBNavbar
-      expand="lg"
-      light={!isHomeRoute()}
-      dark={isHomeRoute()}
-      bgColor={isHomeRoute() ? '' : 'light'}
-      style={{zIndex: 2000}}
-    >
+    <MDBNavbar expand="lg" dark bgColor="dark" style={{zIndex: 2000}}>
       <MDBContainer fluid>
         <MDBNavbarBrand className="navbar-brand-margin fs-2" href="/">
           <PiGavel className="me-2" />
