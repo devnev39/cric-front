@@ -61,6 +61,16 @@ function LineBarChart(props) {
         },
       },
     },
+    plugins: {
+      title: {
+        display: props.option.chartTitle || false,
+        text: props.option.chartTitle,
+        font: {
+          size: props.option.chartTitleSize,
+        },
+        position: props.option.chartTitlePosition,
+      },
+    },
   };
   return (
     <>
