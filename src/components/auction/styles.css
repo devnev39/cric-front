@@ -81,23 +81,3 @@
 table {
     max-width: fit-content;
 }
-
-.circleAround {
-    border-radius: 50%;
-    border: #00b4d8 solid 10px;
-    text-align: center;
-    padding: 10px;
-    width: 50%;
-}
-
-.circleAround2 {
-    border-radius: 50%;
-    width: 100%;
-    padding: 15px;
-
-    background: #fff;
-    border: 10px solid #00b4d8;
-    text-align: center;
-    font-size: large;
-    font-weight: 500;
-}

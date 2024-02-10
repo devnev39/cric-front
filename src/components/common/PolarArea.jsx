@@ -16,9 +16,22 @@ function PolarAreaChart(props) {
       },
     ],
   };
+
+  const option = {
+    plugins: {
+      title: {
+        display: props.option.chartTitle || false,
+        text: props.option.chartTitle,
+        font: {
+          size: props.option.chartTitleSize,
+        },
+        position: props.option.chartTitlePosition,
+      },
+    },
+  };
   return (
     <>
-      <PolarArea data={data} />
+      <PolarArea data={data} options={option} />
     </>
   );
 }

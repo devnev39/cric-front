@@ -9,6 +9,13 @@ import PolarAreaChart from '../common/PolarArea';
 import SubmitForm from '../common/SubmitForm';
 import UpdateForm from '../common/UpdateForm';
 import './styles.css';
+import {
+  MDBCard,
+  MDBCardBody,
+  MDBCol,
+  MDBContainer,
+  MDBRow,
+} from 'mdb-react-ui-kit';
 
 function Players(props) {
   const [chartData, setChartData] = useState(null);
@@ -17,9 +24,9 @@ function Players(props) {
   const [totalIPLTeams, setTotalIplTeams] = useState(0);
   const [playingRoleCount, setPlayingRoleCount] = useState(0);
   const [CUACount, setCUACount] = useState(0);
-  const [mPlayers, setMplayers] = useState(0);
-  const [aPlayers, setAplayers] = useState(0);
-  const [rPlayers, setRplayers] = useState(0);
+  const [mPlayers, setMplayers] = useState([]);
+  const [aPlayers, setAplayers] = useState([]);
+  const [rPlayers, setRplayers] = useState([]);
   const [currentPlayer, setCurrentPlayer] = useState(0);
 
   const [showUploadDiv, setShowUploadDiv] = useState(false);
@@ -33,18 +40,27 @@ function Players(props) {
     xlabel: 'Name',
     ylinelabel: 'AuctionedPrice',
     ybarlabel: 'BasePrice',
+    chartTitle: 'Players with highest base value with auctioned value',
+    chartTitleSize: 20,
+    chartTitlePosition: 'top',
   };
 
   const area1Option = {
     xkey: 'CUA',
     ykey: 'Count',
     ylabel: 'Players',
+    chartTitle: 'No. of capped and uncapped players',
+    chartTitleSize: 20,
+    chartTitlePosition: 'bottom',
   };
 
   const area2Option = {
     xkey: 'PlayingRole',
     ykey: 'Count',
     ylabel: 'Players',
+    chartTitle: 'No. of player according to playing role',
+    chartTitleSize: 20,
+    chartTitlePosition: 'bottom',
   };
 
   const tableFields = [
@@ -372,7 +388,12 @@ function Players(props) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({auction: props.auctionObj}),
+      body: JSON.stringify({
+        auction: {
+          _id: props.auctionObj._id,
+          poolingMethod: props.auctionObj.poolingMethod,
+        },
+      }),
       credentials: 'include',
     };
     const resp = await (
@@ -449,170 +470,186 @@ function Players(props) {
   return (
     <>
       <div className="mt-3" id="playersMainDiv">
-        <div className="player-top-container m-2 pb-5 border">
-          <div className="player-top-first mt-3 ml-3">
-            <div className="h4">Default player list overview</div>
-            <div className="row ml-1 my-3">
-              <div className="col-8 shadow rounded p-3">
-                {chartData ? (
-                  <LineBarChart data={chartData} option={option} />
-                ) : null}
-              </div>
-              <div className="col-4">
-                <div className="rounded shadow py-3 px-3">
-                  <div
-                    className="circleAround w-50 mb-5"
-                    style={{marginTop: '0%', marginLeft: '20%'}}
-                  >
-                    <div className="m-1">
-                      <div className="h4">Total of </div>
-                      <div className="h1">
-                        {playerLenght[0] ? playerLenght[0].Name : 0}
-                      </div>
-                      <div className="h4">players</div>
-                    </div>
+        <div className="d-flex display-5 fw-normal py-3 justify-content-center">
+          Default player list overview
+        </div>
+        <div className="m-2 pb-5 border">
+          <div className="mt-3">
+            <MDBContainer>
+              <MDBRow className="gap-2">
+                <MDBCol lg={8}>
+                  <div className="rounded shadow p-3">
+                    {chartData ? (
+                      <LineBarChart data={chartData} option={option} />
+                    ) : null}
                   </div>
-                  <div className="row">
-                    <div
-                      className="col-6"
-                      style={{margin: '0', paddingLeft: '2%'}}
-                    >
-                      <div
-                        className="circleAround2"
-                        style={{
-                          marginTop: '0%',
-                          marginLeft: '',
-                          paddingLeft: '',
-                        }}
-                      >
-                        Players from
-                        <div className="h3">
-                          {Object.keys(totalCountries).length}
-                        </div>
-                        countries
-                      </div>
-                    </div>
-                    <div className="col-6">
-                      <div
-                        className="circleAround2"
-                        style={{marginTop: '0%', marginLeft: ''}}
-                      >
-                        Total of
-                        <div className="h3">
-                          {Object.keys(totalIPLTeams).length}
-                        </div>
-                        IPL teams
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+                </MDBCol>
+                <MDBCol>
+                  <MDBContainer className="gap-5">
+                    <MDBRow className="mb-3">
+                      <MDBCol>
+                        <MDBCard alignment="center">
+                          <MDBCardBody>
+                            <div className="display-5">
+                              {playerLenght[0] ? playerLenght[0].Name : 0}
+                            </div>
+                            <div className="fs-4">Total Players</div>
+                          </MDBCardBody>
+                        </MDBCard>
+                      </MDBCol>
+                    </MDBRow>
+                    <MDBRow>
+                      <MDBCol>
+                        <MDBCard alignment="center">
+                          <MDBCardBody>
+                            <div className="display-5">
+                              {Object.keys(totalCountries).length}
+                            </div>
+                            <div className="fs-4">Countries</div>
+                          </MDBCardBody>
+                        </MDBCard>
+                      </MDBCol>
+                      <MDBCol>
+                        <MDBCard alignment="center">
+                          <MDBCardBody>
+                            <div className="display-5">
+                              {Object.keys(totalIPLTeams).length}
+                            </div>
+                            <div className="fs-4">IPL Teams</div>
+                          </MDBCardBody>
+                        </MDBCard>
+                      </MDBCol>
+                    </MDBRow>
+                  </MDBContainer>
+                </MDBCol>
+              </MDBRow>
+            </MDBContainer>
           </div>
-          <div className="player-top-last">
-            <div className="row">
-              <div className="col-6 d-flex justify-content-center">
-                <div className="shadow rounded p-3">
-                  {CUACount ? (
-                    <PolarAreaChart data={CUACount} option={area1Option} />
-                  ) : null}
-                  <div className="d-flex justify-content-center">
-                    No. of player according to capped and uncapped
+          <div className="mt-5">
+            <MDBContainer>
+              <MDBRow center>
+                <MDBCol lg={4}>
+                  <div className="shadow rounded p-3">
+                    {CUACount ? (
+                      <PolarAreaChart data={CUACount} option={area1Option} />
+                    ) : null}
                   </div>
-                </div>
-              </div>
-              <div className="col-6 d-flex justify-content-center">
-                <div className="shadow rounded p-3">
-                  {playingRoleCount ? (
-                    <PolarAreaChart
-                      data={playingRoleCount}
-                      option={area2Option}
-                    />
-                  ) : null}
-                  <div className="d-flex justify-content-center mt-5">
-                    No. of player according to playing role
+                </MDBCol>
+                <MDBCol lg={4}>
+                  <div className="shadow rounded p-3">
+                    {playingRoleCount ? (
+                      <PolarAreaChart
+                        data={playingRoleCount}
+                        option={area2Option}
+                      />
+                    ) : null}
                   </div>
-                </div>
-              </div>
-            </div>
+                </MDBCol>
+              </MDBRow>
+            </MDBContainer>
           </div>
         </div>
-        <div className="player-mid-container border m-2 p-3">
-          <div className="searchbox-container m-2">
-            <div className="row">
-              <div className="col-4">
-                <label htmlFor="serachInput" className="h5">
-                  Search :{' '}
-                </label>
-                <input
-                  name="searchInput"
-                  placeholder="$|added|removed|edited"
-                  id="searchInput"
-                  className="mx-3"
-                  onKeyUp={searchInput}
-                />
-              </div>
-              <div className="col-8">
-                <div className="status-container">
-                  <div className="row h5">
-                    <div className="col-2 d-flex justify-content-center">
-                      <i className="fa-solid fa-circle text-danger"></i>
-                    </div>
-                    <div className="col-2 d-flex justify-content-center">
-                      <i className="fa-solid fa-circle text-success"></i>
-                    </div>
-                    <div className="col-2 d-flex justify-content-center">
-                      <i className="fa-solid fa-circle text-info"></i>
-                    </div>
-                    <div className="col-2 d-flex justify-content-center">
-                      {mPlayers ?
-                        `Total Players : ${mPlayers.length + aPlayers.length}` :
-                        null}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-4"></div>
-              <div className="col-8">
-                <div className="row">
-                  <div className="col-2 d-flex justify-content-center">
-                    {rPlayers ? `Removed : ${rPlayers.length}` : 'Removed'}
-                  </div>
-                  <div className="col-2 d-flex justify-content-center">
-                    {aPlayers ? `Added : ${aPlayers.length}` : 'Added'}
-                  </div>
-                  <div className="col-2 d-flex justify-content-center">
-                    Edited
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div className="border m-2 p-3">
+          <div className="m-2">
+            <MDBContainer>
+              <MDBRow>
+                <MDBCol>
+                  <label htmlFor="serachInput" className="h5">
+                    Search :
+                  </label>
+                  <input
+                    name="searchInput"
+                    placeholder="$|added|removed|edited"
+                    id="searchInput"
+                    className="mx-3"
+                    onKeyUp={searchInput}
+                  />
+                </MDBCol>
+                <MDBCol>
+                  <MDBRow center>
+                    <MDBCol lg={3}>
+                      <MDBCard
+                        alignment="center"
+                        className="bg-success fw-bold"
+                      >
+                        <MDBCardBody>
+                          <div className="fs-3">{aPlayers.length}</div>
+                          <figcaption>Added</figcaption>
+                        </MDBCardBody>
+                      </MDBCard>
+                    </MDBCol>
+                    <MDBCol lg={3}>
+                      <MDBCard alignment="center" className="bg-danger fw-bold">
+                        <MDBCardBody>
+                          <div className="fs-3">{rPlayers.length}</div>
+                          <figcaption>Removed</figcaption>
+                        </MDBCardBody>
+                      </MDBCard>
+                    </MDBCol>
+                    <MDBCol lg={3}>
+                      <MDBCard alignment="center" className="bg-info fw-bold">
+                        <MDBCardBody>
+                          <div className="fs-3">
+                            {mPlayers.length ?
+                              mPlayers.reduce((i, current) => {
+                                if (current.Edited) {
+                                  return i + 1;
+                                }
+                                return 0;
+                              }) :
+                              0}
+                          </div>
+                          <figcaption>Edited</figcaption>
+                        </MDBCardBody>
+                      </MDBCard>
+                    </MDBCol>
+                    <MDBCol lg={3}>
+                      <MDBCard alignment="center" className="fw-bold">
+                        <MDBCardBody>
+                          <div className="fs-3">
+                            {aPlayers.length +
+                              rPlayers.length +
+                              mPlayers.length}
+                          </div>
+                          <figcaption>Total</figcaption>
+                        </MDBCardBody>
+                      </MDBCard>
+                    </MDBCol>
+                  </MDBRow>
+                  {/* {mPlayers ?
+                          `Total Players : ${mPlayers.length + aPlayers.length}` :
+                          null} */}
+                </MDBCol>
+              </MDBRow>
+            </MDBContainer>
           </div>
-          <div className="row">
-            <div className="col-12">
-              <div className="border shadow rounded players-table-container">
-                <table className="table table-striped table-bordered">
-                  <thead className="table-head">{setTableHead()}</thead>
-                  <tbody id="tableBody">
-                    {mPlayers ? setTableBody() : null}
-                  </tbody>
-                </table>
-              </div>
-              <div className="d-flex justify-content-center mt-3">
-                <button
-                  className="btn btn-success"
-                  onClick={() => toggleSubmitForm('newPlayerForm')}
-                >
-                  Add Player
-                </button>
-              </div>
-            </div>
-          </div>
+          <MDBContainer>
+            <MDBRow>
+              <MDBCol lg={12}>
+                <div className="border shadow rounded players-table-container">
+                  <table className="table table-striped table-bordered">
+                    <thead className="table-head">{setTableHead()}</thead>
+                    <tbody id="tableBody">
+                      {mPlayers ? setTableBody() : null}
+                    </tbody>
+                  </table>
+                </div>
+              </MDBCol>
+              <MDBCol>
+                <div className="d-flex justify-content-center mt-3">
+                  <button
+                    className="btn btn-success"
+                    onClick={() => toggleSubmitForm('newPlayerForm')}
+                  >
+                    Add Player
+                  </button>
+                </div>
+              </MDBCol>
+            </MDBRow>
+          </MDBContainer>
           <div className="d-flex justify-content-center mt-5">
             <div>
-              <div className="custom-control custom-switch">
+              <div className="">
                 <input
                   type="checkbox"
                   className="custom-control-input"
