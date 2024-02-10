@@ -1,8 +1,7 @@
 const settings = {
   BaseUrl:
-    process.env.VITE_ENV === 'production' ?
-      process.env.VITE_ENV_PROD_URL :
-      process.env.VITE_ENV_DEV_URL,
+    import.meta.env.VITE_ENV === 'production' ?
+      import.meta.env.VITE_PROD_URL :
+      import.meta.env.VITE_DEV_URL,
 };
-
 export default settings;
