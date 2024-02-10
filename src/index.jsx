@@ -18,8 +18,5 @@ root.render(
       <BrowserRouter>
         <App />
       </BrowserRouter>
-      <footer className="pt-5 pb-2">
-        <div className="d-flex justify-content-center">@devnev</div>
-      </footer>
     </>,
 );
