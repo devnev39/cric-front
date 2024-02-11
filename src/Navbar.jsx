@@ -43,7 +43,13 @@ const navItems = [
 export default function Navbar() {
   const [openBasic, setOpenBasic] = useState(false);
   return (
-    <MDBNavbar expand="lg" dark bgColor="dark" style={{zIndex: 2000}}>
+    <MDBNavbar
+      expand="lg"
+      id="mainNavBar"
+      dark
+      bgColor="dark"
+      style={{zIndex: 2000}}
+    >
       <MDBContainer fluid>
         <MDBNavbarBrand className="navbar-brand-margin fs-2" href="/">
           <PiGavel className="me-2" />
