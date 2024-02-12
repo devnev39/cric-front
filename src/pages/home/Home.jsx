@@ -184,7 +184,7 @@ const Home = () => {
                       >
                         <MDBCard alignment="center">
                           <MDBCardBody>
-                            <div className="display-4 text-success">123</div>
+                            <div className="display-4 text-success">200+</div>
                             <div className="fs-4">Players</div>
                           </MDBCardBody>
                         </MDBCard>
@@ -206,7 +206,7 @@ const Home = () => {
                       >
                         <MDBCard alignment="center">
                           <MDBCardBody>
-                            <div className="display-4 text-success">123</div>
+                            <div className="display-4 text-success">5+</div>
                             <div className="fs-4">Countries</div>
                           </MDBCardBody>
                         </MDBCard>
@@ -231,7 +231,7 @@ const Home = () => {
                       >
                         <MDBCard alignment="center">
                           <MDBCardBody>
-                            <div className="display-4 text-success">123</div>
+                            <div className="display-4 text-success">150+</div>
                             <div className="fs-4">Indian Players</div>
                           </MDBCardBody>
                         </MDBCard>
@@ -253,7 +253,7 @@ const Home = () => {
                       >
                         <MDBCard alignment="center">
                           <MDBCardBody>
-                            <div className="display-4 text-success">123</div>
+                            <div className="display-4 text-success">80+</div>
                             <div className="fs-4">Outseas Players</div>
                           </MDBCardBody>
                         </MDBCard>

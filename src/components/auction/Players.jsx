@@ -561,7 +561,7 @@ function Players(props) {
                     name="searchInput"
                     placeholder="$|added|removed|edited"
                     id="searchInput"
-                    className="mx-3"
+                    className="mx-3 w-50"
                     onKeyUp={searchInput}
                   />
                 </MDBCol>
