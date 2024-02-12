@@ -70,7 +70,6 @@ const AdminView = () => {
     const opts = options.map((opt) => {
       return makeOptionItem(opt, options.indexOf(opt) === 0);
     });
-    console.log(opts);
     return opts;
   };
 

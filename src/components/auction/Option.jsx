@@ -19,9 +19,6 @@ function Option(props) {
     };
     run();
   }, []);
-  useEffect(() => {
-    console.log(wiModel);
-  }, [wiModel]);
 
   useEffect(() => {
     if (!modelJson) return;
@@ -33,7 +30,6 @@ function Option(props) {
     });
     obj['_id'] = props.auctionObj._id;
     setModelVal(obj);
-    console.log(obj);
   }, [modelJson, props.auctionObj]);
 
   const captureWiModel = async () => {
@@ -84,17 +80,14 @@ function Option(props) {
     }
     const keys = Object.keys(wiModel);
     for (const key of keys) {
-      console.log(key);
       const re = new RegExp(`\\b${key}\\b`, 'g');
       while (rule.match(re)) {
         rule = rule.replace(re, '');
-        console.log(rule);
       }
     }
     rule = rule.match('([A-z])');
     if (rule && rule.length) {
       alert('Rule invalid !');
-      console.log(rule);
       return;
     }
     const Rule = {

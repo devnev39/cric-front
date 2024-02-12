@@ -10,11 +10,16 @@ import SubmitForm from '../common/SubmitForm';
 import UpdateForm from '../common/UpdateForm';
 import './styles.css';
 import {
+  MDBBtn,
   MDBCard,
   MDBCardBody,
   MDBCol,
   MDBContainer,
+  MDBIcon,
   MDBRow,
+  MDBTable,
+  MDBTableBody,
+  MDBTableHead,
 } from 'mdb-react-ui-kit';
 
 function Players(props) {
@@ -149,18 +154,24 @@ function Players(props) {
     if (condition === 'mPlayers' || condition === 'Add') {
       tds.push(
           <td key={`${field}${p.SRNO}`}>
-            <button
-              className="btn btn-info btn-sm mx-2"
-              onClick={() => updatePlayer(p)}
-            >
-              <i className="fa-solid fa-user-pen"></i>
-            </button>
-            <button
-              className="btn btn-danger btn-sm"
-              onClick={() => movePlayerAndResponse(p, condition, 'Rmv')}
-            >
-              <i className="fa-solid fa-square-minus"></i>
-            </button>
+            <div>
+              <MDBBtn
+                onClick={() => updatePlayer(p)}
+                className="me-2 mb-2"
+                size="sm"
+                color="primary"
+              >
+                <MDBIcon fas icon="user-edit" size="sm" />
+              </MDBBtn>
+              <MDBBtn
+                onClick={() => movePlayerAndResponse(p, condition, 'Rmv')}
+                className="mb-2"
+                size="sm"
+                color="danger"
+              >
+                <MDBIcon fas icon="trash" size="sm" />
+              </MDBBtn>
+            </div>
           </td>,
       );
     }
@@ -206,7 +217,6 @@ function Players(props) {
     // dest -> destination array
     // player -> player object
     const method = src || dest ? 'PATCH' : 'DELETE';
-    console.log(props.auctionObj);
     return await (
       await fetch(
           `${settings.BaseUrl}/auction/${props.auctionObj._id}/players`,
@@ -362,14 +372,12 @@ function Players(props) {
     );
     neglects = neglects.split(',');
     neglects = neglects.concat(defNeg);
-    console.log(neglects);
     all.forEach((player) => {
       for (const neg of neglects) {
         player[neg] = undefined;
       }
       return player;
     });
-    console.log(all[10]);
     const ws = xlsx.utils.json_to_sheet(all);
     const wb = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(wb, ws, 'Players');
@@ -465,7 +473,6 @@ function Players(props) {
   useEffect(() => {
     const run = async () => await requestData();
     run();
-    console.log('Auction data fetched !');
   }, [props.auctionObj]);
   return (
     <>
@@ -627,12 +634,12 @@ function Players(props) {
             <MDBRow>
               <MDBCol lg={12}>
                 <div className="border shadow rounded players-table-container">
-                  <table className="table table-striped table-bordered">
-                    <thead className="table-head">{setTableHead()}</thead>
-                    <tbody id="tableBody">
+                  <MDBTable align="middle">
+                    <MDBTableHead>{setTableHead()}</MDBTableHead>
+                    <MDBTableBody id="tableBody">
                       {mPlayers ? setTableBody() : null}
-                    </tbody>
-                  </table>
+                    </MDBTableBody>
+                  </MDBTable>
                 </div>
               </MDBCol>
               <MDBCol>

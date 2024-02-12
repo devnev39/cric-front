@@ -33,11 +33,9 @@ function UpdateForm(props) {
       body: JSON.stringify(obj),
       credentials: 'include',
     };
-    console.log('Clicked !');
     const url = props.postUrl ?
       `${settings.BaseUrl}${props.postUrl}` :
       `${settings.BaseUrl}/${props.modelKey}/${props.model._id}`;
-    console.log(url);
     fetch(url, resp)
         .then((res) => res.json())
         .then((res) => {

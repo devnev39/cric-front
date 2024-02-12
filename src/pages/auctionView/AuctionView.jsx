@@ -37,7 +37,6 @@ const AuctionView = () => {
     }
     data = Object.entries(data).map(([key, val]) => [val, key]);
     data = Object.fromEntries(data);
-    console.log(data);
     setCountryCodes(data);
   };
 
@@ -181,7 +180,6 @@ const AuctionView = () => {
       if (pooledPlayerDataset.find((e) => e.SRNO === srno)) {
         const player = pooledPlayerDataset.find((e) => e.SRNO === srno);
         setPrevPlayer(current);
-        console.log(player);
         return player;
       }
       alert(`No player found with given srno : ${srno}`);

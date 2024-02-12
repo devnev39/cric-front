@@ -4,6 +4,7 @@ import {io} from 'socket.io-client';
 import {simplify, number, fraction, round} from 'mathjs';
 import fetchModel from '../../helpers/fetchModel';
 import PolarAreaChart from '../common/PolarArea';
+import {MDBContainer, MDBTable} from 'mdb-react-ui-kit';
 
 function LiveStats(props) {
   const [socket, setSocket] = useState(null);
@@ -41,9 +42,7 @@ function LiveStats(props) {
     if (!socket.connected) {
       return;
     }
-    console.log('Listening for data !');
     socket.on(`${props.auctionObj._id}`, (data) => {
-      console.log('Auction data received !');
       data.dPlayers = data.dPlayers.concat(data.Add);
       let total = 0;
       for (const team of data.Teams) {
@@ -73,7 +72,6 @@ function LiveStats(props) {
         if (team.Players.length) {
           team.Players = team.Players.map((player) => {
             if (!player) {
-              console.log(player);
               return null;
             }
             if (Object.keys(player).length < 3) {
@@ -82,7 +80,6 @@ function LiveStats(props) {
                   auctionData.dPlayers :
                   auctionData.cPlayers;
               for (const p of dataset) {
-                // console.log(p._id);
                 if (p._id === player._id) {
                   return p;
                 }
@@ -127,7 +124,6 @@ function LiveStats(props) {
           let soldTotal = 0;
           for (const player of team.Players) {
             if (!player) {
-              console.log(player);
               continue;
             }
             const cRuleHolder = JSON.parse(JSON.stringify(cRule));
@@ -188,7 +184,7 @@ function LiveStats(props) {
         </div>
       </div>
       <div className="d-flex justify-content-center">
-        <div style={{width: '70%'}}>
+        <MDBContainer>
           {auctionData ?
             auctionData.Teams ?
               auctionData.Teams.map((team) => {
@@ -301,11 +297,9 @@ function LiveStats(props) {
                       );
                     }
                     return (
-                    // !isNaN(player[prop]) ?
                       <td key={`${player.Name}${prop}`}>
                         {player[prop] || NaN}
                       </td>
-                    // : null
                     );
                   });
                   return <tr key={`${player.SRNO}`}>{tds}</tr>;
@@ -320,16 +314,21 @@ function LiveStats(props) {
                     <div className="d-flex justify-content-start">
                       <div>
                         <div className="w-100">
-                          <table className="table table-striped table-bordered">
+                          <MDBTable hover striped bordered borderColor="dark">
                             <thead className="h6">{teamheads}</thead>
                             <tbody className="h5">{teambody}</tbody>
-                          </table>
+                          </MDBTable>
                         </div>
                         <div className="w-100">
-                          <table className="table table-striped table-bordered">
+                          <MDBTable
+                            hover
+                            striped
+                            bordered
+                            borderColor="primary"
+                          >
                             <thead className="table-head h6">{theads}</thead>
                             <tbody className="h5">{tbody}</tbody>
-                          </table>
+                          </MDBTable>
                           <div>{ruleAvgs}</div>
                         </div>
                       </div>
@@ -339,7 +338,7 @@ function LiveStats(props) {
               }) :
               null :
             null}
-        </div>
+        </MDBContainer>
         <div style={{width: '30%'}}>
           {auctionData ?
             auctionData.Teams ?

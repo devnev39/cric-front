@@ -72,8 +72,6 @@ function LineBarChart(props) {
       },
     },
   };
-  console.log(data);
-  console.log(option);
   return (
     <>
       <Bar data={data} options={option} />

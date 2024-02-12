@@ -128,7 +128,6 @@ function Teams(props) {
 
   useEffect(() => {
     setRows(null);
-    console.log(props.auctionObj.Teams);
     setRows(makeRow());
   }, [props.auctionObj]);
 
