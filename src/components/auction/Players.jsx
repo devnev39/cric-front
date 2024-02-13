@@ -13,9 +13,17 @@ import {
   MDBBtn,
   MDBCard,
   MDBCardBody,
+  MDBCheckbox,
   MDBCol,
   MDBContainer,
   MDBIcon,
+  MDBModal,
+  MDBModalBody,
+  MDBModalContent,
+  MDBModalDialog,
+  MDBModalFooter,
+  MDBModalHeader,
+  MDBModalTitle,
   MDBRow,
   MDBTable,
   MDBTableBody,
@@ -35,6 +43,16 @@ function Players(props) {
   const [currentPlayer, setCurrentPlayer] = useState(0);
 
   const [showUploadDiv, setShowUploadDiv] = useState(false);
+
+  const [downloadPlayerDatasetOptions, setDownloadDPlayerDatasetOptions] =
+    useState({
+      fields: ['team_id', '_id', '__v', 'IMGURL', 'SOLD'],
+      options: {},
+    });
+
+  const [basicModal, setBasicModal] = useState(false);
+
+  const toggleOpen = () => setBasicModal(!basicModal);
   // const [playerModel,setPlayerModel] - u
 
   const option = {
@@ -79,6 +97,14 @@ function Players(props) {
     'StrikeRate',
     'Action',
   ];
+
+  const downloadTableFields = tableFields.concat([
+    'CUA',
+    'SoldPrice',
+    'PlayingRole',
+    'IPL2022Team',
+    'IPLMatches',
+  ]);
 
   const requestAndSetData = async (queries, setObject) => {
     const res = await fetchData(`${settings.BaseUrl}/player/query`, {
@@ -346,12 +372,12 @@ function Players(props) {
     }
   };
 
-  const downloadDataset = async (removed) => {
+  const downloadDataset = async () => {
     const mp = JSON.parse(JSON.stringify(mPlayers));
     const ad = JSON.parse(JSON.stringify(aPlayers));
     const rm = JSON.parse(JSON.stringify(rPlayers));
     let all = null;
-    if (removed) {
+    if (downloadPlayerDatasetOptions.options.removed) {
       all = rm;
     } else {
       all = mp.concat(ad);
@@ -359,22 +385,22 @@ function Players(props) {
     if (!all) {
       window.alert('Not found !');
     }
-    const vals = Object.keys(all[0]);
-    const defNeg = ['team_id', '_id', '__v', 'IMGURL', 'SOLD', 'SoldPrice'];
-    defNeg.forEach((neg) => {
-      const ind = vals.indexOf(neg);
-      if (ind !== 1) {
-        vals.splice(ind, 1);
-      }
-    });
-    let neglects = window.prompt(
-        `Enter fields to be neglected from below sepearted by comma (,) Fields : ${vals}`,
-    );
-    neglects = neglects.split(',');
-    neglects = neglects.concat(defNeg);
+    // const vals = Object.keys(all[0]);
+    // const defNeg = ['team_id', '_id', '__v', 'IMGURL', 'SOLD', 'SoldPrice'];
+    // defNeg.forEach((neg) => {
+    //   const ind = vals.indexOf(neg);
+    //   if (ind !== 1) {
+    //     vals.splice(ind, 1);
+    //   }
+    // });
+    // let neglects = window.prompt(
+    //     `Enter fields to be neglected from below sepearted by comma (,) Fields : ${vals}`,
+    // );
+    // neglects = neglects.split(',');
+    // neglects = neglects.concat(defNeg);
     all.forEach((player) => {
-      for (const neg of neglects) {
-        player[neg] = undefined;
+      for (const neg of downloadPlayerDatasetOptions.fields) {
+        delete player[neg];
       }
       return player;
     });
@@ -693,13 +719,27 @@ function Players(props) {
               <div className="mt-5">
                 <button
                   className="btn btn-info mx-3"
-                  onClick={() => downloadDataset(false)}
+                  onClick={() => {
+                    setDownloadDPlayerDatasetOptions((prev) => {
+                      const a = prev;
+                      a.options.removed = false;
+                      return {...prev, options: a.options};
+                    });
+                    toggleOpen();
+                  }}
                 >
                   Download Total Players
                 </button>
                 <button
                   className="btn btn-info"
-                  onClick={() => downloadDataset(true)}
+                  onClick={() => {
+                    setDownloadDPlayerDatasetOptions((prev) => {
+                      const a = prev;
+                      a.options.removed = true;
+                      return {...prev, options: a.options};
+                    });
+                    toggleOpen();
+                  }}
                 >
                   Download Removed Players
                 </button>
@@ -732,6 +772,51 @@ function Players(props) {
           />
         ) : null}
       </div>
+      <MDBModal open={basicModal} setOpen={() => toggleOpen} tabIndex="-1">
+        <MDBModalDialog>
+          <MDBModalContent>
+            <MDBModalHeader>
+              <MDBModalTitle>
+                Select properties to be added to excel file
+              </MDBModalTitle>
+            </MDBModalHeader>
+            <MDBModalBody>
+              {downloadTableFields.map((key) => {
+                return (
+                  <MDBCheckbox
+                    key={key}
+                    defaultChecked
+                    label={key}
+                    onChange={(e) =>
+                      setDownloadDPlayerDatasetOptions((prev) => {
+                        const a = prev;
+                        if (a.fields.indexOf(key) == -1 && !e.target.checked) {
+                          a.fields.push(key);
+                        } else if (
+                          a.fields.indexOf(key) != -1 &&
+                          e.target.checked
+                        ) {
+                          a.fields.remove(key);
+                        }
+                        console.log(a);
+                        return {...prev, fields: a.fields};
+                      })
+                    }
+                  />
+                );
+              })}
+            </MDBModalBody>
+            <MDBModalFooter>
+              <MDBBtn color="success" onClick={() => downloadDataset()}>
+                Download
+              </MDBBtn>
+              <MDBBtn color="secondary" onClick={() => toggleOpen()}>
+                Close
+              </MDBBtn>
+            </MDBModalFooter>
+          </MDBModalContent>
+        </MDBModalDialog>
+      </MDBModal>
     </>
   );
 }
