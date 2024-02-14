@@ -385,19 +385,6 @@ function Players(props) {
     if (!all) {
       window.alert('Not found !');
     }
-    // const vals = Object.keys(all[0]);
-    // const defNeg = ['team_id', '_id', '__v', 'IMGURL', 'SOLD', 'SoldPrice'];
-    // defNeg.forEach((neg) => {
-    //   const ind = vals.indexOf(neg);
-    //   if (ind !== 1) {
-    //     vals.splice(ind, 1);
-    //   }
-    // });
-    // let neglects = window.prompt(
-    //     `Enter fields to be neglected from below sepearted by comma (,) Fields : ${vals}`,
-    // );
-    // neglects = neglects.split(',');
-    // neglects = neglects.concat(defNeg);
     all.forEach((player) => {
       for (const neg of downloadPlayerDatasetOptions.fields) {
         delete player[neg];
