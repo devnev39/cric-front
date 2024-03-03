@@ -1,14 +1,18 @@
-import settings from '../../config/settings';
-import React, {useEffect, useState} from 'react';
-import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import encrypt from '../../components/common/Encrypt';
-import authenticateResponse from '../../components/common/authenticateResponse';
-import Option from '../../components/auction/Option';
-import Teams from '../../components/auction/Teams';
-import {Auction as AuctionComponent} from '../../components/auction/Auction';
-import Players from '../../components/auction/Players';
-import LiveStats from '../../components/auction/LiveStats';
-import './styles.css';
+import auctionApi from "../../api/auction";
+import rulesApi from "../../api/rule";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import encrypt from "../../components/common/Encrypt";
+import authenticateResponse from "../../components/common/authenticateResponse";
+import Option from "../../components/auction/Option";
+import Teams from "../../components/auction/Teams";
+import { Auction as AuctionComponent } from "../../components/auction/Auction";
+import Players from "../../components/auction/Players";
+import LiveStats from "../../components/auction/LiveStats";
+import "./styles.css";
+import { useDispatch, useSelector } from "react-redux";
+import { updateAuction } from "../../feature/auction";
+import { setRules } from "../../feature/rule";
 
 const Auction = () => {
   /*
@@ -18,60 +22,77 @@ const Auction = () => {
     currentComponent    :   Currently active component in sidebar
     trigger             :   Trigger to fetch updated info from server
     */
-  const {state} = useLocation();
-  const {auctionId} = useParams();
-  const [auctionData, setAuctionData] = useState(null);
-  const [currentComponent, setCurrentComponent] = useState('Options');
+  const { state } = useLocation();
+  const { auctionId } = useParams();
+  const [currentComponent, setCurrentComponent] = useState("Options");
   const [trigger, setTrigger] = useState(false);
+
+  const auctionData = useSelector((state) => state.auction.auction);
+
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+
+  const dispatch = useDispatch();
+
   const toggleTrigger = () => {
     setTrigger(!trigger);
   };
   const navigate = useNavigate();
   if (!state) {
-    alert('Cannot identify the route !');
+    alert("Cannot identify the route !");
     navigate(-1);
   }
   const fetchAuctionData = async () => {
     if (state.auction._id !== auctionId) {
-      alert('Invalid id !');
+      alert("Invalid id !");
       return;
     }
-    const response = await (
-      await fetch(`${settings.BaseUrl}/auction/${state.auction._id}`, {
-        credentials: 'include',
-      })
-    ).json();
-    if (response.status !== 200) {
-      alert(response.data);
-      if (response.status > 500 && response.status < 600) {
-        const key = encrypt(
-            prompt(`Enter password for ${state.auction.Name} : `),
-        );
-        const authenticate = await authenticateResponse(response, {
-          _id: state.auction._id,
-          Password: key,
+
+    auctionApi
+        .getAuction(state.auction._id)
+        .then((response) => response.json())
+        .then((response) => {
+          if (!response.status) {
+            alert(response.data);
+            if (response.errorCode > 500 && response.errorCode < 600) {
+              const key = encrypt(
+                  prompt(`Enter password for ${state.auction.Name} : `),
+              );
+              authenticateResponse(response, {
+                _id: state.auction._id,
+                password: key,
+              }).then((authenticate) => {
+                if (authenticate.status === true) {
+                  window.location.reload();
+                } else {
+                  alert(authenticate.data);
+                  navigate(-1);
+                }
+              });
+            }
+          } else {
+            dispatch(updateAuction(response.data));
+            rulesApi
+                .getRules(response.data._id, signal)
+                .then((resp) => resp.json())
+                .then((resp) => {
+                  if (resp.status) {
+                    dispatch(setRules(resp.data));
+                  } else {
+                    window.alert(`${resp.errorCode} : ${resp.data}`);
+                  }
+                });
+          }
         });
-        if (authenticate === true) {
-          window.location.reload();
-        } else {
-          alert(authenticate.data);
-          navigate(-1);
-        }
-      }
-    } else {
-      setAuctionData(response.data);
-    }
   };
 
   const onSelect = async (selection) => {
-    if (selection.target.innerText === 'Logout') {
-      if (window.confirm('Do you want to logout ?')) {
-        const res = await (
-          await fetch(`${settings.BaseUrl}/logout`, {credentials: 'include'})
-        ).json();
-        if (res.status === 200) {
-          alert('Logged out !');
-          navigate('/auctions');
+    if (selection.target.innerText === "Logout") {
+      if (window.confirm("Do you want to logout ?")) {
+        const res = await (await auctionApi.logoutAuction(signal)).json();
+        if (res.status) {
+          alert("Logged out !");
+          navigate("/auctions");
           return;
         } else {
           alert(res.data);
@@ -81,30 +102,16 @@ const Auction = () => {
         return;
       }
     }
-    if (selection.target.innerText === 'Delete') {
-      if (window.confirm('Do you want to delete this auction ?')) {
-        const deleteId = prompt('Enter delete admin id : ');
+    if (selection.target.innerText === "Delete") {
+      if (window.confirm("Do you want to delete this auction ?")) {
+        const deleteId = prompt("Enter delete admin id : ");
         const res = await (
-          await fetch(`${settings.BaseUrl}/auction/${auctionData._id}`, {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              auction: auctionData,
-              deleteId: encrypt(deleteId),
-            }),
-            credentials: 'include',
-          })
+          await auctionApi.deleteAuction(auctionData, deleteId, signal)
         ).json();
-        if (res.status === 200) {
-          const r = await (
-            await fetch(`${settings.BaseUrl}/logout`, {
-              credentials: 'include',
-            })
-          ).json();
-          if (r.status === 200) {
-            navigate('/auctions');
+        if (res.status) {
+          const r = await (await auctionApi.logoutAuction(signal)).json();
+          if (r.status) {
+            navigate("/auctions");
           } else {
             alert(r.data);
           }
@@ -118,42 +125,42 @@ const Auction = () => {
       }
     }
     Array.prototype.slice
-        .call(document.getElementsByClassName('activeItem'))
+        .call(document.getElementsByClassName("activeItem"))
         .forEach((element) => {
-          element.classList.remove('activeItem');
+          element.classList.remove("activeItem");
         });
-    selection.target.classList.add('activeItem');
+    selection.target.classList.add("activeItem");
     setCurrentComponent(selection.target.innerText);
   };
 
   const sideNavItems = [
     {
-      text: 'Options',
-      iconClassName: 'fa-solid fa-gear',
+      text: "Options",
+      iconClassName: "fa-solid fa-gear",
     },
     {
-      text: 'Teams',
-      iconClassName: 'fa-solid fa-user-group',
+      text: "Teams",
+      iconClassName: "fa-solid fa-user-group",
     },
     {
-      text: 'Players',
-      iconClassName: 'fa-solid fa-user-pen',
+      text: "Players",
+      iconClassName: "fa-solid fa-user-pen",
     },
     {
-      text: 'Auction',
-      iconClassName: 'fa-solid fa-gavel',
+      text: "Auction",
+      iconClassName: "fa-solid fa-gavel",
     },
     {
-      text: 'Live Stats',
-      iconClassName: 'fa-solid fa-wave-square',
+      text: "Live Stats",
+      iconClassName: "fa-solid fa-wave-square",
     },
     {
-      text: 'Logout',
-      iconClassName: 'fa-solid fa-right-from-bracket text-danger',
+      text: "Logout",
+      iconClassName: "fa-solid fa-right-from-bracket text-danger",
     },
     {
-      text: 'Delete',
-      iconClassName: 'fa-solid fa-trash-can text-danger',
+      text: "Delete",
+      iconClassName: "fa-solid fa-trash-can text-danger",
     },
   ];
 
@@ -161,7 +168,7 @@ const Auction = () => {
     return (
       <div
         key={`${item.iconClassName}`}
-        className={`side-nav-item ${active ? 'activeItem' : ''}`}
+        className={`side-nav-item ${active ? "activeItem" : ""}`}
         onClick={(e) => {
           onSelect(e);
         }}
@@ -179,10 +186,7 @@ const Auction = () => {
   };
 
   useEffect(() => {
-    const run = async () => {
-      await fetchAuctionData();
-    };
-    run();
+    fetchAuctionData();
   }, [trigger]);
   return (
     <div className="auctionRoot">
@@ -192,34 +196,28 @@ const Auction = () => {
         </div>
         {auctionData ? (
           <div className="col-10">
-            {currentComponent === 'Options' ? (
-              <Option
-                auctionObj={auctionData}
-                setAuctionObj={setAuctionData}
-                trigger={toggleTrigger}
-              />
-            ) : null}
-            {currentComponent === 'Teams' ? (
+            {currentComponent === "Options" ? <Option /> : null}
+            {currentComponent === "Teams" ? (
               <Teams
                 auctionObj={auctionData}
                 trigger={toggleTrigger}
                 setAuctionObj={setAuctionData}
               />
             ) : null}
-            {currentComponent === 'Players' ? (
+            {currentComponent === "Players" ? (
               <Players
                 auctionObj={auctionData}
                 setAuctionObj={setAuctionData}
                 trigger={toggleTrigger}
               />
             ) : null}
-            {currentComponent === 'Auction' ? (
+            {currentComponent === "Auction" ? (
               <AuctionComponent
                 auctionObj={auctionData}
                 trigger={toggleTrigger}
               />
             ) : null}
-            {currentComponent === 'Live Stats' ? (
+            {currentComponent === "Live Stats" ? (
               <LiveStats auctionObj={auctionData} trigger={toggleTrigger} />
             ) : null}
           </div>

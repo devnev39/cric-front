@@ -1,8 +1,11 @@
 .auctionRowContent{
-    border-bottom: 1px solid;
+    /* border-bottom: 1px solid;
+    border-top: 1px solid; */
+    border: 1px solid;
+    padding: 5px;
 }
 .auctionRowContent:hover,.newAuctionButtonDiv:hover{
-    box-shadow: 10px 8px 8px 5px grey;
+    /* box-shadow: 10px 8px 8px 5px grey; */
     transform: scale(1.03);
 }
 .newAuctionButtonDiv,.auctionRowContent{

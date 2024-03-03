@@ -1,26 +1,29 @@
-import settings from '../../config/settings';
-import React, {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import './styles.css';
-import {MDBCol, MDBContainer, MDBRow} from 'mdb-react-ui-kit';
+import auctionApi from "../../api/auction";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./styles.css";
+import { MDBTypography } from "mdb-react-ui-kit";
 const Auctions = () => {
   const [auctions, setAuctions] = useState(null);
   const navigate = useNavigate();
 
-  const statusLightsGenerator = () => {
-    const lights = ['red', 'orange', 'green'];
-    const status = ['Has not started', 'In progress', 'Finished'];
-    return lights.map((c) => {
-      return (
-        <MDBRow key={c}>
-          <MDBCol lg={2}>
-            <i style={{color: c}} className="fa-solid fa-circle p-2"></i>
-          </MDBCol>
-          <MDBCol lg={6}>{status[lights.indexOf(c)]}</MDBCol>
-        </MDBRow>
-      );
-    });
-  };
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+
+  // const statusLightsGenerator = () => {
+  //   const lights = ['red', 'orange', 'green'];
+  //   const status = ['Has not started', 'In progress', 'Finished'];
+  //   return lights.map((c) => {
+  //     return (
+  //       <MDBRow key={c}>
+  //         <MDBCol lg={2}>
+  //           <i style={{color: c}} className="fa-solid fa-circle p-2"></i>
+  //         </MDBCol>
+  //         <MDBCol lg={6}>{status[lights.indexOf(c)]}</MDBCol>
+  //       </MDBRow>
+  //     );
+  //   });
+  // };
   const createAuctionStack = () => {
     return auctions.map((auction) => {
       return (
@@ -29,31 +32,31 @@ const Auctions = () => {
           className="row mb-4 shadow-sm rounded h5 auctionRowContent"
           onClick={() => {
             navigate(`/auction/${auction._id}`, {
-              state: {auction: auction},
+              state: { auction: auction },
             });
           }}
         >
           <div
             className="col-1 d-flex justify-content-center"
-            style={{borderRight: `2px dotted ${auction.Status}`}}
+            style={{ borderRight: `2px dotted ${auction.status}` }}
           >
-            {auction.No}
+            {auctions.indexOf(auction) + 1}
           </div>
           <div
             className="col-8 d-flex justify-content-center"
-            style={{borderRight: `2px dotted`}}
+            style={{ borderRight: `2px dotted` }}
           >
-            {auction.Name}
+            {auction.name}
           </div>
           <div className="col-2 d-flex justify-content-center">
-            {auction.MaxBudget}
+            {auction.maxBudget}
           </div>
           <div
             className="col-1 d-flex justify-content-center"
-            style={{borderLeft: `2px dotted ${auction.Status}`}}
+            style={{ borderLeft: `2px dotted ${auction.status}` }}
           >
             <i
-              style={{color: auction.Status}}
+              style={{ color: auction.status }}
               className="fa-solid fa-circle p-2"
             ></i>
           </div>
@@ -62,20 +65,22 @@ const Auctions = () => {
     });
   };
   const getAuctions = async () => {
-    const response = await (
-      await fetch(`${settings.BaseUrl}/auction`, {credentials: 'include'})
-    ).json();
-    if (response.status === 601) {
-      navigate(`/auction/${response.data._id}`, {
-        state: {auction: response.data},
-      });
-      return;
-    }
-    if (response.status !== 200) {
-      alert(response.data);
-      return;
-    }
-    setAuctions(response.data);
+    auctionApi
+        .getAll(signal)
+        .then((resp) => resp.json())
+        .then((response) => {
+          if (!response.status && response.errorCode !== 601) {
+          // Show error
+            return;
+          }
+          if (response.errorCode === 601) {
+            navigate(`/auction/${response.data._id}`, {
+              state: { auction: response.data },
+            });
+            return;
+          }
+          setAuctions(response.data);
+        });
   };
 
   const createLoadingDiv = () => {
@@ -94,14 +99,14 @@ const Auctions = () => {
   };
 
   useEffect(() => {
-    const run = async () => {
-      await getAuctions();
+    getAuctions();
+    return () => {
+      abortController.abort();
     };
-    run();
   }, []);
   return (
     <div className="auctionsContainerRoot mt-5">
-      <div className="row">
+      {/* <div className="row">
         <div className="col-5"></div>
         <div className="col-4">
           <h1 className="ml-5">Auctions</h1>
@@ -111,8 +116,12 @@ const Auctions = () => {
             {statusLightsGenerator()}
           </MDBContainer>
         </div>
+      </div> */}
+      <div className="d-flex justify-content-center">
+        <MDBTypography className="display-5">Auctions</MDBTypography>
       </div>
-      <div className="d-flex justify-content-center mt-5">
+      <hr className="hr" />
+      <div className="d-flex justify-content-center">
         <div className="auctionsContainer w-50">
           {auctions ? createAuctionStack() : createLoadingDiv()}
         </div>
@@ -122,7 +131,7 @@ const Auctions = () => {
           <div className="col-4"></div>
           <div
             className="col-4 d-flex justify-content-center shadow h3 newAuctionButtonDiv"
-            onClick={() => navigate('/new/auction')}
+            onClick={() => navigate("/new/auction")}
           >
             +
           </div>
