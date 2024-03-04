@@ -1,5 +1,6 @@
 import auctionApi from "../../api/auction";
 import rulesApi from "../../api/rule";
+import teamsApi from "../../api/team";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import encrypt from "../../components/common/Encrypt";
@@ -13,6 +14,7 @@ import "./styles.css";
 import { useDispatch, useSelector } from "react-redux";
 import { updateAuction } from "../../feature/auction";
 import { setRules } from "../../feature/rule";
+import { setTeams } from "../../feature/team";
 
 const Auction = () => {
   /*
@@ -78,6 +80,16 @@ const Auction = () => {
                 .then((resp) => {
                   if (resp.status) {
                     dispatch(setRules(resp.data));
+                  } else {
+                    window.alert(`${resp.errorCode} : ${resp.data}`);
+                  }
+                });
+            teamsApi
+                .getTeams(response.data._id, signal)
+                .then((resp) => resp.json())
+                .then((resp) => {
+                  if (resp.status) {
+                    dispatch(setTeams(resp.data));
                   } else {
                     window.alert(`${resp.errorCode} : ${resp.data}`);
                   }
@@ -197,13 +209,7 @@ const Auction = () => {
         {auctionData ? (
           <div className="col-10">
             {currentComponent === "Options" ? <Option /> : null}
-            {currentComponent === "Teams" ? (
-              <Teams
-                auctionObj={auctionData}
-                trigger={toggleTrigger}
-                setAuctionObj={setAuctionData}
-              />
-            ) : null}
+            {currentComponent === "Teams" ? <Teams /> : null}
             {currentComponent === "Players" ? (
               <Players
                 auctionObj={auctionData}

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 import {
   MDBContainer,
   MDBNavbar,
@@ -9,47 +9,41 @@ import {
   MDBNavbarItem,
   MDBNavbarLink,
   MDBCollapse,
-} from 'mdb-react-ui-kit';
-import {PiGavel} from 'react-icons/pi';
-import './styles.css';
+} from "mdb-react-ui-kit";
+import { PiGavel } from "react-icons/pi";
+import "./styles.css";
 
 const navItems = [
   {
-    text: 'Home',
-    href: '/',
+    text: "Home",
+    href: "/",
   },
   {
-    text: 'Auctions',
-    href: '/auctions',
+    text: "Auctions",
+    href: "/auctions",
   },
   {
-    text: 'Players',
-    href: '/players',
+    text: "Players",
+    href: "/players",
   },
   {
-    text: 'Team',
-    href: '/team',
+    text: "Team",
+    href: "/team",
   },
   {
-    text: 'Admin',
-    href: '/admin',
+    text: "Admin",
+    href: "/admin",
   },
   {
-    text: 'About',
-    href: '/about',
+    text: "About",
+    href: "/about",
   },
 ];
 
 export default function Navbar() {
   const [openBasic, setOpenBasic] = useState(false);
   return (
-    <MDBNavbar
-      expand="lg"
-      id="mainNavBar"
-      dark
-      bgColor="dark"
-      style={{zIndex: 2000}}
-    >
+    <MDBNavbar expand="lg" id="mainNavBar" dark bgColor="dark">
       <MDBContainer fluid>
         <MDBNavbarBrand className="navbar-brand-margin fs-2" href="/">
           <PiGavel className="me-2" />

@@ -1,187 +1,235 @@
-import settings from '../../config/settings';
-import React, {useEffect, useState} from 'react';
-import SubmitForm from '../common/SubmitForm';
-import UpdateForm from '../common/UpdateForm';
-import './styles.css';
-/**
- *
- * @param {Object} props.auctionObj Auction Data
- * @param {Function} props.trigger Trigger to fetch updated info
- */
-// TableHeads  SN Name Budget Actions
+import teamApi from "../../api/team";
+import React, { useState } from "react";
+import * as Yup from "yup";
+import "./styles.css";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  MDBBtn,
+  MDBInput,
+  MDBModal,
+  MDBModalBody,
+  MDBModalContent,
+  MDBModalDialog,
+  MDBModalFooter,
+  MDBModalHeader,
+  MDBModalTitle,
+  MDBTable,
+  MDBTableBody,
+  MDBTableHead,
+  MDBTypography,
+} from "mdb-react-ui-kit";
+import { Formik } from "formik";
+import { addTeam, removeTeam, updateTeam } from "../../feature/team";
+
 function Teams(props) {
-  // const [teamModel,setTeamModel] = useState();
-  const [currentTeam, setCurrentTeam] = useState(null);
-  const [rows, setRows] = useState(null);
+  // Fetch team data and set to store if not set
+  const [basicModal, setBasicModal] = useState(false);
 
-  const makeRow = () => {
-    if (!props.auctionObj.Teams.length) {
-      return null;
-    }
-    return props.auctionObj.Teams.map((team) => {
-      return (
-        <div
-          key={`${team._id}}`}
-          className="row mb-4 shadow-sm rounded h5 auctionRowContent p-2"
-        >
-          <div
-            className="col-1 d-flex justify-content-center"
-            style={{borderRight: `2px dotted`}}
-          >
-            {team.No}
-          </div>
-          <div
-            className="col-4 d-flex justify-content-center"
-            style={{borderRight: `2px dotted`}}
-          >
-            {team.Name}
-          </div>
-          <div
-            className="col-2 d-flex justify-content-center"
-            style={{borderRight: `2px dotted`}}
-          >
-            {team.Key}
-          </div>
-          <div
-            className="col-2 d-flex justify-content-center"
-            style={{borderRight: `2px dotted`}}
-          >
-            {team.Budget}
-          </div>
-          <div className="col-2 d-flex justify-content-center">
-            <button
-              className="btn btn-danger btn-sm mx-2"
-              onClick={() => deleteTeam(team._id)}
-            >
-              <i className="fa-solid fa-trash-can"></i>
-            </button>
-            <button
-              className="btn btn-warning btn-sm"
-              onClick={() => updateTeam(team)}
-            >
-              <i className="fa-solid fa-pen-to-square"></i>
-            </button>
-          </div>
-        </div>
-      );
-    });
+  const toggleOpen = () => setBasicModal(!basicModal);
+
+  const teams = useSelector((state) => state.team.teams);
+  const auction = useSelector((state) => state.auction.auction);
+
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const [updatingTeam, setUpdatingTeam] = useState({ name: "", budget: "" });
+
+  const resetUpdatingTeam = () => {
+    setUpdatingTeam({ name: "", budget: "" });
+    setIsUpdating(false);
   };
 
-  const deleteTeam = async (teamId) => {
-    if (!window.confirm('Do you want do delete this team ?')) {
-      return;
-    }
-    const resp = await (
-      await fetch(
-          `${settings.BaseUrl}/auction/${props.auctionObj._id}/teams/${teamId}`,
-          {
-            method: 'DELETE',
-            credentials: 'include',
-          },
-      )
-    ).json();
-    if (resp.status === 200) {
-      alert('Success !');
-      props.trigger();
+  const dispatch = useDispatch();
+
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+
+  const teamTableColumns = [
+    "#",
+    "Name",
+    "Current Budget",
+    "Max Budget",
+    "Actions",
+  ];
+
+  const addNewTeam = (values, { setSubmitting }) => {
+    if (isUpdating) {
+      teamApi
+          .updateTeam(updatingTeam._id, values, signal)
+          .then((resp) => resp.json())
+          .then((resp) => {
+            if (resp.status) {
+              dispatch(updateTeam(resp.data));
+            } else {
+              window.alert(`${resp.errorCode} : ${resp.data}`);
+            }
+            setSubmitting(false);
+            resetUpdatingTeam();
+            toggleOpen();
+          });
     } else {
-      alert(`${resp.status} ${resp.data}`);
+      teamApi
+          .addTeam({ ...values, auctionId: auction._id }, signal)
+          .then((resp) => resp.json())
+          .then((resp) => {
+            if (resp.status) {
+              dispatch(addTeam(resp.data));
+            } else {
+              window.alert(`${resp.errorCode} : ${resp.data}`);
+            }
+            setSubmitting(false);
+            resetUpdatingTeam();
+            toggleOpen();
+          });
     }
   };
 
-  const updateTeam = (team) => {
-    setCurrentTeam(team);
-    toggleSubmitForm('updateForm');
+  const deleteTeam = (id) => {
+    if (!window.confirm("Confirm to delete the team ?")) return;
+    teamApi
+        .deleteTeam(id, signal)
+        .then((resp) => resp.json())
+        .then((resp) => {
+          if (resp.status) {
+            dispatch(removeTeam(id));
+          } else {
+            window.alert(`${resp.errorCode} : ${resp.data}`);
+          }
+        });
   };
 
-  const toggleSubmitForm = (formId) => {
-    const e = document.getElementById(formId);
-    if (e.classList.contains('display')) {
-      e.classList.toggle('display');
-      e.classList.toggle('openForm');
-      e.classList.toggle('closeForm');
-      e.classList.toggle('openFormDisplay');
-      setTimeout(() => {
-        e.classList.toggle('closeFormDisplay');
-      }, 500);
-      document.getElementById('teamMainDiv').classList.toggle('blurBackground');
-      setCurrentTeam(null);
+  const updateTeamClicked = (id) => {
+    const team = teams.filter((t) => t._id == id);
+    if (team.length) {
+      setIsUpdating(true);
+      setUpdatingTeam(team[0]);
+      toggleOpen();
     } else {
-      e.classList.toggle('display');
-      e.classList.toggle('closeForm');
-      e.classList.toggle('openFormDisplay');
-      e.classList.toggle('closeFormDisplay');
-      setTimeout(() => {
-        e.classList.toggle('openForm');
-      }, 100);
-      document.getElementById('teamMainDiv').classList.toggle('blurBackground');
-    }
-    if (formId !== 'submitForm') {
-      return;
-    }
-    const ele = document.getElementsByClassName('newTeamDivButton')[0];
-    if (ele.innerText === '+') {
-      ele.innerText = '-';
-    } else {
-      ele.innerText = '+';
+      window.alert("No team found !");
     }
   };
-
-  useEffect(() => {
-    setRows(null);
-    setRows(makeRow());
-  }, [props.auctionObj]);
 
   return (
     <>
-      <div
-        className="optionContainerRoot mt-5 d-flex justify-content-center"
-        id="teamMainDiv"
-      >
-        <div className="rounded shadow p-5 teams-container">
-          <div className="d-flex justify-content-center border-bottom">
-            <h2 className="pb-5">Teams</h2>
-          </div>
-          <div className="team-items-container p-3">{rows || <h3>o-o</h3>}</div>
-        </div>
+      <div className="d-flex justify-content-center teamsContainer mt-4">
+        <MDBTypography className="display-6">Teams</MDBTypography>
       </div>
+      <hr className="hr" />
       <div className="d-flex justify-content-center">
-        <div
-          className="rounded shadow my-5 px-5 h4 newTeamDivButton"
-          onClick={() => {
-            toggleSubmitForm('submitForm');
-          }}
-        >
-          +
+        <div className="border rounded">
+          <MDBTable responsive striped>
+            <MDBTableHead>
+              <tr>
+                {teamTableColumns.map((t) => (
+                  <td key={t}>{t}</td>
+                ))}
+              </tr>
+            </MDBTableHead>
+            <MDBTableBody>
+              {teams.map((team) => (
+                <tr key={team._id}>
+                  <td>{teams.indexOf(team) + 1}</td>
+                  <td>{team.name}</td>
+                  <td>{team.currentBudget}</td>
+                  <td>{team.budget}</td>
+                  <td>
+                    <MDBBtn
+                      className="text-primary"
+                      color="link"
+                      rounded
+                      size="sm"
+                      onClick={() => updateTeamClicked(team._id)}
+                    >
+                      Update
+                    </MDBBtn>
+                    <MDBBtn
+                      className="text-danger"
+                      color="link"
+                      rounded
+                      size="sm"
+                      onClick={() => deleteTeam(team._id)}
+                    >
+                      Delete
+                    </MDBBtn>
+                  </td>
+                </tr>
+              ))}
+            </MDBTableBody>
+          </MDBTable>
         </div>
       </div>
-      <div className="closeFormDisplay closeForm" id="submitForm">
-        <div className="d-flex justify-content-center">
-          <SubmitForm
-            postUrl={`/auction/${props.auctionObj._id}/teams`}
-            modelKey="team"
-            neglects={[]}
-            navigate={props.trigger}
-            closeFunc={() => toggleSubmitForm('submitForm')}
-            parentKey="submit1"
-          />
-        </div>
+      <div className="d-flex justify-content-center my-3">
+        <MDBBtn size="sm" onClick={toggleOpen}>
+          Add Team
+        </MDBBtn>
       </div>
-      <div className="closeFormDisplay closeForm" id="updateForm">
-        <div className="d-flex justify-content-center">
-          {currentTeam ? (
-            <UpdateForm
-              modelKey={'team'}
-              neglects={[]}
-              setFunc={props.setAuctionObj}
-              model={currentTeam}
-              postUrl={`/auction/${props.auctionObj._id}/teams/${currentTeam._id}`}
-              closeFunc={() => toggleSubmitForm('updateForm')}
-              parentKey="update1"
-              navigate={props.trigger}
-            />
-          ) : null}
-        </div>
-      </div>
+      <MDBModal open={basicModal} setOpen={setBasicModal} tabIndex="100">
+        <MDBModalDialog>
+          <MDBModalContent>
+            <MDBModalHeader>
+              <MDBModalTitle>Add Team</MDBModalTitle>
+              <MDBBtn
+                className="btn-close"
+                color="none"
+                onClick={toggleOpen}
+              ></MDBBtn>
+            </MDBModalHeader>
+            <MDBModalBody>
+              <Formik
+                initialValues={updatingTeam}
+                validationSchema={Yup.object({
+                  name: Yup.string().required("Required !"),
+                  budget: Yup.number().required("Required !"),
+                })}
+                onSubmit={addNewTeam}
+                enableReinitialize
+              >
+                {(formik) => (
+                  <form id="teamForm" onSubmit={formik.handleSubmit}>
+                    <MDBInput
+                      className="my-2"
+                      id="teamName"
+                      label="Name"
+                      {...formik.getFieldProps("name")}
+                    />
+                    {formik.touched.name && formik.errors.name ? (
+                      <MDBTypography note noteColor="danger">
+                        {formik.errors.name}
+                      </MDBTypography>
+                    ) : null}
+                    <MDBInput
+                      type="number"
+                      className="my-2"
+                      id="teamBudget"
+                      label="Budget"
+                      {...formik.getFieldProps("budget")}
+                    />
+                    {formik.touched.budget && formik.errors.budget ? (
+                      <MDBTypography note noteColor="danger">
+                        {formik.errors.budget}
+                      </MDBTypography>
+                    ) : null}
+                  </form>
+                )}
+              </Formik>
+            </MDBModalBody>
+            <MDBModalFooter>
+              <MDBBtn
+                color="secondary"
+                onClick={() => {
+                  resetUpdatingTeam();
+                  toggleOpen();
+                }}
+              >
+                Close
+              </MDBBtn>
+              <MDBBtn type="submit" form="teamForm">
+                {isUpdating ? "Update" : "Add"}
+              </MDBBtn>
+            </MDBModalFooter>
+          </MDBModalContent>
+        </MDBModalDialog>
+      </MDBModal>
     </>
   );
 }
