@@ -1,6 +1,7 @@
 import auctionApi from "../../api/auction";
 import rulesApi from "../../api/rule";
 import teamsApi from "../../api/team";
+import auctionPlayersApi from "../../api/auctionPlayers";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import encrypt from "../../components/common/Encrypt";
@@ -15,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateAuction } from "../../feature/auction";
 import { setRules } from "../../feature/rule";
 import { setTeams } from "../../feature/team";
+import { setCustomPlayers, setPlayers } from "../../feature/auctionPlayers";
 
 const Auction = () => {
   /*
@@ -94,6 +96,17 @@ const Auction = () => {
                     window.alert(`${resp.errorCode} : ${resp.data}`);
                   }
                 });
+            auctionPlayersApi
+                .getAuctionPlayers(response.data._id, signal)
+                .then((resp) => resp.json())
+                .then((resp) => {
+                  if (resp.status && resp.data) {
+                    dispatch(setPlayers(resp.data.players));
+                    dispatch(setCustomPlayers(resp.data.customPlayers));
+                  } else {
+                    window.alert(`${resp.errorCode} : ${resp.data}`);
+                  }
+                });
           }
         });
   };
@@ -117,23 +130,34 @@ const Auction = () => {
     if (selection.target.innerText === "Delete") {
       if (window.confirm("Do you want to delete this auction ?")) {
         const deleteId = prompt("Enter delete admin id : ");
-        const res = await (
-          await auctionApi.deleteAuction(auctionData, deleteId, signal)
-        ).json();
-        if (res.status) {
-          const r = await (await auctionApi.logoutAuction(signal)).json();
-          if (r.status) {
-            navigate("/auctions");
-          } else {
-            alert(r.data);
-          }
-          return;
-        } else {
-          alert(res.data);
-        }
-        return;
-      } else {
-        return;
+        auctionApi
+            .deleteAuction(auctionData, deleteId, signal)
+            .then((resp) => resp.json())
+            .then((resp) => {
+              console.log(resp);
+              if (resp.status) {
+                auctionApi
+                    .logoutAuction(signal)
+                    .then((r) => r.json())
+                    .then((r) => {
+                      if (r.status) {
+                        navigate("/auctions");
+                      } else {
+                        alert(r.data);
+                      }
+                      return;
+                    })
+                    .catch((err) => {
+                      window.alert(`${err}`);
+                    });
+              } else {
+                alert(resp.data);
+              }
+              return;
+            })
+            .catch((err) => {
+              window.alert(`${err}`);
+            });
       }
     }
     Array.prototype.slice
@@ -210,13 +234,7 @@ const Auction = () => {
           <div className="col-10">
             {currentComponent === "Options" ? <Option /> : null}
             {currentComponent === "Teams" ? <Teams /> : null}
-            {currentComponent === "Players" ? (
-              <Players
-                auctionObj={auctionData}
-                setAuctionObj={setAuctionData}
-                trigger={toggleTrigger}
-              />
-            ) : null}
+            {currentComponent === "Players" ? <Players /> : null}
             {currentComponent === "Auction" ? (
               <AuctionComponent
                 auctionObj={auctionData}

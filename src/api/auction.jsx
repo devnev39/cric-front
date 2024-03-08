@@ -1,3 +1,4 @@
+import encrypt from "../components/common/Encrypt";
 import settings from "../config/settings";
 
 export default {
