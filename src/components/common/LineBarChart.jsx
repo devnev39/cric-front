@@ -1,5 +1,5 @@
-import React from 'react';
-import {Bar} from 'react-chartjs-2';
+import React from "react";
+import { Bar } from "react-chartjs-2";
 /**
  *
  * @param {Object} props.option options for chart
@@ -11,12 +11,12 @@ function LineBarChart(props) {
     labels: props.data.map((obj) => obj[props.option.xkey]),
     datasets: [
       {
-        type: 'line',
+        type: "line",
         label: props.option.ylinelabel,
         data: props.data.map((obj) => obj[props.option.ylinekey]),
       },
       {
-        type: 'bar',
+        type: "bar",
         label: props.option.ybarlabel,
         data: props.data.map((obj) => obj[props.option.ybarkey]),
       },
@@ -36,8 +36,8 @@ function LineBarChart(props) {
     return m1 > m2 ? m1 : m2;
   };
   const option = {
-    indexAxis: props.option.indexAxis || 'x',
-    aspectRatio: props.option.aspectRatio,
+    indexAxis: props.option.indexAxis || "x",
+    maintainAspectRatio: false,
     scales: {
       y: {
         suggestedMax: max() + 10,
@@ -47,7 +47,7 @@ function LineBarChart(props) {
           font: {
             weight: 500,
           },
-          color: 'black',
+          color: "black",
         },
       },
       x: {
@@ -57,7 +57,7 @@ function LineBarChart(props) {
           font: {
             weight: 500,
           },
-          color: 'black',
+          color: "black",
         },
       },
     },

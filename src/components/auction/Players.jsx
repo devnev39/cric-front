@@ -1,6 +1,7 @@
 import { MDBTypography } from "mdb-react-ui-kit";
 import React from "react";
 import PlayersTable from "./PlayersTable";
+import PlayerStats from "./PlayerStats";
 
 function Players() {
   return (
@@ -9,7 +10,8 @@ function Players() {
         <MDBTypography className="display-6">Default Players</MDBTypography>
       </div>
       <hr className="hr" />
-      <div className="d-flex justify-content-evenly"></div>
+      <PlayerStats />
+      <hr className="hr" />
       <PlayersTable />
     </>
   );
