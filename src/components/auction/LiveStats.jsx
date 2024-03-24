@@ -1,49 +1,95 @@
-import settings from '../../config/settings';
-import * as xlsx from 'xlsx';
-import React, {useEffect, useState} from 'react';
-import {io} from 'socket.io-client';
-import {simplify, number, fraction, round} from 'mathjs';
-import fetchModel from '../../helpers/fetchModel';
-import PolarAreaChart from '../common/PolarArea';
+import React, { useEffect, useState } from "react";
 import {
-  MDBBtn,
-  MDBCheckbox,
+  MDBCard,
+  MDBCardBody,
+  MDBCardTitle,
+  MDBCol,
   MDBContainer,
-  MDBIcon,
-  MDBModal,
-  MDBModalBody,
-  MDBModalContent,
-  MDBModalDialog,
-  MDBModalFooter,
-  MDBModalHeader,
-  MDBModalTitle,
+  MDBRow,
   MDBTable,
+  MDBTableBody,
+  MDBTableHead,
   MDBTabs,
   MDBTabsContent,
   MDBTabsItem,
   MDBTabsLink,
   MDBTabsPane,
-} from 'mdb-react-ui-kit';
+  MDBTypography,
+} from "mdb-react-ui-kit";
+import { useDispatch, useSelector } from "react-redux";
+import { simplify, number, fraction, round } from "mathjs";
+import { updateTeam } from "../../feature/team";
+import PolarAreaChart from "../common/PolarArea";
+import { updatePlayer } from "../../feature/auctionPlayers";
 
-function LiveStats(props) {
-  const [socket, setSocket] = useState(null);
-  const [auctionData, setAuctionData] = useState(props.auctionObj || null);
-  const [totalPlayers, setTotalSoldPlayers] = useState(0);
-  const [totalUnsoldPlayers, setTotalUnsoldPlayers] = useState(0);
-  const [teamModel, setTeamModel] = useState(null);
-  const [playerModel, setPlayerModel] = useState(null);
-  const [flag, setFlag] = useState(false);
-  const [basicActive, setBasicActive] = useState('tab1');
-  const [basicModal, setBasicModal] = useState(false);
-
-  const playerFields = ['SRNO', 'Name', 'BasePrice', 'SoldPrice'];
-
-  const [downloadPlayerFields, setDownloadPlayerFields] = useState({
-    fields: playerFields,
+const updateTeamRules = () => async (dispatch, getState) => {
+  const rules = getState().rule.rules;
+  rules.forEach(async (r) => {
+    const teams = getState().team.teams;
+    const players = getState().auctionPlayers.players;
+    teams.forEach(async (t) => {
+      const nT = JSON.parse(JSON.stringify(t));
+      if (r.type == "team") {
+        const cRule = JSON.parse(JSON.stringify(r));
+        for (const key of Object.keys(t)) {
+          const re = new RegExp(`\\b${key}\\b`, "g");
+          while (cRule.rule.match(re)) {
+            cRule.rule = cRule.rule.replace(re, t[key]);
+          }
+        }
+        cRule.rule = simplify(cRule.rule).toString();
+        while (cRule.rule.includes(" ")) {
+          cRule.rule = cRule.rule.replace(" ", "");
+        }
+        let num = 0;
+        try {
+          num = round(number(fraction(cRule.rule)), 2);
+        } catch (error) {
+          console.log(error);
+        }
+        nT[r.name] = num;
+      } else if (r.type == "player") {
+        const teamPlayers = players.filter((p) => {
+          if (t.players.find((pl) => pl._id == p._id)) {
+            return true;
+          }
+          return false;
+        });
+        let avg = 0;
+        teamPlayers.forEach(async (p) => {
+          const cRule = JSON.parse(JSON.stringify(r));
+          for (const key of Object.keys(p)) {
+            const re = new RegExp(`\\b${key}\\b`, "g");
+            while (cRule.rule.match(re)) {
+              cRule.rule = cRule.rule.replace(re, p[key]);
+            }
+          }
+          cRule.rule = simplify(cRule.rule).toString();
+          while (cRule.rule.includes(" ")) {
+            cRule.rule = cRule.rule.replace(" ", "");
+          }
+          let num = 0;
+          try {
+            num = round(number(fraction(cRule.rule)), 2);
+          } catch (error) {
+            console.log(error);
+          }
+          const nP = JSON.parse(JSON.stringify(p));
+          nP[r.name] = num;
+          avg += num;
+          await dispatch(updatePlayer(nP));
+        });
+        avg = avg / teamPlayers.length;
+        nT[`${r.name}avg`] = avg;
+      }
+      await dispatch(updateTeam(nT));
+    });
   });
+};
 
-  const toggleOpen = () => setBasicModal(!basicModal);
-
+const LiveStats = () => {
+  const [basicActive, setBasicActive] = useState("tab1");
+  const dispatch = useDispatch();
   const handleBasicClick = (value) => {
     if (value === basicActive) {
       return;
@@ -51,458 +97,267 @@ function LiveStats(props) {
     setBasicActive(value);
   };
 
-  const downloadDataset = () => {
-    if (!auctionData) return;
-    const teams = JSON.parse(JSON.stringify(auctionData.Teams));
-    teams.forEach((team) => {
-      team.Players.forEach((player) => {
-        Object.keys(player).forEach((k) => {
-          if (downloadPlayerFields.fields.indexOf(k) == -1) {
-            delete player[k];
-          }
-        });
-      });
-    });
-    const wb = xlsx.utils.book_new();
-    teams.forEach((team) => {
-      const ws = xlsx.utils.json_to_sheet(team.Players);
-      xlsx.utils.book_append_sheet(wb, ws, team.Name);
-    });
-    xlsx.writeFile(wb, 'Players.xlsx');
-  };
+  // Load the data from local store
+  // Parse the data with rules
+  // After parsing save the data in store
+  // Show the data
+
+  const teams = useSelector((state) => state.team.teams);
+  const rules = useSelector((state) => state.rule.rules);
+  const players = useSelector((state) => state.auctionPlayers.players);
 
   useEffect(() => {
-    const runMe = async () => {
-      await fetchModel(
-          `${settings.BaseUrl}/wimodels/TeamRuleModel`,
-          setTeamModel,
-      );
-      await fetchModel(
-          `${settings.BaseUrl}/wimodels/PlayerRuleModel`,
-          setPlayerModel,
-      );
-    };
-    const sck = io(`${settings.BaseUrl}`, {
-      withCredentials: true,
-    });
-    sck.on('connect', () => {
-      setSocket(sck);
-    });
-    runMe();
+    if (teams.length && rules.length && players.length) {
+      dispatch(updateTeamRules());
+    }
   }, []);
 
-  useEffect(() => {
-    if (!socket) {
-      return;
-    }
-    if (!socket.connected) {
-      return;
-    }
-    socket.on(`${props.auctionObj._id}`, (data) => {
-      data.dPlayers = data.dPlayers.concat(data.Add);
-      let total = 0;
-      for (const team of data.Teams) {
-        total += team.Players.length;
-      }
-      setTotalSoldPlayers(total);
-      setAuctionData(data);
-    });
-  }, [socket]);
-
-  useEffect(() => {
-    if (!teamModel || !playerModel) {
-      return;
-    }
-    if (!auctionData) {
-      return;
-    }
-    auctionData.dPlayers = auctionData.dPlayers.concat(auctionData.Add);
-    let total = 0;
-    for (const team of auctionData.Teams) {
-      total += team.Players.length;
-    }
-    setTotalSoldPlayers(total);
-    setTotalUnsoldPlayers(auctionData.dPlayers.length - total);
-    if (auctionData.Teams.length) {
-      for (const team of auctionData.Teams) {
-        if (team.Players.length) {
-          team.Players = team.Players.map((player) => {
-            if (!player) {
-              return null;
-            }
-            if (Object.keys(player).length < 3) {
-              const dataset =
-                auctionData.poolingMethod === 'Composite' ?
-                  auctionData.dPlayers :
-                  auctionData.cPlayers;
-              for (const p of dataset) {
-                if (p._id === player._id) {
-                  return p;
-                }
-              }
-            }
-            return player;
-          });
-        }
-      }
-    }
-    for (const team of auctionData.Teams) {
-      for (const rule of auctionData.Rules) {
-        let cRule = JSON.parse(JSON.stringify(rule));
-        if (cRule.type === 'Team') {
-          for (const key of Object.keys(teamModel)) {
-            const re = new RegExp(`\\b${key}\\b`, 'g');
-            while (cRule.rule.match(re)) {
-              cRule.rule = cRule.rule.replace(re, team[key]);
-            }
-          }
-          cRule.rule = simplify(cRule.rule).toString();
-          while (cRule.rule.includes(' ')) {
-            cRule.rule = cRule.rule.replace(' ', '');
-          }
-          try {
-            team[rule.ruleName] = round(number(fraction(cRule.rule)), 2);
-          } catch (error) {
-            team[rule.ruleName] = 0;
-          }
-        }
-        if (cRule.type === 'Player') {
-          let ruleAvg = 0;
-          let soldTotal = 0;
-          for (const player of team.Players) {
-            if (!player) {
-              continue;
-            }
-            const cRuleHolder = JSON.parse(JSON.stringify(cRule));
-            for (const key of Object.keys(playerModel)) {
-              const re = new RegExp(`\\b${key}\\b`, 'g');
-              while (cRule.rule.match(re)) {
-                cRule.rule = cRule.rule.replace(re, player[key]);
-              }
-            }
-            try {
-              cRule.rule = simplify(cRule.rule).toString();
-            } catch (error) {}
-
-            while (cRule.rule.includes(' ')) {
-              cRule.rule = cRule.rule.replace(' ', '');
-            }
-            try {
-              const ans = round(number(fraction(cRule.rule)), 2);
-              if (isNaN(ans)) {
-                player[rule.ruleName] = 0;
-              } else {
-                player[rule.ruleName] = ans;
-              }
-            } catch (error) {
-              player[rule.ruleName] = 0;
-            }
-            soldTotal += player.SoldPrice;
-            ruleAvg += player[rule.ruleName];
-            cRule = cRuleHolder;
-          }
-          team[`${cRule.ruleName}avg`] = round(
-              ruleAvg / team.Players.length,
-              2,
-          );
-          team['totalSoldPrice'] = soldTotal;
-        }
-      }
-    }
-    setFlag(!flag);
-  }, [auctionData, teamModel, playerModel]);
-
+  // MQTT
+  // Upon receiving new data update the data and parse with rules
   return (
-    <div className="w-100">
+    <>
       <MDBTabs fill className="mb-3">
         <MDBTabsItem>
           <MDBTabsLink
-            onClick={() => handleBasicClick('tab1')}
-            active={basicActive == 'tab1'}
+            onClick={() => handleBasicClick("tab1")}
+            active={basicActive == "tab1"}
           >
             Live Stats
           </MDBTabsLink>
         </MDBTabsItem>
         <MDBTabsItem>
           <MDBTabsLink
-            onClick={() => handleBasicClick('tab2')}
-            active={basicActive == 'tab2'}
+            onClick={() => handleBasicClick("tab2")}
+            active={basicActive == "tab2"}
+          >
+            Team Stats
+          </MDBTabsLink>
+        </MDBTabsItem>
+        <MDBTabsItem>
+          <MDBTabsLink
+            onClick={() => handleBasicClick("tab3")}
+            active={basicActive == "tab3"}
           >
             Downloads
           </MDBTabsLink>
         </MDBTabsItem>
       </MDBTabs>
       <MDBTabsContent>
-        <MDBTabsPane open={basicActive == 'tab1'}>
-          <div className="d-flex display-5 fw-normal py-3 justify-content-center">
-            Live Stats
-          </div>
-          <div className="d-flex justify-content-evenly mt-5">
-            <div className="h5 rounded border shadow p-2">
-              Total Sold Players :{' '}
-              <span className="text-success">{totalPlayers}</span>
-            </div>
-            <div className="h5 rounded border shadow p-2">
-              Total Remaining :{' '}
-              <span className="text-danger">{totalUnsoldPlayers}</span>
-            </div>
-          </div>
-          <div className="d-flex justify-content-center">
-            <MDBContainer>
-              {auctionData ?
-                auctionData.Teams ?
-                  auctionData.Teams.map((team) => {
-                    if (!auctionData.Rules) {
-                      return null;
-                    }
-                    for (const team of auctionData.Teams) {
-                      for (const player of team.Players) {
-                        if (player) {
-                          if (Object.keys(player).length < 3) {
-                            return null;
-                          }
-                        }
-                      }
-                    }
-
-                    const tableHeads = [
-                      'Name',
-                      'Current',
-                      'Budget',
-                      'AuctionMaxBudget',
-                      'TotalPlayers',
-                      'Remaining',
-                    ];
-                    auctionData.Rules.forEach((rule) => {
-                      if (rule.type === 'Team') {
-                        tableHeads.push(rule.ruleName);
-                      }
-                    });
-                    let teamheads = tableHeads.map((head) => {
-                      return <th key={`${head}`}>{head}</th>;
-                    });
-                    teamheads = <tr key={`${team.Name}`}>{teamheads}</tr>;
-                    const teambody = (
-                      <tr>
-                        {tableHeads.map((prop) => {
-                          if (prop === 'Name') {
-                            return (
-                              <td
-                                className="bg-dark text-white"
-                                key={`${team[prop]}${prop}`}
-                              >
-                                {team[prop]}
-                              </td>
-                            );
-                          }
-                          if (prop === 'TotalPlayers') {
-                            // setTotalSoldPlayers(totalPlayers + team.Players.length);
-                            return (
-                              <td key={`${prop}`}>{team.Players.length}</td>
-                            );
-                          }
-                          if (prop === 'Remaining') {
-                            return (
-                              <td key={`${prop}`}>
-                                {auctionData.MaxPlayers - team.Players.length}
-                              </td>
-                            );
-                          }
-                          return (
-                            <td key={`${team[prop]}${prop}`}>{team[prop]}</td>
-                          );
-                        })}
-                      </tr>
-                    );
-
-                    const theadsProps = [
-                      'No',
-                      'Name',
-                      'BasePrice',
-                      'AuctionedPrice',
-                      'SoldPrice',
-                    ];
-
-                    const ruleAvgs = [];
-
-                    auctionData.Rules.forEach((rule) => {
-                      if (rule.type === 'Team') {
-                        return;
-                      }
-                      ruleAvgs.push(
-                          <div
-                            key={`${rule.ruleName}$avg`}
-                            className="text-danger h5"
-                          >
-                            {rule.ruleName}
-                            <sub>avg</sub> : {team[`${rule.ruleName}avg`]}
-                          </div>,
-                      );
-                      theadsProps.push(rule.ruleName);
-                    });
-                    ruleAvgs.push(
-                        <div key={`SoldTotal`} className="text-danger h5">
-                          TotalSold : {team[`totalSoldPrice`]}
-                        </div>,
-                    );
-                    let theads = theadsProps.map((head) => {
-                      return <th key={`${head}`}>{head}</th>;
-                    });
-                    theads = <tr key={`${team.Name}`}>{theads}</tr>;
-
-                    const tbody = team.Players.map((player) => {
-                      if (!player) {
-                        return null;
-                      }
-                      const tds = theadsProps.map((prop) => {
-                        if (prop === 'No') {
-                          return (
-                            <td key={`${player.Name}${prop}`}>
-                              {team.Players.indexOf(player) + 1}
-                            </td>
-                          );
-                        }
-                        return (
-                          <td key={`${player.Name}${prop}`}>
-                            {player[prop] || NaN}
-                          </td>
-                        );
-                      });
-                      return <tr key={`${player.SRNO}`}>{tds}</tr>;
-                    });
-
-                    return (
-                      <div
-                        className="shadow rounded p-3 mt-5"
-                        style={{width: '100%'}}
-                        key={`${auctionData.Teams.indexOf(team)}${team.Name}`}
-                      >
-                        <div className="d-flex justify-content-start">
-                          <div>
-                            <div className="w-100">
-                              <MDBTable
-                                hover
-                                striped
-                                bordered
-                                borderColor="dark"
-                              >
-                                <thead className="h6">{teamheads}</thead>
-                                <tbody className="h5">{teambody}</tbody>
-                              </MDBTable>
-                            </div>
-                            <div className="w-100">
-                              <MDBTable
-                                hover
-                                striped
-                                bordered
-                                borderColor="primary"
-                              >
-                                <thead className="table-head h6">
-                                  {theads}
-                                </thead>
-                                <tbody className="h5">{tbody}</tbody>
-                              </MDBTable>
-                              <div>{ruleAvgs}</div>
-                            </div>
+        <MDBTabsPane open={basicActive == "tab1"}>
+          <MDBContainer>
+            <MDBRow>
+              <MDBCol size={8}>
+                {teams.length && players.length ?
+                  teams.map((t) => (
+                    <MDBCard key={t.key} className="my-3">
+                      <MDBCardBody>
+                        <MDBCardTitle>
+                          <MDBTypography tag={"mark"}>{t.name}</MDBTypography>
+                        </MDBCardTitle>
+                        <div className="d-flex justify-content-center">
+                          <div className="border rounded">
+                            <MDBTable>
+                              <MDBTableHead>
+                                <tr>
+                                  <th scope="col">#</th>
+                                  <th scope="col">Name</th>
+                                  <th scope="col">Base Price</th>
+                                  <th scope="col">Auctioned Price</th>
+                                  <th scope="col">Sold Price</th>
+                                  {rules.length ?
+                                      rules.map((r) =>
+                                          r.type == "player" ? (
+                                            <th key={r.name} scope="col">
+                                              {r.name}
+                                            </th>
+                                          ) : null,
+                                      ) :
+                                      null}
+                                </tr>
+                              </MDBTableHead>
+                              <MDBTableBody>
+                                {t.players.map((p) => (
+                                  <tr key={p.id}>
+                                    <td>
+                                      {players.findIndex(
+                                          (pl) => pl._id == p._id,
+                                      ) + 1}
+                                    </td>
+                                    <td>
+                                      {
+                                        players.find((pl) => p._id == pl._id)
+                                            .name
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        players.find((pl) => p._id == pl._id)
+                                            .basePrice
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        players.find((pl) => p._id == pl._id)
+                                            .auctionedPrice
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        players.find((pl) => p._id == pl._id)
+                                            .soldPrice
+                                      }
+                                    </td>
+                                    {rules.length ?
+                                        rules.map((r) =>
+                                            r.type == "player" ? (
+                                              <td key={r.name}>
+                                                {
+                                                  players.find(
+                                                      (pl) => p._id == pl._id,
+                                                  )[r.name]
+                                                }
+                                              </td>
+                                            ) : null,
+                                        ) :
+                                        null}
+                                  </tr>
+                                ))}
+                                <tr>
+                                  <td></td>
+                                  <td></td>
+                                  <td></td>
+                                  <td></td>
+                                  <td>
+                                    <MDBTypography className="mark rounded text-danger">
+                                        Avg.
+                                    </MDBTypography>
+                                  </td>
+                                  {rules.length ?
+                                      rules.map((r) =>
+                                          r.type == "player" ? (
+                                            <td key={r.name}>
+                                              {t[`${r.name}avg`]}
+                                            </td>
+                                          ) : null,
+                                      ) :
+                                      null}
+                                </tr>
+                              </MDBTableBody>
+                            </MDBTable>
                           </div>
                         </div>
-                      </div>
-                    );
-                  }) :
-                  null :
-                null}
-            </MDBContainer>
-            <div style={{width: '30%'}}>
-              {auctionData ?
-                auctionData.Teams ?
-                  auctionData.Rules.map((rule) => {
-                    return (
-                      <div
-                        key={auctionData.Rules.indexOf(rule)}
-                        className="shadow rounded p-2 my-2"
-                      >
-                        <PolarAreaChart
-                          data={auctionData.Teams}
-                          option={{
-                            ykey:
-                                rule.type === 'Player' ?
-                                  `${rule.ruleName}avg` :
-                                  rule.ruleName,
-                            xkey: 'Name',
-                            ylabel: 'Value',
-                          }}
-                        />
-                        <div className="d-flex justify-content-center h5">
-                          {rule.ruleName}
+                      </MDBCardBody>
+                    </MDBCard>
+                  )) :
+                  null}
+              </MDBCol>
+              <MDBCol size={4}>
+                {rules.map((r) =>
+                  r.type == "player" ? (
+                    <MDBCard key={r.name} className="my-3">
+                      <MDBCardBody>
+                        <div style={{ height: "45vh" }}>
+                          <PolarAreaChart
+                            data={teams}
+                            option={{
+                              ykey: `${r.name}avg`,
+                              xkey: "name",
+                              ylabel: `${r.name}`,
+                              xlabel: "value",
+                              chartTitle: `${r.name} - Avg Value`,
+                            }}
+                          />
                         </div>
+                      </MDBCardBody>
+                    </MDBCard>
+                  ) : null,
+                )}
+              </MDBCol>
+            </MDBRow>
+          </MDBContainer>
+        </MDBTabsPane>
+        <MDBTabsPane open={basicActive == "tab2"}>
+          <MDBContainer>
+            <MDBRow>
+              <MDBCol size={8}>
+                <MDBCard>
+                  <MDBCardBody>
+                    <div className="d-flex justify-content-center">
+                      <div className="border rounded">
+                        <MDBTable striped>
+                          <MDBTableHead>
+                            <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Name</th>
+                              <th scope="col">Max Budget</th>
+                              <th scope="col">Remaining Budget</th>
+                              {rules.length ?
+                                rules.map((r) =>
+                                    r.type == "team" ? (
+                                      <th key={r.name} scope="col">
+                                        {r.name}
+                                      </th>
+                                    ) : null,
+                                ) :
+                                null}
+                            </tr>
+                          </MDBTableHead>
+                          <MDBTableBody>
+                            {teams.length ?
+                              teams.map((t) => (
+                                <tr key={t.key}>
+                                  <td>{teams.indexOf(t) + 1}</td>
+                                  <td>{t.name}</td>
+                                  <td>{t.budget}</td>
+                                  <td>{t.currentBudget}</td>
+                                  {rules.length ?
+                                      rules.map((r) =>
+                                          r.type == "team" ? (
+                                            <td key={r.name}>{t[r.name]}</td>
+                                          ) : null,
+                                      ) :
+                                      null}
+                                </tr>
+                              )) :
+                              null}
+                          </MDBTableBody>
+                        </MDBTable>
                       </div>
-                    );
-                  }) :
-                  null :
-                null}
-            </div>
-          </div>
+                    </div>
+                  </MDBCardBody>
+                </MDBCard>
+              </MDBCol>
+              <MDBCol size={4}>
+                {rules.length && teams.length ?
+                  rules.map((r) =>
+                      r.type == "team" ? (
+                        <MDBCard key={r.name}>
+                          <MDBCardBody>
+                            <div style={{ height: "45vh" }}>
+                              <PolarAreaChart
+                                data={teams}
+                                option={{
+                                  ykey: r.name,
+                                  xkey: "name",
+                                  ylabel: r.name,
+                                  xlabel: "Some",
+                                  chartTitle: `${r.name} - Rule Value`,
+                                }}
+                              />
+                            </div>
+                          </MDBCardBody>
+                        </MDBCard>
+                      ) : null,
+                  ) :
+                  null}
+              </MDBCol>
+            </MDBRow>
+          </MDBContainer>
         </MDBTabsPane>
-        <MDBTabsPane open={basicActive == 'tab2'}>
-          <div className="fs-2 square-border border-bottom mb-5 border-3">
-            Team data download
-          </div>
-          <MDBBtn className="btn-success" size="lg" onClick={toggleOpen}>
-            <MDBIcon size="lg" fas icon="arrow-down" />
-            Download all team data
-          </MDBBtn>
-          <MDBModal open={basicModal} setOpen={setBasicModal} tabIndex="-1">
-            <MDBModalDialog>
-              <MDBModalContent>
-                <MDBModalHeader>
-                  <MDBModalTitle>
-                    Select properties to be included
-                  </MDBModalTitle>
-                </MDBModalHeader>
-                <MDBModalBody>
-                  {playerFields.map((key) => {
-                    return (
-                      <MDBCheckbox
-                        defaultChecked
-                        key={key}
-                        label={key}
-                        onChange={(c) => {
-                          setDownloadPlayerFields((current) => {
-                            const fields = current.fields;
-                            if (c.target.checked) {
-                              fields.push(key);
-                            } else if (fields.indexOf(key) != -1) {
-                              fields.splice(fields.indexOf(key), 1);
-                            }
-                            console.log(fields);
-                            return {...current, fields: fields};
-                          });
-                        }}
-                      />
-                    );
-                  })}
-                </MDBModalBody>
-                <MDBModalFooter>
-                  <MDBBtn
-                    color="success"
-                    onClick={() => {
-                      downloadDataset();
-                      toggleOpen();
-                    }}
-                  >
-                    Download
-                  </MDBBtn>
-                  <MDBBtn color="secondary" onClick={toggleOpen}>
-                    Close
-                  </MDBBtn>
-                </MDBModalFooter>
-              </MDBModalContent>
-            </MDBModalDialog>
-          </MDBModal>
-        </MDBTabsPane>
+        <MDBTabsPane open={basicActive == "tab3"}>Tab 3</MDBTabsPane>
       </MDBTabsContent>
-    </div>
+    </>
   );
-}
+};
 
 export default LiveStats;

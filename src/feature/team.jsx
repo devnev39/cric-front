@@ -19,8 +19,9 @@ const teamSlice = createSlice({
     },
 
     updateTeam: (state, action) => {
+      const ind = state.teams.findIndex((t) => t._id == action.payload._id);
       state.teams = state.teams.filter((t) => t._id != action.payload._id);
-      state.teams = state.teams.concat(action.payload);
+      state.teams.splice(ind, 0, action.payload);
     },
   },
 });

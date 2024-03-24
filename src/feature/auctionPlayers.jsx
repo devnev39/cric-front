@@ -24,10 +24,7 @@ const auctionPlayersSlice = createSlice({
     },
 
     updatePlayer: (state, action) => {
-      const player = state.players.filter(
-          (p) => p._id == action.payload._id,
-      )[0];
-      const ind = state.players.indexOf(player);
+      const ind = state.players.findIndex((p) => p._id == action.payload._id);
       state.players = state.players.filter((p) => p._id != action.payload._id);
       state.players.splice(ind, 0, action.payload);
     },

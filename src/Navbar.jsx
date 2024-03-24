@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MDBContainer,
   MDBNavbar,
@@ -42,8 +42,22 @@ const navItems = [
 
 export default function Navbar() {
   const [openBasic, setOpenBasic] = useState(false);
+  const [showNav, setShowNav] = useState(true);
+
+  useEffect(() => {
+    console.log(document.URL);
+    if (document.URL.indexOf("/auction/view/") != -1) {
+      setShowNav(false);
+    } else setShowNav(true);
+  }, [document.URL]);
   return (
-    <MDBNavbar expand="lg" id="mainNavBar" dark bgColor="dark">
+    <MDBNavbar
+      style={{ display: `${showNav ? "block" : "none"}` }}
+      expand="lg"
+      id="mainNavBar"
+      dark
+      bgColor="dark"
+    >
       <MDBContainer fluid>
         <MDBNavbarBrand className="navbar-brand-margin fs-2" href="/">
           <PiGavel className="me-2" />

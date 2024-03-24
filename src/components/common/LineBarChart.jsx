@@ -38,6 +38,10 @@ function LineBarChart(props) {
   const option = {
     indexAxis: props.option.indexAxis || "x",
     maintainAspectRatio: false,
+    interaction: {
+      intersect: false,
+      mode: "index",
+    },
     scales: {
       y: {
         suggestedMax: max() + 10,

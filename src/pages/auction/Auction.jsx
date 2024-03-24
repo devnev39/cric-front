@@ -16,16 +16,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateAuction } from "../../feature/auction";
 import { setRules } from "../../feature/rule";
 import { setTeams } from "../../feature/team";
+import { setCountryCodes } from "../../feature/countries";
 import { setCustomPlayers, setPlayers } from "../../feature/auctionPlayers";
+import { fetchCountryCodes } from "../../api/countryCodes";
 
 const Auction = () => {
-  /*
-    state               :   Clicked auction information from /Auctions page
-    auctionId           :   auctionId in the browser addressbar to crosscheck browser state
-    auctionData         :   Full auction data fetched from server after auth
-    currentComponent    :   Currently active component in sidebar
-    trigger             :   Trigger to fetch updated info from server
-    */
   const { state } = useLocation();
   const { auctionId } = useParams();
   const [currentComponent, setCurrentComponent] = useState("Options");
@@ -108,6 +103,13 @@ const Auction = () => {
                   }
                 });
           }
+        });
+
+    fetchCountryCodes()
+        .then((resp) => resp.json())
+        .then((resp) => {
+          const rev = Object.entries(resp).map(([key, value]) => [value, key]);
+          dispatch(setCountryCodes(Object.fromEntries(rev)));
         });
   };
 

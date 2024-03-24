@@ -1,5 +1,5 @@
-import React from 'react';
-import {PolarArea} from 'react-chartjs-2';
+import React from "react";
+import { PolarArea } from "react-chartjs-2";
 
 /**
  *
@@ -26,6 +26,26 @@ function PolarAreaChart(props) {
           size: props.option.chartTitleSize,
         },
         position: props.option.chartTitlePosition,
+      },
+    },
+    x: {
+      title: {
+        display: true,
+        text: props.option.xlabel,
+        font: {
+          weight: 500,
+        },
+        color: "black",
+      },
+    },
+    y: {
+      title: {
+        display: true,
+        text: props.option.ylabel,
+        font: {
+          weight: 500,
+        },
+        color: "black",
       },
     },
   };
