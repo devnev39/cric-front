@@ -1,77 +1,145 @@
-import settings from '../../config/settings';
-import React, {useState} from 'react';
-import './styles.css';
-import {io} from 'socket.io-client';
+import React, { useEffect, useState } from "react";
+import teamApi from "../../api/team";
+import {
+  MDBBtn,
+  MDBCard,
+  MDBCardBody,
+  MDBCardText,
+  MDBCol,
+  MDBContainer,
+  MDBInput,
+  MDBRow,
+  MDBTable,
+  MDBTableBody,
+  MDBTableHead,
+  MDBTypography,
+} from "mdb-react-ui-kit";
+import { useDispatch, useSelector } from "react-redux";
+import { setObservableTeam, updateObservableTeam } from "../../feature/team";
+import mqtt from "mqtt";
+import { updateAuction } from "../../feature/auction";
 
 const Team = () => {
-  const [teamData, setTeamData] = useState(null);
+  // Fetch team data with players
+  const [teamKey, setTeamKey] = useState(null);
+  const observableTeam = useSelector((state) => state.team.observableTeam);
+  const auction = useSelector((state) => state.auction.auction);
 
-  const connectSocketAndFetchData = async () => {
-    const teamCode = document.getElementById('teamCodeInput').value;
-    if (teamCode === '') {
-      window.alert('Empty team code !'); return;
-    }
-    const data = await (await fetch(`${settings.BaseUrl}/teams/${teamCode}`, {credentials: 'include'})).json();
-    if (data.status === 200) {
-      setTeamData(data.data);
-      const sock = io(settings.BaseUrl, {withCredentials: true});
-      sock.on('connect', () => {
-        sock.on(teamCode, (data) => {
-          setTeamData(data);
+  const dispatch = useDispatch();
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  const findTeam = () => {
+    teamApi
+        .getTeam(teamKey, signal)
+        .then((res) => res.json())
+        .then((res) => {
+          if (res.status) {
+            dispatch(setObservableTeam(res.data.team));
+            dispatch(updateAuction(res.data.auction));
+          } else {
+            window.alert(`${res.errorCode} : ${res.data}`);
+          }
         });
-      });
-    } else {
-      window.alert(data.data);
-    }
   };
 
-  return (
-    <>
-      {
-      !teamData ?
-        <div className="d-flex justify-content-center align-items-center" style={{height: '50vh'}}>
-          <div className="rounded shadow p-5">
-            <div className="row">
-              <div className="col-5 h5">
-                Team Code :
+  useEffect(() => {
+    if (Object.keys(observableTeam).length) {
+      const client = mqtt.connect(import.meta.env.VITE_MQTT_HOST, {
+        username: import.meta.env.VITE_MQTT_USERNAME,
+        password: import.meta.env.VITE_MQTT_PASSWORD,
+      });
+      client.on("connect", () => {
+        console.log("Connected !");
+        console.log(observableTeam.auctionId);
+        client.subscribe(`/${observableTeam.auctionId}`);
+        client.on("message", (topic, message) => {
+          console.log(topic);
+          const data = JSON.parse(message);
+          console.log(data);
+          if (data.player.sold && data.player.team_id == observableTeam._id) {
+            dispatch(updateObservableTeam(data.player));
+          } else if (!data.player.sold) {
+            dispatch(updateObservableTeam(data.player));
+          }
+        });
+      });
+    }
+  }, [observableTeam]);
+  return Object.keys(observableTeam).length ? (
+    <MDBContainer className="mt-3">
+      <MDBRow>
+        <MDBCol size={12}>
+          <MDBCard>
+            <MDBCardBody>
+              <div className="d-flex justify-content-center">
+                <MDBCardText>
+                  <MDBTypography className="display-6">
+                    {auction.name}
+                  </MDBTypography>
+                </MDBCardText>
               </div>
-              <div className="col-7">
-                <input type="text" id="teamCodeInput" placeholder="Team Code"></input>
+              <div className="d-flex justify-content-center">
+                <MDBTypography tag={"mark"} className="h2">
+                  {observableTeam.name}
+                </MDBTypography>
               </div>
-            </div>
-            <div className="d-flex justify-content-center mt-5">
-              <button className="btn btn-success" onClick={connectSocketAndFetchData}>Submit</button>
-            </div>
-
+              <div className="d-flex justify-content-center">
+                <div className="border rounded">
+                  <MDBTable>
+                    <MDBTableHead>
+                      <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Country</th>
+                        <th scope="col">Base Price</th>
+                        <th scope="col">Sold Price</th>
+                      </tr>
+                    </MDBTableHead>
+                    <MDBTableBody>
+                      {observableTeam.players.map((p) => (
+                        <tr key={p._id}>
+                          <td>{p.name}</td>
+                          <td>{p.country}</td>
+                          <td>{p.basePrice}</td>
+                          <td>{p.soldPrice}</td>
+                        </tr>
+                      ))}
+                    </MDBTableBody>
+                  </MDBTable>
+                </div>
+              </div>
+              {!auction.allowRealtimeUpdates ? (
+                <div className="d-flex justify-content-center mt-3">
+                  <MDBTypography note noteColor="info">
+                    Realtime updates are turned off.
+                  </MDBTypography>
+                </div>
+              ) : null}
+            </MDBCardBody>
+          </MDBCard>
+        </MDBCol>
+      </MDBRow>
+    </MDBContainer>
+  ) : (
+    <div className="d-flex justify-content-center mt-3">
+      <MDBCard className="w-25">
+        <MDBCardBody>
+          <MDBCardText>
+            <MDBTypography variant="h5">Enter Team Key</MDBTypography>
+          </MDBCardText>
+          <MDBInput
+            onChange={(e) => setTeamKey(e.target.value)}
+            label="Team Key"
+          />
+          <div className="d-flex justify-content-center">
+            <MDBBtn onClick={() => findTeam()} color="success" className="mt-3">
+              Submit
+            </MDBBtn>
           </div>
-        </div> :
-      <div className="team-container">
-        <h1>{teamData.Name}</h1>
-        <h3 className="text-success">Total Budget : {teamData.Budget}</h3>
-        <h3 className="text-danger">Remaining Budget : {teamData.Current}</h3>
-        <table className="team-table">
-          <thead>
-            <tr>
-              <th>Sr no.</th>
-              <th>Player name</th>
-              <th>Base Price</th>
-              <th>Sold Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {teamData ? teamData.Players.map((player) => (
-              <tr key={player.SRNO}>
-                <td>{player.SRNO}</td>
-                <td>{player.Name}</td>
-                <td>{player.BasePrice}</td>
-                <td>{player.SoldPrice}</td>
-              </tr>
-            )) : null}
-          </tbody>
-        </table>
-      </div>
-      }
-    </>
+        </MDBCardBody>
+      </MDBCard>
+    </div>
   );
 };
 

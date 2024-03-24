@@ -135,6 +135,13 @@ function Option(props) {
                   onChange={formik.handleChange}
                   disabled={!auctionEditEnabled}
                 />
+                <MDBCheckbox
+                  id="allowRealtimeUpdates"
+                  label="Allow Realtime Updates"
+                  checked={formik.values.allowRealtimeUpdates}
+                  onChange={formik.handleChange}
+                  disabled={!auctionEditEnabled}
+                />
                 <div className="d-flex justify-content-center mt-5">
                   <MDBBtn
                     className="mx-3"

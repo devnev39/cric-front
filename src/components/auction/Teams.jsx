@@ -47,6 +47,7 @@ function Teams(props) {
   const teamTableColumns = [
     "#",
     "Name",
+    "Key",
     "Current Budget",
     "Max Budget",
     "Actions",
@@ -130,6 +131,7 @@ function Teams(props) {
                 <tr key={team._id}>
                   <td>{teams.indexOf(team) + 1}</td>
                   <td>{team.name}</td>
+                  <td>{team.key}</td>
                   <td>{team.currentBudget}</td>
                   <td>{team.budget}</td>
                   <td>

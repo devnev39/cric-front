@@ -43,4 +43,16 @@ export default {
     });
     return result;
   },
+
+  getTeam: async (key, signal) => {
+    const result = await fetch(`${settings.BaseUrl}/teams/${key}`, {
+      credentials: "include",
+      signal: signal,
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return result;
+  },
 };

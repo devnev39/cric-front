@@ -21,6 +21,8 @@ import { simplify, number, fraction, round } from "mathjs";
 import { updateTeam } from "../../feature/team";
 import PolarAreaChart from "../common/PolarArea";
 import { updatePlayer } from "../../feature/auctionPlayers";
+import mqtt from "mqtt";
+import { useParams } from "react-router";
 
 const updateTeamRules = () => async (dispatch, getState) => {
   const rules = getState().rule.rules;
@@ -90,6 +92,7 @@ const updateTeamRules = () => async (dispatch, getState) => {
 const LiveStats = () => {
   const [basicActive, setBasicActive] = useState("tab1");
   const dispatch = useDispatch();
+  const { auctionId } = useParams();
   const handleBasicClick = (value) => {
     if (value === basicActive) {
       return;
@@ -105,11 +108,38 @@ const LiveStats = () => {
   const teams = useSelector((state) => state.team.teams);
   const rules = useSelector((state) => state.rule.rules);
   const players = useSelector((state) => state.auctionPlayers.players);
+  const auction = useSelector((state) => state.auction.auction);
 
   useEffect(() => {
     if (teams.length && rules.length && players.length) {
       dispatch(updateTeamRules());
     }
+    if (!auction.allowRealtimeUpdates) {
+      return;
+    }
+    const client = mqtt.connect(import.meta.env.VITE_MQTT_HOST, {
+      username: import.meta.env.VITE_MQTT_USERNAME,
+      password: import.meta.env.VITE_MQTT_PASSWORD,
+    });
+    client.on("connect", () => {
+      console.log("Connected !");
+      console.log(auctionId);
+      client.subscribe(`/${auctionId}`);
+      client.on("message", (topic, message) => {
+        console.log(topic);
+        const data = JSON.parse(message);
+        dispatch(updatePlayer(data.player));
+        dispatch(updateTeam(data.team));
+        dispatch(updateTeamRules());
+      });
+    });
+
+    return () => {
+      if (!auction.allowRealtimeUpdates) {
+        return;
+      }
+      client.end();
+    };
   }, []);
 
   // MQTT
@@ -147,6 +177,14 @@ const LiveStats = () => {
           <MDBContainer>
             <MDBRow>
               <MDBCol size={8}>
+                {!auction.allowRealtimeUpdates ? (
+                  <>
+                    <MDBTypography note noteColor="info">
+                      Realtime updates are turned off ! If wanted turn on from
+                      options tab.
+                    </MDBTypography>
+                  </>
+                ) : null}
                 {teams.length && players.length ?
                   teams.map((t) => (
                     <MDBCard key={t.key} className="my-3">
