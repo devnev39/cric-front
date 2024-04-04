@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  MDBBtn,
   MDBCard,
   MDBCardBody,
   MDBCardTitle,
@@ -23,6 +24,7 @@ import PolarAreaChart from "../common/PolarArea";
 import { updatePlayer } from "../../feature/auctionPlayers";
 import mqtt from "mqtt";
 import { useParams } from "react-router";
+import { utils, writeFile } from "xlsx";
 
 const updateTeamRules = () => async (dispatch, getState) => {
   const rules = getState().rule.rules;
@@ -110,6 +112,28 @@ const LiveStats = () => {
   const players = useSelector((state) => state.auctionPlayers.players);
   const auction = useSelector((state) => state.auction.auction);
 
+  const downloadCurrentTeamData = () => {
+    const workbook = utils.book_new();
+    for (const team of teams) {
+      const pls = team.players.map((p) => {
+        let pl = players.filter((pl) => pl._id == p._id)[0];
+        pl = JSON.parse(JSON.stringify(pl));
+        delete pl.imgUrl;
+        delete pl.team_id;
+        delete pl.sold;
+        delete pl.includeInAuction;
+        delete pl.isAdded;
+        delete pl.isEdited;
+        delete pl._id;
+        delete pl.__v;
+        return pl;
+      });
+      const worksheet = utils.json_to_sheet(pls);
+      utils.book_append_sheet(workbook, worksheet, team.name);
+    }
+    writeFile(workbook, `${auction.name}_team_data.xlsx`);
+  };
+
   useEffect(() => {
     if (teams.length && rules.length && players.length) {
       dispatch(updateTeamRules());
@@ -180,7 +204,7 @@ const LiveStats = () => {
                 {!auction.allowRealtimeUpdates ? (
                   <>
                     <MDBTypography note noteColor="info">
-                      Realtime updates are turned off ! If wanted turn on from
+                      Realtime updates are turned off ! If wanted, turn on from
                       options tab.
                     </MDBTypography>
                   </>
@@ -318,6 +342,14 @@ const LiveStats = () => {
           <MDBContainer>
             <MDBRow>
               <MDBCol size={8}>
+                {!auction.allowRealtimeUpdates ? (
+                  <>
+                    <MDBTypography note noteColor="info">
+                      Realtime updates are turned off ! If wanted, turn on from
+                      options tab.
+                    </MDBTypography>
+                  </>
+                ) : null}
                 <MDBCard>
                   <MDBCardBody>
                     <div className="d-flex justify-content-center">
@@ -392,7 +424,17 @@ const LiveStats = () => {
             </MDBRow>
           </MDBContainer>
         </MDBTabsPane>
-        <MDBTabsPane open={basicActive == "tab3"}>Tab 3</MDBTabsPane>
+        <MDBTabsPane open={basicActive == "tab3"}>
+          <div className="w-50">
+            <MDBTypography note noteColor="warning">
+              Please do check the datasheet before handing out ! It might
+              contain sensitive info for winner judgetment !
+            </MDBTypography>
+          </div>
+          <MDBBtn onClick={downloadCurrentTeamData}>
+            Download Current Team Data
+          </MDBBtn>
+        </MDBTabsPane>
       </MDBTabsContent>
     </>
   );
