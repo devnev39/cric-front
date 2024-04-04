@@ -1,14 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import settings from '../../config/settings';
-import './styles.css';
-import {useNavigate} from 'react-router';
-import encrypt from '../../components/common/Encrypt';
-
+import React, { useEffect, useState } from "react";
+import settings from "../../config/settings";
+import "./styles.css";
+import { useNavigate } from "react-router";
+import encrypt from "../../components/common/Encrypt";
 
 const Admin = () => {
-  const [selectedOption, setSelectedOption] = useState('admin');
-  const [patValue, setPatValue] = useState('');
-  const [password, setPassword] = useState('');
+  const [selectedOption, setSelectedOption] = useState("admin");
+  const [patValue, setPatValue] = useState("");
+  const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
@@ -21,24 +20,30 @@ const Admin = () => {
   };
 
   const login = async () => {
-    const resp = await (await fetch(`${settings.BaseUrl}/auth/admin`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({password: encrypt(password)}),
-      credentials: 'include',
-    })).json();
-    if (resp.status === 200) {
-      navigate('/view/admin', {state: {fromAdmin: true}});
+    const resp = await (
+      await fetch(`${settings.BaseUrl}/auth/admin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ password: encrypt(password) }),
+        credentials: "include",
+      })
+    ).json();
+    if (resp.status) {
+      navigate("/view/admin", { state: { fromAdmin: true } });
+    } else if (resp.errorCode === 601) {
+      navigate("/view/admin", { state: { fromAdmin: true } });
     } else {
-      window.alert(`${resp.data}`);
+      window.alert(`${resp.errorCode} : ${resp.data}`);
     }
   };
   const loadAdmin = async () => {
-    const resp = await (await fetch(`${settings.BaseUrl}/admin`, {credentials: 'include'})).json();
-    if (resp.status === 601) {
-      navigate('/view/admin', {state: {fromAdmin: true}});
+    const resp = await (
+      await fetch(`${settings.BaseUrl}/admin`, { credentials: "include" })
+    ).json();
+    if (resp.errorCode == 601) {
+      navigate("/view/admin", { state: { fromAdmin: true } });
     }
   };
   useEffect(() => {
@@ -51,24 +56,28 @@ const Admin = () => {
         <div className="admin-options">
           <button
             type="button"
-            className={`admin-option ${selectedOption === 'admin' ? 'selected' : ''}`}
-            onClick={() => handleOptionChange('admin')}
+            className={`admin-option ${selectedOption === "admin" ? "selected" : ""}`}
+            onClick={() => handleOptionChange("admin")}
           >
             Admin
           </button>
           <button
             type="button"
-            className={`admin-option ${selectedOption === 'pat' ? 'selected' : ''}`}
-            onClick={() => handleOptionChange('pat')}
+            className={`admin-option ${selectedOption === "pat" ? "selected" : ""}`}
+            onClick={() => handleOptionChange("pat")}
           >
             PAT
           </button>
         </div>
 
-        {selectedOption === 'admin' ? (
+        {selectedOption === "admin" ? (
           <div>
             <label htmlFor="password">Password:</label>
-            <input onChange={(e) => setPassword(e.target.value)} type="password" id="password" />
+            <input
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              id="password"
+            />
           </div>
         ) : (
           <div>

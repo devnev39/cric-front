@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
-import React from 'react';
-import './styles.css';
+import React from "react";
+import "./styles.css";
 import {
   MDBBtn,
   MDBCard,
@@ -10,15 +10,18 @@ import {
   MDBFooter,
   MDBIcon,
   MDBRow,
-} from 'mdb-react-ui-kit';
-import {animated, useInView, useSpring} from '@react-spring/web';
+} from "mdb-react-ui-kit";
+import { animated, useInView, useSpring } from "@react-spring/web";
+import { useNavigate } from "react-router";
 
 const Home = () => {
+  const navigate = useNavigate();
+
   const createSprings = (number) => {
     const springs = [];
     const props = [];
     for (let i = 0; i < number; i++) {
-      const [spring, prop] = useSpring(() => ({from: {x: 1}}));
+      const [spring, prop] = useSpring(() => ({ from: { x: 1 } }));
       springs.push(spring);
       props.push(prop);
     }
@@ -29,80 +32,80 @@ const Home = () => {
 
   const expandOnHover = (cardNumber) => {
     props[cardNumber].start({
-      from: {x: 1},
-      to: {x: 1.1},
+      from: { x: 1 },
+      to: { x: 1.1 },
     });
   };
 
   const shrinkAfterHover = (cardNumber) => {
     props[cardNumber].start({
-      from: {x: 1.1},
-      to: {x: 1},
+      from: { x: 1.1 },
+      to: { x: 1 },
     });
   };
 
   const [propsA] = useSpring(() => ({
-    from: {opacity: 0, transform: 'translateY(-50px)'},
-    to: {opacity: 1, transform: 'translateY(0px)'},
+    from: { opacity: 0, transform: "translateY(-50px)" },
+    to: { opacity: 1, transform: "translateY(0px)" },
     delay: 500,
   }));
   const [propsB] = useSpring(() => ({
-    from: {opacity: 0, transform: 'translateY(-50px)'},
-    to: {opacity: 1, transform: 'translateY(0px)'},
+    from: { opacity: 0, transform: "translateY(-50px)" },
+    to: { opacity: 1, transform: "translateY(0px)" },
     delay: 1000,
   }));
   const [propsC] = useSpring(() => ({
-    from: {opacity: 0, transform: 'translateY(-50px)'},
-    to: {opacity: 1, transform: 'translateY(0px)'},
+    from: { opacity: 0, transform: "translateY(-50px)" },
+    to: { opacity: 1, transform: "translateY(0px)" },
     delay: 1500,
   }));
 
   const [propsD] = useSpring(() => ({
-    from: {opacity: 0, transform: 'translateY(50px)'},
-    to: {opacity: 1, transform: 'translateY(0px)'},
+    from: { opacity: 0, transform: "translateY(50px)" },
+    to: { opacity: 1, transform: "translateY(0px)" },
     delay: 1800,
   }));
 
   const [midDivRefA, springsA] = useInView(
       () => ({
-        from: {transform: 'translateY(-100px)'},
-        to: {transform: 'translateY(0px)'},
-        config: {tension: 280, friction: 60},
+        from: { transform: "translateY(-100px)" },
+        to: { transform: "translateY(0px)" },
+        config: { tension: 280, friction: 60 },
       }),
-      {rootMargin: '-20%', once: true},
+      { rootMargin: "-20%", once: true },
   );
 
   const [midDivRefB, springsB] = useInView(
       () => ({
-        from: {transform: 'translateY(50px)', opacity: 0},
-        to: {transform: 'translateY(0px)', opacity: 1},
-        config: {tension: 280, friction: 60},
+        from: { transform: "translateY(50px)", opacity: 0 },
+        to: { transform: "translateY(0px)", opacity: 1 },
+        config: { tension: 280, friction: 60 },
       }),
-      {rootMargin: '-10%', once: true},
+      { rootMargin: "-10%", once: true },
   );
 
   const [cardARef, springCardA] = useInView(
       () => ({
-        from: {transform: 'translateY(-100px)'},
-        to: {transform: 'translateY(0px)'},
-        config: {tension: 280, friction: 60},
+        from: { transform: "translateY(-100px)" },
+        to: { transform: "translateY(0px)" },
+        config: { tension: 280, friction: 60 },
       }),
-      {rootMargin: '-20%', once: true},
+      { rootMargin: "-20%", once: true },
   );
 
   const [cardDRef, springCardD] = useInView(
       () => ({
-        from: {transform: 'translateY(70px)'},
-        to: {transform: 'translateY(0px)'},
-        config: {tension: 280, friction: 60},
+        from: { transform: "translateY(70px)" },
+        to: { transform: "translateY(0px)" },
+        config: { tension: 280, friction: 60 },
       }),
-      {rootMargin: '-20%', once: true},
+      { rootMargin: "-20%", once: true },
   );
 
   return (
     <>
       <div id="hometop" className="bg-image background shadow-2-strong">
-        <div className="mask" style={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
+        <div className="mask" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
           <div className="offset">
             <MDBContainer>
               <MDBRow>
@@ -126,10 +129,25 @@ const Home = () => {
                     Outlast and Build Your Dream Team?
                   </animated.div>
                   <div className="col-12 top-buttons mt-5 d-flex justify-contents-start gap-5">
-                    <MDBBtn size="lg" rounded color="success">
+                    <MDBBtn
+                      size="lg"
+                      rounded
+                      color="success"
+                      onClick={() => {
+                        navigate("/new/auction");
+                      }}
+                    >
                       Create new auction
                     </MDBBtn>
-                    <MDBBtn size="lg" outline rounded color="danger">
+                    <MDBBtn
+                      size="lg"
+                      outline
+                      rounded
+                      color="danger"
+                      onClick={() => {
+                        navigate("/auctions");
+                      }}
+                    >
                       Continue auction
                     </MDBBtn>
                   </div>
@@ -193,7 +211,7 @@ const Home = () => {
                   </MDBCol>
                   <MDBCol>
                     <animated.div
-                      style={{...springCardA}}
+                      style={{ ...springCardA }}
                       onMouseEnter={() => expandOnHover(1)}
                       onMouseLeave={() => shrinkAfterHover(1)}
                     >
@@ -384,7 +402,7 @@ const Home = () => {
         </section>
         <div
           className="text-center p-4"
-          style={{backgroundColor: 'rgba(0, 0, 0, 0.05)'}}
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.05)" }}
         >
           © 2021 Copyright :
           <a

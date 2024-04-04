@@ -5,6 +5,7 @@ import ruleReducer from "../feature/rule";
 import teamReducer from "../feature/team";
 import auctionPlayersReducer from "../feature/auctionPlayers";
 import countryCodeReducer from "../feature/countries";
+import usersReducer from "../feature/users";
 
 export default configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export default configureStore({
     team: teamReducer,
     auctionPlayers: auctionPlayersReducer,
     countryCodes: countryCodeReducer,
+    users: usersReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

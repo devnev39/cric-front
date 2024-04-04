@@ -1,38 +1,49 @@
-import React, {useEffect, useState} from 'react';
-import settings from '../../config/settings';
-import {useNavigate, useLocation} from 'react-router';
-import './styles.css';
-import Users from '../../components/adminView/Users';
-import AuctionConfig from '../../components/adminView/AuctionConfig';
+import React, { useEffect, useState } from "react";
+import settings from "../../config/settings";
+import auctionApi from "../../api/auction";
+import usersApi from "../../api/user";
+import { useNavigate, useLocation } from "react-router";
+import "./styles.css";
+import Users from "../../components/adminView/Users";
+import AuctionConfig from "../../components/adminView/AuctionConfig";
+import { useDispatch } from "react-redux";
+import { setAuctions } from "../../feature/auction";
+import { setUsers } from "../../feature/users";
 
 const AdminView = () => {
-  const [currentComponent, setCurrentComponent] = useState('Users');
-  const {state} = useLocation();
+  const [currentComponent, setCurrentComponent] = useState("Users");
+  const { state } = useLocation();
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
   const options = [
     {
-      text: 'Users',
-      iconClassName: 'fa-solid fa-user',
+      text: "Users",
+      iconClassName: "fa-solid fa-user",
     },
     {
-      text: 'Auctions',
-      iconClassName: 'fa-solid fa-gavel',
+      text: "Auctions",
+      iconClassName: "fa-solid fa-gavel",
     },
     {
-      text: 'Logout',
-      iconClassName: 'fa-solid fa-right-from-bracket',
+      text: "Logout",
+      iconClassName: "fa-solid fa-right-from-bracket",
     },
   ];
 
   const onSelect = async (selection) => {
-    if (selection.target.innerText === 'Logout') {
-      if (window.confirm('Do you want to logout ?')) {
+    if (selection.target.innerText === "Logout") {
+      if (window.confirm("Do you want to logout ?")) {
         const res = await (
-          await fetch(`${settings.BaseUrl}/logout`, {credentials: 'include'})
+          await fetch(`${settings.BaseUrl}/logout`, { credentials: "include" })
         ).json();
-        if (res.status === 200) {
-          alert('Logged out !');
-          navigate('/auctions');
+        if (res.status) {
+          alert("Logged out !");
+          navigate("/auctions");
           return;
         } else {
           alert(res.data);
@@ -43,11 +54,11 @@ const AdminView = () => {
       }
     }
     Array.prototype.slice
-        .call(document.getElementsByClassName('activeItem'))
+        .call(document.getElementsByClassName("activeItem"))
         .forEach((element) => {
-          element.classList.remove('activeItem');
+          element.classList.remove("activeItem");
         });
-    selection.target.classList.add('activeItem');
+    selection.target.classList.add("activeItem");
     setCurrentComponent(selection.target.innerText);
   };
 
@@ -55,7 +66,7 @@ const AdminView = () => {
     return (
       <div
         key={`${item.iconClassName}`}
-        className={`side-nav-item ${active ? 'activeItem' : ''}`}
+        className={`side-nav-item ${active ? "activeItem" : ""}`}
         onClick={(e) => {
           onSelect(e);
         }}
@@ -75,24 +86,55 @@ const AdminView = () => {
 
   const checkLogin = async () => {
     const resp = await (
-      await fetch(`${settings.BaseUrl}/admin`, {credentials: 'include'})
+      await fetch(`${settings.BaseUrl}/admin`, { credentials: "include" })
     ).json();
-    if (resp.status !== 601) {
+    if (!resp.status && resp.errorCode !== 601) {
       navigate(-1);
     }
   };
 
+  const fetchData = () => {
+    auctionApi
+        .getAllAuctionsAdmin(signal)
+        .then((resp) => resp.json())
+        .then((resp) => {
+          if (resp.status) {
+            dispatch(setAuctions(resp.data));
+          } else {
+            window.alert(`${resp.errorCode} : ${resp.data}`);
+          }
+        })
+        .catch((err) => {
+          window.alert(`Get All Auctions : ${err}`);
+        });
+
+    usersApi
+        .getUsers(signal)
+        .then((res) => res.json())
+        .then((res) => {
+          if (res.status) {
+            dispatch(setUsers(res.data));
+          } else {
+            window.alert(`${res.errorCode} : ${res.data}`);
+          }
+        })
+        .catch((err) => {
+          window.alert(`Get All Users : ${err}`);
+        });
+  };
+
   useEffect(() => {
     checkLogin();
+    fetchData();
   }, []);
 
   if (!state) {
-    window.alert('Cannot identify the route ! State not found !');
+    window.alert("Cannot identify the route ! State not found !");
     return;
   }
 
   if (!state.fromAdmin) {
-    window.alert('Cannot identify the route !');
+    window.alert("Cannot identify the route !");
     return;
   }
 
@@ -105,12 +147,12 @@ const AdminView = () => {
           </div>
           <div className="col-10">
             {currentComponent ? (
-              currentComponent === 'Users' ? (
+              currentComponent === "Users" ? (
                 <Users />
               ) : null
             ) : null}
             {currentComponent ? (
-              currentComponent === 'Auctions' ? (
+              currentComponent === "Auctions" ? (
                 <AuctionConfig />
               ) : null
             ) : null}
