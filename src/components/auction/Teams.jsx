@@ -117,12 +117,15 @@ function Teams(props) {
       </div>
       <hr className="hr" />
       <div className="d-flex justify-content-center">
-        <div className="border rounded">
+        <div
+          className="border rounded overflow-auto"
+          style={{ height: "60vh" }}
+        >
           <MDBTable responsive striped>
             <MDBTableHead>
               <tr>
                 {teamTableColumns.map((t) => (
-                  <td key={t}>{t}</td>
+                  <th key={t}>{t}</th>
                 ))}
               </tr>
             </MDBTableHead>

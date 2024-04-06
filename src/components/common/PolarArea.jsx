@@ -18,6 +18,8 @@ function PolarAreaChart(props) {
   };
 
   const option = {
+    maintainAspectRatio: false,
+    responsive: true,
     plugins: {
       title: {
         display: props.option.chartTitle || false,

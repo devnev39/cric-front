@@ -4,6 +4,7 @@ const ruleSlice = createSlice({
   name: "rule",
   initialState: {
     rules: [],
+    sampleRules: [],
   },
   reducers: {
     setRules: (state, action) => {
@@ -15,8 +16,12 @@ const ruleSlice = createSlice({
     removeRule: (state, action) => {
       state.rules = state.rules.filter((r) => r._id != action.payload);
     },
+    setSampleRules: (state, action) => {
+      state.sampleRules = action.payload;
+    },
   },
 });
 
-export const { updateRules, removeRule, setRules } = ruleSlice.actions;
+export const { updateRules, removeRule, setRules, setSampleRules } =
+  ruleSlice.actions;
 export default ruleSlice.reducer;

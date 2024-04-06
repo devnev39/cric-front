@@ -8,6 +8,7 @@ import { Field, Formik } from "formik";
 import {
   MDBBtn,
   MDBCheckbox,
+  MDBIcon,
   MDBInput,
   MDBModal,
   MDBModalBody,
@@ -36,6 +37,9 @@ function Option(props) {
 
   const a = useSelector(selectAuction);
   const rules = useSelector(selectRules);
+
+  const sampleRules = useSelector((state) => state.rule.sampleRules);
+
   const ruleTableColums = ["#", "Name", "Type", "Rule", "Actions"];
   const dispatch = useDispatch();
 
@@ -65,22 +69,23 @@ function Option(props) {
   };
 
   const addNewRule = (values, { setSubmitting }) => {
+    if (setSubmitting) setSubmitting(true);
     ruleApi
         .addRule({ ...values, auctionId: a._id }, signal)
         .then((res) => res.json())
         .then((res) => {
           if (res.status) {
-            dispatch(updateRules(values));
-            setSubmitting(false);
-            toggleOpen();
+            dispatch(updateRules(res.data));
+            if (setSubmitting) toggleOpen();
           } else {
             window.alert(`${res.errorCode} : ${res.dat}`);
-            setSubmitting(false);
           }
         })
         .catch((err) => {
           window.alert(`${err}`);
-          setSubmitting(false);
+        })
+        .finally(() => {
+          if (setSubmitting) setSubmitting(false);
         });
   };
 
@@ -218,6 +223,57 @@ function Option(props) {
               Add Rule
             </MDBBtn>
           </div>
+          <div className="d-flex justify-content-center mt-3">
+            <MDBTypography variant="h5">
+              Rules used by another auctions
+            </MDBTypography>
+          </div>
+          <div className="d-flex justify-content-center">
+            <div
+              className="border rounded overflow-auto"
+              style={{ height: "50vh" }}
+            >
+              <MDBTable align="middle" striped>
+                <MDBTableHead>
+                  <tr>
+                    {ruleTableColums.map((cln) => (
+                      <th scope="col" key={cln}>
+                        {cln}
+                      </th>
+                    ))}
+                  </tr>
+                </MDBTableHead>
+                <MDBTableBody>
+                  {sampleRules.map((rule) => (
+                    <tr key={rules.indexOf(rule)}>
+                      <td>
+                        <MDBIcon color="info" fas icon="star" />
+                      </td>
+                      <td>{rule.name}</td>
+                      <td>{rule.type}</td>
+                      <td>{rule.rule}</td>
+                      <td>
+                        <MDBBtn
+                          onClick={() =>
+                            addNewRule(
+                                { ...rule, _id: undefined },
+                                { setSubmitting: undefined },
+                            )
+                          }
+                          color="link"
+                          className="text-success"
+                          rounded
+                          size="sm"
+                        >
+                          Add
+                        </MDBBtn>
+                      </td>
+                    </tr>
+                  ))}
+                </MDBTableBody>
+              </MDBTable>
+            </div>
+          </div>
           <MDBModal open={basicModal} setOpen={setBasicModal} tabIndex="-1">
             <MDBModalDialog>
               <MDBModalContent>
@@ -238,9 +294,33 @@ function Option(props) {
                       type: "",
                     }}
                     onSubmit={addNewRule}
+                    enableReinitialize
                   >
                     {(frm) => (
                       <form id="ruleForm" onSubmit={frm.handleSubmit}>
+                        <Field
+                          as="select"
+                          id="ruleType"
+                          {...frm.getFieldProps("type")}
+                        >
+                          <option value="">--Please choose an option--</option>
+                          <option value={"player"}>Player</option>
+                          <option selected value={"team"}>
+                            Team
+                          </option>
+                        </Field>
+                        {frm.touched.type && frm.errors.type ? (
+                          <MDBTypography note noteColor="danger">
+                            {frm.errors.type}
+                          </MDBTypography>
+                        ) : null}
+                        {frm.values.type ? (
+                          <MDBTypography note noteColor="info">
+                            {frm.values.type == "team" ?
+                              `Available fields: budget, currentBudget` :
+                              `Availabel fields: soldPrice, auctionedPrice, basePrice`}
+                          </MDBTypography>
+                        ) : null}
                         <MDBInput
                           className="my-2"
                           id="ruleName"
@@ -261,21 +341,6 @@ function Option(props) {
                         {frm.touched.rule && frm.errors.rule ? (
                           <MDBTypography note noteColor="danger">
                             {frm.errors.rule}
-                          </MDBTypography>
-                        ) : null}
-                        <Field
-                          as="select"
-                          id="ruleType"
-                          {...frm.getFieldProps("type")}
-                        >
-                          <option selected="selected" value={"player"}>
-                            Player
-                          </option>
-                          <option value={"team"}>Team</option>
-                        </Field>
-                        {frm.touched.type && frm.errors.type ? (
-                          <MDBTypography note noteColor="danger">
-                            {frm.errors.type}
                           </MDBTypography>
                         ) : null}
                       </form>

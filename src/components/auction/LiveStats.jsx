@@ -77,6 +77,7 @@ const updateTeamRules = () => async (dispatch, getState) => {
             num = round(number(fraction(cRule.rule)), 2);
           } catch (error) {
             console.log(error);
+            console.log(cRule);
           }
           const nP = JSON.parse(JSON.stringify(p));
           nP[r.name] = num;
@@ -217,7 +218,10 @@ const LiveStats = () => {
                           <MDBTypography tag={"mark"}>{t.name}</MDBTypography>
                         </MDBCardTitle>
                         <div className="d-flex justify-content-center">
-                          <div className="border rounded">
+                          <div
+                            className="border rounded overflow-auto"
+                            style={{ height: "70vh" }}
+                          >
                             <MDBTable>
                               <MDBTableHead>
                                 <tr>
@@ -318,7 +322,7 @@ const LiveStats = () => {
                   r.type == "player" ? (
                     <MDBCard key={r.name} className="my-3">
                       <MDBCardBody>
-                        <div style={{ height: "45vh" }}>
+                        <div style={{ height: "60vh" }}>
                           <PolarAreaChart
                             data={teams}
                             option={{
@@ -353,7 +357,10 @@ const LiveStats = () => {
                 <MDBCard>
                   <MDBCardBody>
                     <div className="d-flex justify-content-center">
-                      <div className="border rounded">
+                      <div
+                        className="border rounded overflow-auto"
+                        style={{ height: "70vh" }}
+                      >
                         <MDBTable striped>
                           <MDBTableHead>
                             <tr>
@@ -403,7 +410,7 @@ const LiveStats = () => {
                       r.type == "team" ? (
                         <MDBCard key={r.name}>
                           <MDBCardBody>
-                            <div style={{ height: "45vh" }}>
+                            <div style={{ height: "60vh" }}>
                               <PolarAreaChart
                                 data={teams}
                                 option={{

@@ -279,7 +279,10 @@ function PlayersTable() {
               onChange={(value) => setGlobalFilter(value)}
             />
           </div>
-          <div className="border rounded">
+          <div
+            className="border rounded overflow-auto"
+            style={{ height: "70vh" }}
+          >
             <MDBTable striped>
               <MDBTableHead>
                 {table.getHeaderGroups().map((headerGroup) => (

@@ -14,7 +14,7 @@ import LiveStats from "../../components/auction/LiveStats";
 import "./styles.css";
 import { useDispatch, useSelector } from "react-redux";
 import { updateAuction } from "../../feature/auction";
-import { setRules } from "../../feature/rule";
+import { setRules, setSampleRules } from "../../feature/rule";
 import { setTeams } from "../../feature/team";
 import { setCountryCodes } from "../../feature/countries";
 import { setCustomPlayers, setPlayers } from "../../feature/auctionPlayers";
@@ -80,6 +80,22 @@ const Auction = () => {
                   } else {
                     window.alert(`${resp.errorCode} : ${resp.data}`);
                   }
+                });
+            rulesApi
+                .getAllRules(signal)
+                .then((resp) => resp.json())
+                .then((resp) => {
+                  if (resp.status) {
+                    const rules = resp.data.filter(
+                        (r) => r.auctionId != response.data._id,
+                    );
+                    dispatch(setSampleRules(rules));
+                  } else {
+                    window.alert(`${resp.errorCode} : ${resp.data}`);
+                  }
+                })
+                .catch((err) => {
+                  window.alert(`${err}`);
                 });
             teamsApi
                 .getTeams(response.data._id, signal)
