@@ -231,7 +231,7 @@ function Option(props) {
           <div className="d-flex justify-content-center">
             <div
               className="border rounded overflow-auto"
-              style={{ height: "50vh" }}
+              style={{ maxHeight: "50vh" }}
             >
               <MDBTable align="middle" striped>
                 <MDBTableHead>

@@ -36,6 +36,7 @@ import {
 } from "mdb-react-ui-kit";
 import { useParams } from "react-router";
 import LineBarChart from "../../components/common/LineBarChart";
+import "./styles.css";
 
 const budgetChartOptions = {
   indexAxis: "y",

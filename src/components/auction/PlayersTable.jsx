@@ -281,7 +281,7 @@ function PlayersTable() {
           </div>
           <div
             className="border rounded overflow-auto"
-            style={{ height: "70vh" }}
+            style={{ maxHeight: "70vh" }}
           >
             <MDBTable striped>
               <MDBTableHead>

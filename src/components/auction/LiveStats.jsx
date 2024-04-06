@@ -3,6 +3,7 @@ import {
   MDBBtn,
   MDBCard,
   MDBCardBody,
+  MDBCardText,
   MDBCardTitle,
   MDBCol,
   MDBContainer,
@@ -190,6 +191,14 @@ const LiveStats = () => {
         </MDBTabsItem>
         <MDBTabsItem>
           <MDBTabsLink
+            onClick={() => handleBasicClick("tab4")}
+            active={basicActive == "tab4"}
+          >
+            Players Overview
+          </MDBTabsLink>
+        </MDBTabsItem>
+        <MDBTabsItem>
+          <MDBTabsLink
             onClick={() => handleBasicClick("tab3")}
             active={basicActive == "tab3"}
           >
@@ -220,7 +229,7 @@ const LiveStats = () => {
                         <div className="d-flex justify-content-center">
                           <div
                             className="border rounded overflow-auto"
-                            style={{ height: "70vh" }}
+                            style={{ maxHeight: "70vh" }}
                           >
                             <MDBTable>
                               <MDBTableHead>
@@ -359,7 +368,7 @@ const LiveStats = () => {
                     <div className="d-flex justify-content-center">
                       <div
                         className="border rounded overflow-auto"
-                        style={{ height: "70vh" }}
+                        style={{ maxHeight: "70vh" }}
                       >
                         <MDBTable striped>
                           <MDBTableHead>
@@ -441,6 +450,114 @@ const LiveStats = () => {
           <MDBBtn onClick={downloadCurrentTeamData}>
             Download Current Team Data
           </MDBBtn>
+        </MDBTabsPane>
+        <MDBTabsPane open={basicActive == "tab4"}>
+          <div className="d-flex justify-content-evenly">
+            <MDBCard>
+              <MDBCardBody>
+                <MDBCardTitle>Total Players</MDBCardTitle>
+                <MDBCardText>
+                  <MDBTypography className="display-6 text-center">
+                    {players.length}
+                  </MDBTypography>
+                </MDBCardText>
+              </MDBCardBody>
+            </MDBCard>
+            <MDBCard>
+              <MDBCardBody>
+                <MDBCardTitle>Sold Players</MDBCardTitle>
+                <MDBCardText>
+                  <MDBTypography className="display-6 text-center">
+                    {players.filter((p) => p.sold == true).length}
+                  </MDBTypography>
+                </MDBCardText>
+              </MDBCardBody>
+            </MDBCard>
+            <MDBCard>
+              <MDBCardBody>
+                <MDBCardTitle>Unsold Players</MDBCardTitle>
+                <MDBCardText>
+                  <MDBTypography className="display-6 text-center">
+                    {players.length -
+                      players.filter((p) => p.sold == true).length}
+                  </MDBTypography>
+                </MDBCardText>
+              </MDBCardBody>
+            </MDBCard>
+          </div>
+          <hr className="hr" />
+          <div className="d-flex justify-content-evenly mt-3">
+            <MDBCard>
+              <MDBCardBody>
+                <MDBCardTitle>
+                  <MDBTypography className="mark">Sold Players</MDBTypography>
+                </MDBCardTitle>
+                <div
+                  className="border rounded overflow-auto"
+                  style={{ maxHeight: "70vh" }}
+                >
+                  <MDBTable align="middle" striped>
+                    <MDBTableHead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Base Price</th>
+                        <th scope="col">Sold Price</th>
+                        <th scope="col">Team Name</th>
+                      </tr>
+                    </MDBTableHead>
+                    <MDBTableBody>
+                      {players
+                          .filter((p) => p.sold == true)
+                          .map((p) => (
+                            <tr key={p._id}>
+                              <td>
+                                {players.findIndex((pl) => pl._id == p._id) + 1}
+                              </td>
+                              <td>{p.name}</td>
+                              <td>{p.basePrice}</td>
+                              <td>{p.soldPrice}</td>
+                              <td>{p.teamName}</td>
+                            </tr>
+                          ))}
+                    </MDBTableBody>
+                  </MDBTable>
+                </div>
+              </MDBCardBody>
+            </MDBCard>
+            <MDBCard>
+              <MDBCardBody>
+                <MDBCardTitle>
+                  <MDBTypography className="mark">Unsold Players</MDBTypography>
+                </MDBCardTitle>
+                <div
+                  className="border rounded overflow-auto"
+                  style={{ maxHeight: "70vh" }}
+                >
+                  <MDBTable align="middle" striped>
+                    <MDBTableHead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                      </tr>
+                    </MDBTableHead>
+                    <MDBTableBody>
+                      {players
+                          .filter((p) => p.sold != true)
+                          .map((p) => (
+                            <tr key={p._id}>
+                              <td>
+                                {players.findIndex((pl) => pl._id == p._id) + 1}
+                              </td>
+                              <td>{p.name}</td>
+                            </tr>
+                          ))}
+                    </MDBTableBody>
+                  </MDBTable>
+                </div>
+              </MDBCardBody>
+            </MDBCard>
+          </div>
         </MDBTabsPane>
       </MDBTabsContent>
     </>

@@ -5,6 +5,7 @@ import {
   MDBCard,
   MDBCardBody,
   MDBCardText,
+  MDBCardTitle,
   MDBCol,
   MDBContainer,
   MDBInput,
@@ -85,8 +86,11 @@ const Team = () => {
                   {observableTeam.name}
                 </MDBTypography>
               </div>
-              <div className="d-flex justify-content-center">
-                <div className="border rounded">
+              <div className="d-flex justify-content-evenly">
+                <div
+                  className="border rounded overflow-auto"
+                  style={{ maxHeight: "60vh" }}
+                >
                   <MDBTable>
                     <MDBTableHead>
                       <tr>
@@ -108,6 +112,16 @@ const Team = () => {
                     </MDBTableBody>
                   </MDBTable>
                 </div>
+                <MDBCard>
+                  <MDBCardBody>
+                    <MDBCardTitle>Remaining Budget</MDBCardTitle>
+                    <MDBCardText>
+                      <MDBTypography className="mark display-6">
+                        {observableTeam.currentBudget}
+                      </MDBTypography>
+                    </MDBCardText>
+                  </MDBCardBody>
+                </MDBCard>
               </div>
               {!auction.allowRealtimeUpdates ? (
                 <div className="d-flex justify-content-center mt-3">

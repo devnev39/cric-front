@@ -55,7 +55,7 @@ const Auction = () => {
             alert(response.data);
             if (response.errorCode > 500 && response.errorCode < 600) {
               const key = encrypt(
-                  prompt(`Enter password for ${state.auction.Name} : `),
+                  prompt(`Enter password for ${state.auction.name} : `),
               );
               authenticateResponse(response, {
                 _id: state.auction._id,

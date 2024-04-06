@@ -119,7 +119,7 @@ function Teams(props) {
       <div className="d-flex justify-content-center">
         <div
           className="border rounded overflow-auto"
-          style={{ height: "60vh" }}
+          style={{ maxHeight: "60vh" }}
         >
           <MDBTable responsive striped>
             <MDBTableHead>
