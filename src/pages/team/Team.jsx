@@ -54,16 +54,13 @@ const Team = () => {
       });
       client.on("connect", () => {
         console.log("Connected !");
-        console.log(observableTeam.auctionId);
         client.subscribe(`/${observableTeam.auctionId}`);
         client.on("message", (topic, message) => {
-          console.log(topic);
           const data = JSON.parse(message);
-          console.log(data);
           if (data.player.sold && data.player.team_id == observableTeam._id) {
-            dispatch(updateObservableTeam(data.player));
+            dispatch(updateObservableTeam(data));
           } else if (!data.player.sold) {
-            dispatch(updateObservableTeam(data.player));
+            dispatch(updateObservableTeam(data));
           }
         });
       });
@@ -71,72 +68,80 @@ const Team = () => {
   }, [observableTeam]);
   return Object.keys(observableTeam).length ? (
     <>
-      <MDBContainer className="mt-3">
-        <MDBRow>
-          <MDBCol size={12}>
-            <MDBCard>
-              <MDBCardBody>
-                <div className="d-flex justify-content-center">
-                  <MDBCardText>
-                    <MDBTypography className="display-6">
-                      {auction.name}
+      <div style={{ minHeight: "75vh" }}>
+        <MDBContainer className="mt-3">
+          <MDBRow>
+            <MDBCol size={12}>
+              <MDBCard>
+                <MDBCardBody>
+                  <div className="d-flex justify-content-center">
+                    <MDBCardText>
+                      <MDBTypography className="display-6">
+                        {auction.name}
+                      </MDBTypography>
+                    </MDBCardText>
+                  </div>
+                  <div className="d-flex justify-content-center">
+                    <MDBTypography tag={"mark"} className="h2">
+                      {observableTeam.name}
                     </MDBTypography>
-                  </MDBCardText>
-                </div>
-                <div className="d-flex justify-content-center">
-                  <MDBTypography tag={"mark"} className="h2">
-                    {observableTeam.name}
-                  </MDBTypography>
-                </div>
-                <div className="d-flex justify-content-evenly">
-                  <div
-                    className="border rounded overflow-auto"
-                    style={{ maxHeight: "60vh" }}
-                  >
-                    <MDBTable>
-                      <MDBTableHead>
-                        <tr>
-                          <th scope="col">Name</th>
-                          <th scope="col">Country</th>
-                          <th scope="col">Base Price</th>
-                          <th scope="col">Sold Price</th>
-                        </tr>
-                      </MDBTableHead>
-                      <MDBTableBody>
-                        {observableTeam.players.map((p) => (
-                          <tr key={p._id}>
-                            <td>{p.name}</td>
-                            <td>{p.country}</td>
-                            <td>{p.basePrice}</td>
-                            <td>{p.soldPrice}</td>
+                  </div>
+                  <div className="d-flex justify-content-evenly">
+                    <div
+                      className="border rounded overflow-auto"
+                      style={{ maxHeight: "60vh" }}
+                    >
+                      <MDBTable striped align="center">
+                        <MDBTableHead>
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Country</th>
+                            <th scope="col">Base Price</th>
+                            <th scope="col">Sold Price</th>
                           </tr>
-                        ))}
-                      </MDBTableBody>
-                    </MDBTable>
+                        </MDBTableHead>
+                        <MDBTableBody>
+                          {observableTeam.players.map((p) => (
+                            <tr key={p._id}>
+                              <td>
+                                {observableTeam.players.findIndex(
+                                    (pl) => pl._id == p._id,
+                                ) + 1}
+                              </td>
+                              <td>{p.name}</td>
+                              <td>{p.country}</td>
+                              <td>{p.basePrice}</td>
+                              <td>{p.soldPrice}</td>
+                            </tr>
+                          ))}
+                        </MDBTableBody>
+                      </MDBTable>
+                    </div>
+                    <MDBCard>
+                      <MDBCardBody>
+                        <MDBCardTitle>Remaining Budget</MDBCardTitle>
+                        <MDBCardText>
+                          <MDBTypography className="mark display-6">
+                            {observableTeam.currentBudget}
+                          </MDBTypography>
+                        </MDBCardText>
+                      </MDBCardBody>
+                    </MDBCard>
                   </div>
-                  <MDBCard>
-                    <MDBCardBody>
-                      <MDBCardTitle>Remaining Budget</MDBCardTitle>
-                      <MDBCardText>
-                        <MDBTypography className="mark display-6">
-                          {observableTeam.currentBudget}
-                        </MDBTypography>
-                      </MDBCardText>
-                    </MDBCardBody>
-                  </MDBCard>
-                </div>
-                {!auction.allowRealtimeUpdates ? (
-                  <div className="d-flex justify-content-center mt-3">
-                    <MDBTypography note noteColor="info">
-                      Realtime updates are turned off.
-                    </MDBTypography>
-                  </div>
-                ) : null}
-              </MDBCardBody>
-            </MDBCard>
-          </MDBCol>
-        </MDBRow>
-      </MDBContainer>
+                  {!auction.allowRealtimeUpdates ? (
+                    <div className="d-flex justify-content-center mt-3">
+                      <MDBTypography note noteColor="info">
+                        Realtime updates are turned off.
+                      </MDBTypography>
+                    </div>
+                  ) : null}
+                </MDBCardBody>
+              </MDBCard>
+            </MDBCol>
+          </MDBRow>
+        </MDBContainer>
+      </div>
       <Footer />
     </>
   ) : (

@@ -30,15 +30,16 @@ const teamSlice = createSlice({
     },
 
     updateObservableTeam: (state, action) => {
-      if (action.payload.sold) {
+      if (action.payload.player.sold) {
         state.observableTeam.players = state.observableTeam.players.concat(
-            action.payload,
+            action.payload.player,
         );
       } else {
         state.observableTeam.players = state.observableTeam.players.filter(
-            (p) => p._id != action.payload._id,
+            (p) => p._id != action.payload.player._id,
         );
       }
+      state.observableTeam.currentBudget = action.payload.team.currentBudget;
     },
   },
 });
