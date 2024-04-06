@@ -107,18 +107,7 @@ const Auctions = () => {
   }, []);
   return (
     <>
-      <div className="auctionsContainerRoot mt-5">
-        {/* <div className="row">
-        <div className="col-5"></div>
-        <div className="col-4">
-          <h1 className="ml-5">Auctions</h1>
-        </div>
-        <div className="col-3">
-          <MDBContainer className="rounded shadow w-75 py-2">
-            {statusLightsGenerator()}
-          </MDBContainer>
-        </div>
-      </div> */}
+      <div className="auctionsContainerRoot mt-5" style={{ minHeight: "70vh" }}>
         <div className="d-flex justify-content-center">
           <MDBTypography className="display-5">Auctions</MDBTypography>
         </div>

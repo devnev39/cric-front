@@ -141,27 +141,29 @@ const Team = () => {
     </>
   ) : (
     <>
-      <div className="d-flex justify-content-center mt-3">
-        <MDBCard className="w-25">
-          <MDBCardBody>
-            <MDBCardText>
-              <MDBTypography variant="h5">Enter Team Key</MDBTypography>
-            </MDBCardText>
-            <MDBInput
-              onChange={(e) => setTeamKey(e.target.value)}
-              label="Team Key"
-            />
-            <div className="d-flex justify-content-center">
-              <MDBBtn
-                onClick={() => findTeam()}
-                color="success"
-                className="mt-3"
-              >
-                Submit
-              </MDBBtn>
-            </div>
-          </MDBCardBody>
-        </MDBCard>
+      <div style={{ height: "75vh" }}>
+        <div className="d-flex justify-content-center align-items-center mt-3">
+          <MDBCard className="w-25">
+            <MDBCardBody>
+              <MDBCardText>
+                <MDBTypography variant="h5">Enter Team Key</MDBTypography>
+              </MDBCardText>
+              <MDBInput
+                onChange={(e) => setTeamKey(e.target.value)}
+                label="Team Key"
+              />
+              <div className="d-flex justify-content-center">
+                <MDBBtn
+                  onClick={() => findTeam()}
+                  color="success"
+                  className="mt-3"
+                >
+                  Submit
+                </MDBBtn>
+              </div>
+            </MDBCardBody>
+          </MDBCard>
+        </div>
       </div>
       <Footer />
     </>
