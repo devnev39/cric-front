@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
 import { MDBTypography } from "mdb-react-ui-kit";
+import Footer from "../Footer";
 const Auctions = () => {
   const [auctions, setAuctions] = useState(null);
   const navigate = useNavigate();
@@ -105,8 +106,9 @@ const Auctions = () => {
     };
   }, []);
   return (
-    <div className="auctionsContainerRoot mt-5">
-      {/* <div className="row">
+    <>
+      <div className="auctionsContainerRoot mt-5">
+        {/* <div className="row">
         <div className="col-5"></div>
         <div className="col-4">
           <h1 className="ml-5">Auctions</h1>
@@ -117,28 +119,30 @@ const Auctions = () => {
           </MDBContainer>
         </div>
       </div> */}
-      <div className="d-flex justify-content-center">
-        <MDBTypography className="display-5">Auctions</MDBTypography>
-      </div>
-      <hr className="hr" />
-      <div className="d-flex justify-content-center">
-        <div className="auctionsContainer w-50">
-          {auctions ? createAuctionStack() : createLoadingDiv()}
+        <div className="d-flex justify-content-center">
+          <MDBTypography className="display-5">Auctions</MDBTypography>
         </div>
-      </div>
-      <div className="d-flex justify-content-center">
-        <div className="row w-50">
-          <div className="col-4"></div>
-          <div
-            className="col-4 d-flex justify-content-center shadow h3 newAuctionButtonDiv"
-            onClick={() => navigate("/new/auction")}
-          >
-            +
+        <hr className="hr" />
+        <div className="d-flex justify-content-center">
+          <div className="auctionsContainer w-50">
+            {auctions ? createAuctionStack() : createLoadingDiv()}
           </div>
-          <div className="col-4"></div>
+        </div>
+        <div className="d-flex justify-content-center">
+          <div className="row w-50">
+            <div className="col-4"></div>
+            <div
+              className="col-4 d-flex justify-content-center shadow h3 newAuctionButtonDiv"
+              onClick={() => navigate("/new/auction")}
+            >
+              +
+            </div>
+            <div className="col-4"></div>
+          </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

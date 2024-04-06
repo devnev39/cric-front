@@ -19,6 +19,7 @@ import { setTeams } from "../../feature/team";
 import { setCountryCodes } from "../../feature/countries";
 import { setCustomPlayers, setPlayers } from "../../feature/auctionPlayers";
 import { fetchCountryCodes } from "../../api/countryCodes";
+import Footer from "../Footer";
 
 const Auction = () => {
   const { state } = useLocation();
@@ -243,29 +244,32 @@ const Auction = () => {
     fetchAuctionData();
   }, [trigger]);
   return (
-    <div className="auctionRoot">
-      <div className="row">
-        <div className="col-2 border-right vh-100">
-          <div className="menuContainer">{makeSideNavBar()}</div>
-        </div>
-        {auctionData ? (
-          <div className="col-10">
-            {currentComponent === "Options" ? <Option /> : null}
-            {currentComponent === "Teams" ? <Teams /> : null}
-            {currentComponent === "Players" ? <Players /> : null}
-            {currentComponent === "Auction" ? (
-              <AuctionComponent
-                auctionObj={auctionData}
-                trigger={toggleTrigger}
-              />
-            ) : null}
-            {currentComponent === "Live Stats" ? (
-              <LiveStats auctionObj={auctionData} trigger={toggleTrigger} />
-            ) : null}
+    <>
+      <div className="auctionRoot">
+        <div className="row">
+          <div className="col-2 border-right vh-100">
+            <div className="menuContainer">{makeSideNavBar()}</div>
           </div>
-        ) : null}
+          {auctionData ? (
+            <div className="col-10">
+              {currentComponent === "Options" ? <Option /> : null}
+              {currentComponent === "Teams" ? <Teams /> : null}
+              {currentComponent === "Players" ? <Players /> : null}
+              {currentComponent === "Auction" ? (
+                <AuctionComponent
+                  auctionObj={auctionData}
+                  trigger={toggleTrigger}
+                />
+              ) : null}
+              {currentComponent === "Live Stats" ? (
+                <LiveStats auctionObj={auctionData} trigger={toggleTrigger} />
+              ) : null}
+            </div>
+          ) : null}
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

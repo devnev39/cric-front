@@ -370,13 +370,14 @@ const LiveStats = () => {
                         className="border rounded overflow-auto"
                         style={{ maxHeight: "70vh" }}
                       >
-                        <MDBTable striped>
+                        <MDBTable striped align="center">
                           <MDBTableHead>
                             <tr>
                               <th scope="col">#</th>
                               <th scope="col">Name</th>
                               <th scope="col">Max Budget</th>
                               <th scope="col">Remaining Budget</th>
+                              <th scope="col">Players Bought</th>
                               {rules.length ?
                                 rules.map((r) =>
                                     r.type == "team" ? (
@@ -396,6 +397,11 @@ const LiveStats = () => {
                                   <td>{t.name}</td>
                                   <td>{t.budget}</td>
                                   <td>{t.currentBudget}</td>
+                                  <td>
+                                    {t.players.length} bought |{" "}
+                                    {auction.maxPlayers - t.players.length}{" "}
+                                      Remaining
+                                  </td>
                                   {rules.length ?
                                       rules.map((r) =>
                                           r.type == "team" ? (

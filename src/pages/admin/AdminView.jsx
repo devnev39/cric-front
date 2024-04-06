@@ -9,6 +9,7 @@ import AuctionConfig from "../../components/adminView/AuctionConfig";
 import { useDispatch } from "react-redux";
 import { setAuctions } from "../../feature/auction";
 import { setUsers } from "../../feature/users";
+import Footer from "../Footer";
 
 const AdminView = () => {
   const [currentComponent, setCurrentComponent] = useState("Users");
@@ -159,6 +160,7 @@ const AdminView = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

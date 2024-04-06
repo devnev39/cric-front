@@ -3,6 +3,7 @@ import settings from "../../config/settings";
 import "./styles.css";
 import { useNavigate } from "react-router";
 import encrypt from "../../components/common/Encrypt";
+import Footer from "../Footer";
 
 const Admin = () => {
   const [selectedOption, setSelectedOption] = useState("admin");
@@ -51,7 +52,7 @@ const Admin = () => {
   }, []);
 
   return (
-    <div>
+    <>
       <form className="admin-form mt-5">
         <div className="admin-options">
           <button
@@ -95,7 +96,8 @@ const Admin = () => {
           Submit
         </button>
       </form>
-    </div>
+      <Footer />
+    </>
   );
 };
 
