@@ -61,6 +61,7 @@ function Teams(props) {
           .then((resp) => {
             if (resp.status) {
               dispatch(updateTeam(resp.data));
+              resetUpdatingTeam();
             } else {
               window.alert(`${resp.errorCode} : ${resp.data}`);
             }
@@ -75,6 +76,7 @@ function Teams(props) {
           .then((resp) => {
             if (resp.status) {
               dispatch(addTeam(resp.data));
+              resetUpdatingTeam();
             } else {
               window.alert(`${resp.errorCode} : ${resp.data}`);
             }
