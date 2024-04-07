@@ -241,10 +241,11 @@ const AuctionView = () => {
             </MDBTypography>
           </MDBCol>
           <MDBCol size={4}>
-            <div>
+            <div className="d-flex justify-content-center">
               <img
                 className="img-thumbnail"
                 src={players.length ? players[index].imgUrl : null}
+                style={{ minHeight: "50vh", maxHeight: "60vh" }}
               />
             </div>
             <div className="d-flex justify-content-center mt-3">
