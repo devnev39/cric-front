@@ -17,6 +17,7 @@ import ReduxIcon from "../../resources/redux.svg?react";
 import DockerIcon from "../../resources/docker.svg?react";
 import MongoIcon from "../../resources/mongo.svg?react";
 import VercelIcon from "../../resources/vercel.svg?react";
+import HivemqIcon from "../../resources/hivemq.svg?react";
 
 const About = () => {
   return (
@@ -174,6 +175,7 @@ const About = () => {
                   <MDBTypography className="display-6">Render</MDBTypography>
                 </div> */}
                 <VercelIcon style={{ height: "10vh" }} />
+                <HivemqIcon style={{ marginLeft: "1rem" }} />
               </div>
             </MDBCol>
           </MDBRow>
