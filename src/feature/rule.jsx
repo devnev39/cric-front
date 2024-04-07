@@ -17,7 +17,11 @@ const ruleSlice = createSlice({
       state.rules = state.rules.filter((r) => r._id != action.payload);
     },
     setSampleRules: (state, action) => {
-      state.sampleRules = action.payload;
+      for (const rule of action.payload) {
+        if (state.sampleRules.filter((r) => r.rule == rule.rule).length == 0) {
+          state.sampleRules.push(rule);
+        }
+      }
     },
   },
 });
