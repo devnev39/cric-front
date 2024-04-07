@@ -19,7 +19,10 @@ import { setTeams } from "../../feature/team";
 import { setCountryCodes } from "../../feature/countries";
 import { setCustomPlayers, setPlayers } from "../../feature/auctionPlayers";
 import { fetchCountryCodes } from "../../api/countryCodes";
+import QueryBuiler from "../../helpers/queryBuilder";
+import defaultPlayersApi from "../../api/players";
 import Footer from "../Footer";
+import { setQueryData } from "../../feature/query";
 
 const Auction = () => {
   const { state } = useLocation();
@@ -42,6 +45,49 @@ const Auction = () => {
     alert("Cannot identify the route !");
     navigate(-1);
   }
+
+  const qb = new QueryBuiler();
+
+  const buildQuery = (queries) => {
+    qb.clear();
+    return queries;
+  };
+
+  const queries = [
+    {
+      accessor: "price",
+      query: buildQuery(qb.sort({ BasePrice: -1 }).limit(10).queries),
+    },
+    {
+      accessor: "players",
+      query: buildQuery(qb.count("name").queries),
+    },
+    {
+      accessor: "countries",
+      query: buildQuery(qb.group({ _id: "$country" }).queries),
+    },
+    {
+      accessor: "iplteams",
+      query: buildQuery(qb.group({ _id: "$ipl2022Team" }).queries),
+    },
+  ];
+
+  const fetchQueries = () => {
+    defaultPlayersApi
+        .query(queries)
+        .then((resp) => resp.json())
+        .then((resp) => {
+          if (resp.status && resp.data) {
+            dispatch(setQueryData(resp.data));
+          } else {
+            window.alert(`${resp.errorCode} : ${resp.data}`);
+          }
+        })
+        .catch((err) => {
+          window.alert(`${err}`);
+        });
+  };
+
   const fetchAuctionData = async () => {
     if (state.auction._id !== auctionId) {
       alert("Invalid id !");
@@ -119,6 +165,7 @@ const Auction = () => {
                     window.alert(`${resp.errorCode} : ${resp.data}`);
                   }
                 });
+            fetchQueries();
           }
         });
 

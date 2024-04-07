@@ -6,6 +6,7 @@ import teamReducer from "../feature/team";
 import auctionPlayersReducer from "../feature/auctionPlayers";
 import countryCodeReducer from "../feature/countries";
 import usersReducer from "../feature/users";
+import queryReducer from "../feature/query";
 
 export default configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export default configureStore({
     auctionPlayers: auctionPlayersReducer,
     countryCodes: countryCodeReducer,
     users: usersReducer,
+    query: queryReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

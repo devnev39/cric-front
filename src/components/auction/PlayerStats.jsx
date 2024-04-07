@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
-import QueryBuiler from "../../helpers/queryBuilder";
-import defaultPlayersApi from "../../api/players";
+import React from "react";
 import LineBarChart from "../common/LineBarChart";
+import { useSelector } from "react-redux";
 import {
   MDBCard,
   MDBCardBody,
@@ -30,58 +29,55 @@ const PlayerStats = () => {
   // No. of countries
   // No. of IPL teams
   // No. of total plyaers
-  const [queriedData, setQueriedData] = useState({
-    price: [],
-    players: [],
-    countries: [],
-    iplteams: [],
-  });
+  const queriedData = useSelector((state) => state.query.data);
+  // const [queriedData, setQueriedData] = useState({
+  //   price: [],
+  //   players: [],
+  //   countries: [],
+  //   iplteams: [],
+  // });
 
-  const qb = new QueryBuiler();
+  // const qb = new QueryBuiler();
 
-  const buildQuery = (queries) => {
-    qb.clear();
-    return queries;
-  };
+  // const buildQuery = (queries) => {
+  //   qb.clear();
+  //   return queries;
+  // };
 
-  const queries = [
-    {
-      accessor: "price",
-      query: buildQuery(qb.sort({ BasePrice: -1 }).limit(10).queries),
-    },
-    {
-      accessor: "players",
-      query: buildQuery(qb.count("name").queries),
-    },
-    {
-      accessor: "countries",
-      query: buildQuery(qb.group({ _id: "$country" }).queries),
-    },
-    {
-      accessor: "iplteams",
-      query: buildQuery(qb.group({ _id: "$ipl2022Team" }).queries),
-    },
-  ];
+  // const queries = [
+  //   {
+  //     accessor: "price",
+  //     query: buildQuery(qb.sort({ BasePrice: -1 }).limit(10).queries),
+  //   },
+  //   {
+  //     accessor: "players",
+  //     query: buildQuery(qb.count("name").queries),
+  //   },
+  //   {
+  //     accessor: "countries",
+  //     query: buildQuery(qb.group({ _id: "$country" }).queries),
+  //   },
+  //   {
+  //     accessor: "iplteams",
+  //     query: buildQuery(qb.group({ _id: "$ipl2022Team" }).queries),
+  //   },
+  // ];
 
-  const fetchQueries = () => {
-    defaultPlayersApi
-        .query(queries)
-        .then((resp) => resp.json())
-        .then((resp) => {
-          if (resp.status && resp.data) {
-            setQueriedData(resp.data);
-          } else {
-            window.alert(`${resp.errorCode} : ${resp.data}`);
-          }
-        })
-        .catch((err) => {
-          window.alert(`${err}`);
-        });
-  };
-
-  useEffect(() => {
-    fetchQueries();
-  }, []);
+  // const fetchQueries = () => {
+  //   defaultPlayersApi
+  //       .query(queries)
+  //       .then((resp) => resp.json())
+  //       .then((resp) => {
+  //         if (resp.status && resp.data) {
+  //           setQueriedData(resp.data);
+  //         } else {
+  //           window.alert(`${resp.errorCode} : ${resp.data}`);
+  //         }
+  //       })
+  //       .catch((err) => {
+  //         window.alert(`${err}`);
+  //       });
+  // };
   return (
     <>
       <div className="d-flex justify-content-center">
