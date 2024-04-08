@@ -190,7 +190,7 @@ const AuctionView = () => {
       return;
     }
     bidApi
-        .revertBid(auctionId, players[index], signal)
+        .revertBid(auctionId, players[index], false, signal)
         .then((res) => res.json())
         .then((res) => {
           if (res.status) {

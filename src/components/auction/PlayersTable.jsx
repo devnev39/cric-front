@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-table";
 import * as Yup from "yup";
 import playersApi from "../../api/auctionPlayers";
+import bidApi from "../../api/bid";
 import {
   MDBBtn,
   MDBInput,
@@ -27,6 +28,7 @@ import React, { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Formik } from "formik";
 import { addPlayer, updatePlayer } from "../../feature/auctionPlayers";
+import { updateTeam } from "../../feature/team";
 
 const columnHelper = createColumnHelper();
 
@@ -98,6 +100,58 @@ function PlayersTable() {
     auctionedPrice: "",
   });
 
+  const unbidPlayerHard = (player) => {
+    if (
+      !window.confirm(
+          "Confirm to reset player bid ! The info of the bid will be lost ! Continue ?",
+      )
+    ) {
+      return;
+    }
+    bidApi
+        .revertBid(auction._id, player, true, signal)
+        .then((resp) => resp.json())
+        .then((resp) => {
+          if (resp.status) {
+            dispatch(updatePlayer(resp.data.player));
+            if (resp.data.team) {
+              dispatch(updateTeam(resp.data.team));
+            }
+            window.alert("Success !");
+          } else {
+            window.alert(`${resp.data}`);
+          }
+        });
+  };
+
+  const unbidAllPlayersHard = () => {
+    if (
+      !window.confirm(
+          "Confirm to reset players bid ! The info of the bid will be lost ! Continue ?",
+      )
+    ) {
+      return;
+    }
+    if (players.length) {
+      for (const p of players) {
+        if (!p.sold) continue;
+        bidApi
+            .revertBid(auction._id, p, true, signal)
+            .then((resp) => resp.json())
+            .then((resp) => {
+              if (resp.status) {
+                dispatch(updatePlayer(resp.data.player));
+                if (resp.data.team) {
+                  dispatch(updateTeam(resp.data.team));
+                }
+              } else {
+                window.alert(`${resp.data}`);
+              }
+            });
+      }
+    }
+  };
+
   const playersTableColumns = useMemo(() => {
     return [
       columnHelper.accessor("#", {
@@ -122,7 +176,7 @@ function PlayersTable() {
       }),
       columnHelper.display({
         id: "actions",
-        header: "Actions",
+        header: () => <div style={{ textAlign: "center" }}>Actions</div>,
         cell: (i) => (
           <div className="d-flex justify-content-center">
             <MDBBtn
@@ -134,7 +188,17 @@ function PlayersTable() {
             >
               edit
             </MDBBtn>
-            {players[i.row.index].includeInAuction == false ? (
+            {players[i.row.index].sold == true ? (
+              <MDBBtn
+                size="sm"
+                color="link"
+                rounded
+                className="text-warning"
+                onClick={() => unbidPlayerHard(players[i.row.index])}
+              >
+                Unbid
+              </MDBBtn>
+            ) : players[i.row.index].includeInAuction == false ? (
               <MDBBtn
                 size="sm"
                 color="success"
@@ -392,9 +456,16 @@ function PlayersTable() {
               </select>
             </div>
           </div>
-          <div className="d-flex justify-content-center mt-5">
+          <div className="d-flex justify-content-evenly mt-5">
             <MDBBtn size="sm" onClick={toggleOpen}>
               Add Player
+            </MDBBtn>
+            <MDBBtn
+              size="sm"
+              className="btn btn-warning"
+              onClick={unbidAllPlayersHard}
+            >
+              Unbid All Players
             </MDBBtn>
           </div>
         </div>

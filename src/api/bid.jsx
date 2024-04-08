@@ -14,10 +14,10 @@ export default {
     return result;
   },
 
-  revertBid: async (id, player, signal) => {
+  revertBid: async (id, player, resetHard, signal) => {
     const result = await fetch(`${settings.BaseUrl}/auction/${id}/bid`, {
       method: "DELETE",
-      body: JSON.stringify({ player }),
+      body: JSON.stringify({ player, resetHard }),
       headers: {
         "Content-Type": "application/json",
       },
