@@ -237,7 +237,8 @@ const AuctionView = () => {
               {players.length ? players[index].country : null}
             </MDBTypography>
             <MDBTypography className="display-6 mt-4 mark text-danger">
-              {players.length ? players[index].basePrice : null} Lakhs
+              {players.length ? players[index].basePrice : null}{" "}
+              {auction.priceUnit}
             </MDBTypography>
           </MDBCol>
           <MDBCol size={4}>

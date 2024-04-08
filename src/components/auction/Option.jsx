@@ -133,6 +133,14 @@ function Option(props) {
                   {...formik.getFieldProps("maxPlayers")}
                   disabled={!auctionEditEnabled}
                 />
+                <MDBInput
+                  className="my-3"
+                  id="priceUnit"
+                  label="Price Unit"
+                  type="text"
+                  {...formik.getFieldProps("priceUnit")}
+                  disabled={!auctionEditEnabled}
+                />
                 <MDBCheckbox
                   id="allowPublicTeamView"
                   label="Allow Public Team View"
