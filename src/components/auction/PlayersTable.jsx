@@ -272,9 +272,10 @@ function PlayersTable() {
           .then((resp) => resp.json())
           .then((resp) => {
             if (resp.status && resp.data) {
-              dispatch(updatePlayer(resp.data[0]));
+              dispatch(updatePlayer(resp.data));
               resetUpdaingPlayer();
               toggleOpen();
+              window.alert("Success !");
             } else {
               window.alert(`${resp.errorCode} : ${resp.data}`);
             }
