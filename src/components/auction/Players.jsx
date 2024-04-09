@@ -10,8 +10,11 @@ function Players() {
   const auction = useSelector((state) => state.auction.auction);
   const downloadPlayers = () => {
     const workbook = utils.book_new();
-    const pls = players.map((pl) => {
+    const pls = [];
+    players.forEach((pl, ind) => {
+      if (!pl.includeInAuction) return null;
       const p = JSON.parse(JSON.stringify(pl));
+      p.index = ind + 1;
       delete p._id;
       delete p.__v;
       delete p.auctionedPrice;
@@ -23,9 +26,9 @@ function Players() {
       delete p.isEdited;
       delete p.includeInAuction;
       delete p.soldPrice;
-      return p;
+      pls.push(p);
     });
-    const worksheet = utils.json_to_sheet(pls);
+    const worksheet = utils.json_to_sheet(pls, { header: ["index"] });
     utils.book_append_sheet(workbook, worksheet, "Players");
     writeFile(workbook, `${auction.name}_players.xlsx`);
   };

@@ -143,13 +143,34 @@ const AuctionView = () => {
 
   const nextPlayer = () => {
     if (index < players.length) {
-      setIndex(index + 1);
+      if (players[index + 1].includeInAuction) {
+        setIndex(index + 1);
+      } else {
+        for (let i = index + 1; i < players.length; i++) {
+          if (players[i].includeInAuction) {
+            setIndex(i);
+            break;
+          }
+        }
+      }
     }
   };
 
   const prevPlayer = () => {
     if (index > 0) {
-      setIndex(index - 1);
+      if (players[index - 1].includeInAuction) {
+        console.log(index);
+        setIndex(index - 1);
+        console.log(index - 1);
+      } else {
+        for (let i = index - 1; i >= 0; i--) {
+          if (players[i].includeInAuction) {
+            setIndex(i);
+            console.log(i);
+            break;
+          }
+        }
+      }
     }
   };
 
@@ -160,7 +181,11 @@ const AuctionView = () => {
     }
     const inp = parseInt(prompt("Enter player number/index : "));
     if (inp > 0 && inp <= players.length) {
-      setIndex(inp - 1);
+      if (players[inp - 1].includeInAuction) {
+        setIndex(inp - 1);
+      } else {
+        window.alert(`Player ${players[inp - 1].name} excluded from auction !`);
+      }
     } else {
       window.alert(`Player number should be between ${1} - ${players.length}`);
     }
@@ -209,6 +234,12 @@ const AuctionView = () => {
   useEffect(() => {
     if (Object.keys(auction).length == 0) {
       fetchAuctionData();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (players.length && !players[index].includeInAuction) {
+      nextPlayer();
     }
   }, []);
   // Make an information dispay UI
