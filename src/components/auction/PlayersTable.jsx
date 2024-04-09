@@ -98,6 +98,7 @@ function PlayersTable() {
     basePrice: "",
     ipl2022Team: "",
     auctionedPrice: "",
+    imgUrl: "",
   });
 
   const unbidPlayerHard = (player) => {
@@ -513,16 +514,31 @@ function PlayersTable() {
                       label="Name"
                       {...formik.getFieldProps("name")}
                     />
+                    {formik.touched.name && formik.errors.name ? (
+                      <MDBTypography note noteColor="danger">
+                        {formik.errors.name}
+                      </MDBTypography>
+                    ) : null}
                     <MDBInput
                       className="my-3"
                       label="Country"
                       {...formik.getFieldProps("country")}
                     />
+                    {formik.touched.country && formik.errors.country ? (
+                      <MDBTypography note noteColor="danger">
+                        {formik.errors.country}
+                      </MDBTypography>
+                    ) : null}
                     <MDBInput
                       className="my-3"
                       label="Playing Role"
                       {...formik.getFieldProps("playingRole")}
                     />
+                    {formik.touched.playingRole && formik.errors.playingRole ? (
+                      <MDBTypography note noteColor="danger">
+                        {formik.errors.playingRole}
+                      </MDBTypography>
+                    ) : null}
                     <div className="d-flex justify-content-between my-2">
                       <div className="me-2">
                         <MDBInput
@@ -530,6 +546,12 @@ function PlayersTable() {
                           label="IPL Matches"
                           {...formik.getFieldProps("iplMatches")}
                         />
+                        {formik.touched.iplMatches &&
+                        formik.errors.iplMatches ? (
+                          <MDBTypography note noteColor="danger">
+                            {formik.errors.iplMatches}
+                          </MDBTypography>
+                        ) : null}
                       </div>
                       <div className="mx-2">
                         <MDBInput
@@ -537,6 +559,11 @@ function PlayersTable() {
                           label="Base Price"
                           {...formik.getFieldProps("basePrice")}
                         />
+                        {formik.touched.basePrice && formik.errors.basePrice ? (
+                          <MDBTypography note noteColor="danger">
+                            {formik.errors.basePrice}
+                          </MDBTypography>
+                        ) : null}
                       </div>
                       <div className="ms-2">
                         <MDBInput
@@ -544,6 +571,12 @@ function PlayersTable() {
                           label="Auctioned Price"
                           {...formik.getFieldProps("auctionedPrice")}
                         />
+                        {formik.touched.auctionedPrice &&
+                        formik.errors.auctionedPrice ? (
+                          <MDBTypography note noteColor="danger">
+                            {formik.errors.auctionedPrice}
+                          </MDBTypography>
+                        ) : null}
                       </div>
                     </div>
                     <MDBInput
@@ -551,11 +584,21 @@ function PlayersTable() {
                       label="Last IPL Team"
                       {...formik.getFieldProps("ipl2022Team")}
                     />
+                    {formik.touched.ipl2022Team && formik.errors.ipl2022Team ? (
+                      <MDBTypography note noteColor="danger">
+                        {formik.errors.ipl2022Team}
+                      </MDBTypography>
+                    ) : null}
                     <div className="d-flex justify-content-between my-3">
                       <MDBInput
                         label="Image URL"
                         {...formik.getFieldProps("imgUrl")}
                       />
+                      {formik.touched.imgUrl && formik.errors.imgUrl ? (
+                        <MDBTypography note noteColor="danger">
+                          {formik.errors.imgUrl}
+                        </MDBTypography>
+                      ) : null}
                     </div>
                     <div className="d-flex justify-content-evenly my-3">
                       <div className="me-2">
