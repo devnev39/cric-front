@@ -326,8 +326,9 @@ function PlayersTable() {
     const player = players[index];
     console.log(index);
     setSelectedPlayer(player);
+    console.log(player);
     setIsPlayerUpdating(true);
-    toggleOpen();
+    setBasicModal(true);
   };
 
   return (

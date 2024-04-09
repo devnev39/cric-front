@@ -62,12 +62,13 @@ function Teams(props) {
             if (resp.status) {
               dispatch(updateTeam(resp.data));
               resetUpdatingTeam();
+              toggleOpen();
             } else {
               window.alert(`${resp.errorCode} : ${resp.data}`);
             }
+          })
+          .finally(() => {
             setSubmitting(false);
-            resetUpdatingTeam();
-            toggleOpen();
           });
     } else {
       teamApi
@@ -77,12 +78,13 @@ function Teams(props) {
             if (resp.status) {
               dispatch(addTeam(resp.data));
               resetUpdatingTeam();
+              toggleOpen();
             } else {
               window.alert(`${resp.errorCode} : ${resp.data}`);
             }
+          })
+          .finally(() => {
             setSubmitting(false);
-            resetUpdatingTeam();
-            toggleOpen();
           });
     }
   };
