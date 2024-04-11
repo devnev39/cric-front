@@ -1,5 +1,5 @@
 import teamApi from "../../api/team";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import * as Yup from "yup";
 import "./styles.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +20,7 @@ import {
 } from "mdb-react-ui-kit";
 import { Formik } from "formik";
 import { addTeam, removeTeam, updateTeam } from "../../feature/team";
+import { AlertContext } from "../../context/AlertContext";
 
 function Teams(props) {
   // Fetch team data and set to store if not set
@@ -33,6 +34,7 @@ function Teams(props) {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const [updatingTeam, setUpdatingTeam] = useState({ name: "", budget: "" });
+  const { showMessage } = useContext(AlertContext);
 
   const resetUpdatingTeam = () => {
     setUpdatingTeam({ name: "", budget: "" });
@@ -64,7 +66,7 @@ function Teams(props) {
               resetUpdatingTeam();
               toggleOpen();
             } else {
-              window.alert(`${resp.errorCode} : ${resp.data}`);
+              showMessage(`${resp.errorCode} : ${resp.data}`, "error");
             }
           })
           .finally(() => {
@@ -80,7 +82,7 @@ function Teams(props) {
               resetUpdatingTeam();
               toggleOpen();
             } else {
-              window.alert(`${resp.errorCode} : ${resp.data}`);
+              showMessage(`${resp.errorCode} : ${resp.data}`, "error");
             }
           })
           .finally(() => {
@@ -98,7 +100,7 @@ function Teams(props) {
           if (resp.status) {
             dispatch(removeTeam(id));
           } else {
-            window.alert(`${resp.errorCode} : ${resp.data}`);
+            showMessage(`${resp.errorCode} : ${resp.data}`, "error");
           }
         });
   };
@@ -110,7 +112,7 @@ function Teams(props) {
       setUpdatingTeam(team[0]);
       toggleOpen();
     } else {
-      window.alert("No team found !");
+      showMessage("No team found !");
     }
   };
 

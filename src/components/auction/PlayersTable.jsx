@@ -24,11 +24,12 @@ import {
   MDBTypography,
 } from "mdb-react-ui-kit";
 import { rankItem } from "@tanstack/match-sorter-utils";
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Formik } from "formik";
 import { addPlayer, updatePlayer } from "../../feature/auctionPlayers";
 import { updateTeam } from "../../feature/team";
+import { AlertContext } from "../../context/AlertContext";
 
 const columnHelper = createColumnHelper();
 
@@ -88,6 +89,8 @@ function PlayersTable() {
   const abortController = new AbortController();
   const signal = abortController.signal;
 
+  const { showMessage } = useContext(AlertContext);
+
   const [isPlayerUpading, setIsPlayerUpdating] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState({
     name: "",
@@ -118,9 +121,9 @@ function PlayersTable() {
             if (resp.data.team) {
               dispatch(updateTeam(resp.data.team));
             }
-            window.alert("Success !");
+            showMessage("Success !");
           } else {
-            window.alert(`${resp.data}`);
+            showMessage(`${resp.data}`);
           }
         });
   };
@@ -146,7 +149,7 @@ function PlayersTable() {
                   dispatch(updateTeam(resp.data.team));
                 }
               } else {
-                window.alert(`${resp.data}`);
+                showMessage(`${resp.data}`);
               }
             });
       }
@@ -276,13 +279,13 @@ function PlayersTable() {
               dispatch(updatePlayer(resp.data));
               resetUpdaingPlayer();
               toggleOpen();
-              window.alert("Success !");
+              showMessage("Success !");
             } else {
-              window.alert(`${resp.errorCode} : ${resp.data}`);
+              showMessage(`${resp.errorCode} : ${resp.data}`, "error");
             }
           })
           .catch((err) => {
-            window.alert(`${err}`);
+            showMessage(`${err}`, "error");
           });
     } else {
       values.isAdded = true;
@@ -295,11 +298,11 @@ function PlayersTable() {
               resetUpdaingPlayer();
               toggleOpen();
             } else {
-              window.alert(`${resp.errorCode} : ${resp.data}`);
+              showMessage(`${resp.errorCode} : ${resp.data}`, "error");
             }
           })
           .catch((err) => {
-            window.alert(`${err}`);
+            showMessage(`${err}`, "error");
           });
     }
   };
@@ -315,11 +318,11 @@ function PlayersTable() {
           if (resp.status && resp.data) {
             dispatch(updatePlayer(resp.data));
           } else {
-            window.alert(`${resp.errorCode} : ${resp.data}`);
+            showMessage(`${resp.errorCode} : ${resp.data}`, "error");
           }
         })
         .catch((err) => {
-          window.alert(`${err}`);
+          showMessage(`${err}`, "error");
         });
   };
 

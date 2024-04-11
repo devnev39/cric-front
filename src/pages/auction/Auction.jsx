@@ -2,7 +2,7 @@ import auctionApi from "../../api/auction";
 import rulesApi from "../../api/rule";
 import teamsApi from "../../api/team";
 import auctionPlayersApi from "../../api/auctionPlayers";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import encrypt from "../../components/common/Encrypt";
 import authenticateResponse from "../../components/common/authenticateResponse";
@@ -23,13 +23,14 @@ import QueryBuiler from "../../helpers/queryBuilder";
 import defaultPlayersApi from "../../api/players";
 import Footer from "../Footer";
 import { setQueryData } from "../../feature/query";
+import { AlertContext } from "../../context/AlertContext";
 
 const Auction = () => {
   const { state } = useLocation();
   const { auctionId } = useParams();
   const [currentComponent, setCurrentComponent] = useState("Options");
   const [trigger, setTrigger] = useState(false);
-
+  const { showMessage } = useContext(AlertContext);
   const auctionData = useSelector((state) => state.auction.auction);
 
   const abortController = new AbortController();
@@ -80,11 +81,11 @@ const Auction = () => {
           if (resp.status && resp.data) {
             dispatch(setQueryData(resp.data));
           } else {
-            window.alert(`${resp.errorCode} : ${resp.data}`);
+            showMessage(`${resp.errorCode} : ${resp.data}`, "error");
           }
         })
         .catch((err) => {
-          window.alert(`${err}`);
+          showMessage(`${err}`, "error");
         });
   };
 
@@ -125,7 +126,7 @@ const Auction = () => {
                   if (resp.status) {
                     dispatch(setRules(resp.data));
                   } else {
-                    window.alert(`${resp.errorCode} : ${resp.data}`);
+                    showMessage(`${resp.errorCode} : ${resp.data}`, "error");
                   }
                 });
             rulesApi
@@ -138,11 +139,11 @@ const Auction = () => {
                     );
                     dispatch(setSampleRules(rules));
                   } else {
-                    window.alert(`${resp.errorCode} : ${resp.data}`);
+                    showMessage(`${resp.errorCode} : ${resp.data}`, "error");
                   }
                 })
                 .catch((err) => {
-                  window.alert(`${err}`);
+                  showMessage(`${err}`, "error");
                 });
             teamsApi
                 .getTeams(response.data._id, signal)
@@ -151,7 +152,7 @@ const Auction = () => {
                   if (resp.status) {
                     dispatch(setTeams(resp.data));
                   } else {
-                    window.alert(`${resp.errorCode} : ${resp.data}`);
+                    showMessage(`${resp.errorCode} : ${resp.data}`, "error");
                   }
                 });
             auctionPlayersApi
@@ -162,7 +163,7 @@ const Auction = () => {
                     dispatch(setPlayers(resp.data.players));
                     dispatch(setCustomPlayers(resp.data.customPlayers));
                   } else {
-                    window.alert(`${resp.errorCode} : ${resp.data}`);
+                    showMessage(`${resp.errorCode} : ${resp.data}`, "error");
                   }
                 });
             fetchQueries();
@@ -214,7 +215,7 @@ const Auction = () => {
                       return;
                     })
                     .catch((err) => {
-                      window.alert(`${err}`);
+                      showMessage(`${err}`, "error");
                     });
               } else {
                 alert(resp.data);
@@ -222,7 +223,7 @@ const Auction = () => {
               return;
             })
             .catch((err) => {
-              window.alert(`${err}`);
+              showMessage(`${err}`, "error");
             });
       }
     }

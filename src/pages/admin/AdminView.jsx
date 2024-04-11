@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import settings from "../../config/settings";
 import auctionApi from "../../api/auction";
 import usersApi from "../../api/user";
@@ -9,6 +9,7 @@ import AuctionConfig from "../../components/adminView/AuctionConfig";
 import { useDispatch } from "react-redux";
 import { setAuctions } from "../../feature/auction";
 import { setUsers } from "../../feature/users";
+import { AlertContext } from "../../context/AlertContext";
 import Footer from "../Footer";
 
 const AdminView = () => {
@@ -19,6 +20,8 @@ const AdminView = () => {
   const signal = controller.signal;
 
   const dispatch = useDispatch();
+
+  const { showMessage } = useContext(AlertContext);
 
   const navigate = useNavigate();
   const options = [
@@ -102,11 +105,11 @@ const AdminView = () => {
           if (resp.status) {
             dispatch(setAuctions(resp.data));
           } else {
-            window.alert(`${resp.errorCode} : ${resp.data}`);
+            showMessage(`${resp.errorCode} : ${resp.data}`, "error");
           }
         })
         .catch((err) => {
-          window.alert(`Get All Auctions : ${err}`);
+          showMessage(`Get All Auctions : ${err}`);
         });
 
     usersApi
@@ -116,11 +119,11 @@ const AdminView = () => {
           if (res.status) {
             dispatch(setUsers(res.data));
           } else {
-            window.alert(`${res.errorCode} : ${res.data}`);
+            showMessage(`${res.errorCode} : ${res.data}`, "error");
           }
         })
         .catch((err) => {
-          window.alert(`Get All Users : ${err}`);
+          showMessage(`Get All Users : ${err}`);
         });
   };
 
@@ -130,12 +133,12 @@ const AdminView = () => {
   }, []);
 
   if (!state) {
-    window.alert("Cannot identify the route ! State not found !");
+    showMessage("Cannot identify the route ! State not found !");
     return;
   }
 
   if (!state.fromAdmin) {
-    window.alert("Cannot identify the route !");
+    showMessage("Cannot identify the route !");
     return;
   }
 

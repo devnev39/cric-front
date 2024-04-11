@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import * as Yup from "yup";
 import auctionApi from "../../api/auction";
 import ruleApi from "../../api/rule";
@@ -25,6 +25,7 @@ import {
 } from "mdb-react-ui-kit";
 import { updateAuction } from "../../feature/auction";
 import { removeRule, updateRules } from "../../feature/rule";
+import { AlertContext } from "../../context/AlertContext";
 
 const selectAuction = (state) => state.auction.auction;
 const selectRules = (state) => state.rule.rules;
@@ -45,6 +46,7 @@ function Option(props) {
 
   const [auctionEditEnabled, setAuctionEditEnabled] = useState(false);
   const [basicModal, setBasicModal] = useState(false);
+  const { showMessage } = useContext(AlertContext);
 
   const toggleOpen = () => setBasicModal(!basicModal);
 
@@ -58,12 +60,12 @@ function Option(props) {
             setSubmitting(false);
             setAuctionEditEnabled(false);
           } else {
-            window.alert(`${resp.errorCode} : ${resp.data}`);
+            showMessage(`${resp.errorCode} : ${resp.data}`, "error");
             setSubmitting(false);
           }
         })
         .catch((err) => {
-          window.alert(`${err}`);
+          showMessage(`${err}`, "error");
           setSubmitting(false);
         });
   };
@@ -78,11 +80,11 @@ function Option(props) {
             dispatch(updateRules(res.data));
             if (setSubmitting) toggleOpen();
           } else {
-            window.alert(`${res.errorCode} : ${res.dat}`);
+            showMessage(`${res.errorCode} : ${res.dat}`);
           }
         })
         .catch((err) => {
-          window.alert(`${err}`);
+          showMessage(`${err}`, "error");
         })
         .finally(() => {
           if (setSubmitting) setSubmitting(false);
@@ -97,7 +99,7 @@ function Option(props) {
           if (resp.status) {
             dispatch(removeRule(id));
           } else {
-            window.alert(`${resp.errorCode} : ${resp.data}`);
+            showMessage(`${resp.errorCode} : ${resp.data}`, "error");
           }
         });
   };

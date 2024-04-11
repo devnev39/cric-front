@@ -71,11 +71,11 @@ const PlayerStats = () => {
   //         if (resp.status && resp.data) {
   //           setQueriedData(resp.data);
   //         } else {
-  //           window.alert(`${resp.errorCode} : ${resp.data}`);
+  //           showMessage(`${resp.errorCode} : ${resp.data}`, 'error');
   //         }
   //       })
   //       .catch((err) => {
-  //         window.alert(`${err}`);
+  //         showMessage(`${err}`, 'error');
   //       });
   // };
   return (

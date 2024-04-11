@@ -14,7 +14,7 @@ import {
   updatePlayer,
 } from "../../feature/auctionPlayers";
 import { fetchCountryCodes } from "../../api/countryCodes";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   MDBBtn,
   MDBCol,
@@ -36,6 +36,7 @@ import {
 } from "mdb-react-ui-kit";
 import { useParams } from "react-router";
 import LineBarChart from "../../components/common/LineBarChart";
+import { AlertContext } from "../../context/AlertContext";
 import "./styles.css";
 
 const budgetChartOptions = {
@@ -70,7 +71,7 @@ const AuctionView = () => {
   const auction = useSelector((state) => state.auction.auction);
   const contryCodes = useSelector((state) => state.countryCodes.countryCodes);
   const dispatch = useDispatch();
-
+  const { showMessage } = useContext(AlertContext);
   const abortController = new AbortController();
   const signal = abortController.signal;
 
@@ -106,7 +107,7 @@ const AuctionView = () => {
                   if (resp.status) {
                     dispatch(setRules(resp.data));
                   } else {
-                    window.alert(`${resp.errorCode} : ${resp.data}`);
+                    showMessage(`${resp.errorCode} : ${resp.data}`, "error");
                   }
                 });
             teamsApi
@@ -116,7 +117,7 @@ const AuctionView = () => {
                   if (resp.status) {
                     dispatch(setTeams(resp.data));
                   } else {
-                    window.alert(`${resp.errorCode} : ${resp.data}`);
+                    showMessage(`${resp.errorCode} : ${resp.data}`, "error");
                   }
                 });
             auctionPlayersApi
@@ -127,7 +128,7 @@ const AuctionView = () => {
                     dispatch(setPlayers(resp.data.players));
                     dispatch(setCustomPlayers(resp.data.customPlayers));
                   } else {
-                    window.alert(`${resp.errorCode} : ${resp.data}`);
+                    showMessage(`${resp.errorCode} : ${resp.data}`, "error");
                   }
                 });
           }
@@ -176,7 +177,7 @@ const AuctionView = () => {
 
   const searchAndSetplayer = () => {
     if (players.length == 0) {
-      window.alert("No players found !");
+      showMessage("No players found !");
       return;
     }
     const inp = parseInt(prompt("Enter player number/index : "));
@@ -184,10 +185,10 @@ const AuctionView = () => {
       if (players[inp - 1].includeInAuction) {
         setIndex(inp - 1);
       } else {
-        window.alert(`Player ${players[inp - 1].name} excluded from auction !`);
+        showMessage(`Player ${players[inp - 1].name} excluded from auction !`);
       }
     } else {
-      window.alert(`Player number should be between ${1} - ${players.length}`);
+      showMessage(`Player number should be between ${1} - ${players.length}`);
     }
   };
 
@@ -199,14 +200,14 @@ const AuctionView = () => {
           if (res.status) {
             dispatch(updatePlayer(res.data.player));
             dispatch(updateTeam(res.data.team));
-            window.alert("Success !");
+            showMessage("Success !");
             toggleOpen();
           } else {
-            window.alert(`${res.errorCode} : ${res.data}`);
+            showMessage(`${res.errorCode} : ${res.data}`, "error");
           }
         })
         .catch((err) => {
-          window.alert(`${err}`);
+          showMessage(`${err}`, "error");
         });
   };
 
@@ -221,13 +222,13 @@ const AuctionView = () => {
           if (res.status) {
             dispatch(updatePlayer(res.data.player));
             dispatch(updateTeam(res.data.team));
-            window.alert("Success !");
+            showMessage("Success !");
           } else {
-            window.alert(`${res.errorCode} : ${res.data}`);
+            showMessage(`${res.errorCode} : ${res.data}`, "error");
           }
         })
         .catch((err) => {
-          window.alert(`${err}`);
+          showMessage(`${err}`, "error");
         });
   };
 

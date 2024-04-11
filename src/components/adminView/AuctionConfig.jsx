@@ -19,16 +19,19 @@ import {
   MDBInput,
   MDBTypography,
 } from "mdb-react-ui-kit";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import auction from "../../api/auction";
 import { removeAuction, updateAuctions } from "../../feature/auction";
+import { AlertContext } from "../../context/AlertContext";
 
 const AuctionConfig = () => {
   const auctions = useSelector((state) => state.auction.auctions);
   const [updatingAuction, setUpdatingAuction] = useState(null);
 
   const [basicModal, setBasicModal] = useState(false);
+
+  const { showMessage } = useContext(AlertContext);
 
   const toggleOpen = () => {
     setBasicModal(!basicModal);
@@ -45,7 +48,7 @@ const AuctionConfig = () => {
       toggleOpen();
       setUpdatingAuction(auction);
     } else {
-      window.alert("Auction not found !");
+      showMessage("Auction not found !", "error");
     }
   };
 
@@ -60,11 +63,11 @@ const AuctionConfig = () => {
             dispatch(updateAuctions(resp.data));
             toggleOpen();
           } else {
-            window.alert(`${resp.errorCode} : ${resp.data}`);
+            showMessage(`${resp.errorCode} : ${resp.data}`, "error");
           }
         })
         .catch((err) => {
-          window.alert(`${err}`);
+          showMessage(`${err}`, "error");
         })
         .finally(() => {
           setSubmitting(false);
@@ -84,14 +87,14 @@ const AuctionConfig = () => {
         .then((resp) => resp.json())
         .then((resp) => {
           if (resp.status) {
-            window.alert("Auction deleted !");
+            showMessage("Auction deleted !");
             dispatch(removeAuction({ _id: id }));
           } else {
-            window.alert(`${resp.errorCode} : ${resp.data}`);
+            showMessage(`${resp.errorCode} : ${resp.data}`, "error");
           }
         })
         .catch((err) => {
-          window.alert(`${err}`);
+          showMessage(`${err}`, "error");
         });
   };
   return (

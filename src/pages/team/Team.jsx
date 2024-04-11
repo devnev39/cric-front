@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import teamApi from "../../api/team";
 import {
   MDBBtn,
@@ -15,6 +15,7 @@ import {
   MDBTableHead,
   MDBTypography,
 } from "mdb-react-ui-kit";
+import { AlertContext } from "../../context/AlertContext";
 import { useDispatch, useSelector } from "react-redux";
 import { setObservableTeam, updateObservableTeam } from "../../feature/team";
 import mqtt from "mqtt";
@@ -28,6 +29,7 @@ const Team = () => {
   const auction = useSelector((state) => state.auction.auction);
 
   const dispatch = useDispatch();
+  const { showMessage } = useContext(AlertContext);
 
   const controller = new AbortController();
   const signal = controller.signal;
@@ -41,7 +43,7 @@ const Team = () => {
             dispatch(setObservableTeam(res.data.team));
             dispatch(updateAuction(res.data.auction));
           } else {
-            window.alert(`${res.errorCode} : ${res.data}`);
+            showMessage(`${res.errorCode} : ${res.data}`, "error");
           }
         });
   };

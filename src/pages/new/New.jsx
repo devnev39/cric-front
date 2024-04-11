@@ -2,6 +2,7 @@ import React from "react";
 import auctionApi from "../../api/auction";
 import dayjs from "dayjs";
 import * as Yup from "yup";
+import { useContext } from "react";
 import {
   MDBBtn,
   MDBCard,
@@ -15,12 +16,13 @@ import { Formik } from "formik";
 import { useNavigate } from "react-router";
 import encrypt from "../../components/common/Encrypt";
 import Footer from "../Footer";
+import { AlertContext } from "../../context/AlertContext";
 
 const New = () => {
   const controller = new AbortController();
   const signal = controller.signal;
   const navigate = useNavigate();
-
+  const { showMessage } = useContext(AlertContext);
   const submitNewAuction = (values) => {
     const adminId = encrypt(values.adminId);
     delete values.adminId;
@@ -32,14 +34,14 @@ const New = () => {
         .then((resp) => resp.json())
         .then((resp) => {
           if (resp.status) {
-            window.alert("Success !");
+            showMessage("Success !");
             navigate("/");
           } else {
-            window.alert(`${resp.errorCode} : ${resp.data}`);
+            showMessage(`${resp.errorCode} : ${resp.data}`, "error");
           }
         })
         .catch((err) => {
-          window.alert(err);
+          showMessage(err);
         });
   };
   return (

@@ -10,6 +10,8 @@ import { Chart, registerables } from "chart.js";
 import { Dropdown, Collapse, initMDB } from "mdb-ui-kit";
 import { Provider } from "react-redux";
 import store from "./app/store.js";
+import { AlertContextProvider } from "./context/AlertContext.jsx";
+import Alert from "./components/Alert.jsx";
 initMDB({ Dropdown, Collapse });
 Chart.register(...registerables);
 
@@ -19,7 +21,10 @@ root.render(
       <Navbar />
       <BrowserRouter>
         <Provider store={store}>
-          <App />
+          <AlertContextProvider>
+            <App />
+            <Alert />
+          </AlertContextProvider>
         </Provider>
       </BrowserRouter>
     </>,

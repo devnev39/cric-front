@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import settings from "../../config/settings";
 import "./styles.css";
 import { useNavigate } from "react-router";
 import encrypt from "../../components/common/Encrypt";
 import Footer from "../Footer";
-
+import { AlertContext } from "../../context/AlertContext";
 const Admin = () => {
   const [selectedOption, setSelectedOption] = useState("admin");
   const [patValue, setPatValue] = useState("");
   const [password, setPassword] = useState("");
+
+  const { showMessage } = useContext(AlertContext);
 
   const navigate = useNavigate();
 
@@ -36,7 +38,7 @@ const Admin = () => {
     } else if (resp.errorCode === 601) {
       navigate("/view/admin", { state: { fromAdmin: true } });
     } else {
-      window.alert(`${resp.errorCode} : ${resp.data}`);
+      showMessage(`${resp.errorCode} : ${resp.data}`, "error");
     }
   };
   const loadAdmin = async () => {
