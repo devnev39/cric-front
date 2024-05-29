@@ -1,1 +1,3 @@
-db.collection('auctions').find();
+use("cric-mvc-dev");
+
+db.auctions.find();

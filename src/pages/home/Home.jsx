@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import React from "react";
+import React, { useState } from "react";
 import "./styles.css";
 import {
   MDBBtn,
@@ -7,7 +7,15 @@ import {
   MDBCardBody,
   MDBCol,
   MDBContainer,
+  MDBModal,
+  MDBModalDialog,
+  MDBModalContent,
+  MDBModalHeader,
+  MDBModalTitle,
+  MDBModalBody,
+  MDBModalFooter,
   MDBRow,
+  MDBTypography,
 } from "mdb-react-ui-kit";
 import { animated, useInView, useSpring } from "@react-spring/web";
 import { useNavigate } from "react-router";
@@ -15,6 +23,9 @@ import Footer from "../Footer";
 
 const Home = () => {
   const navigate = useNavigate();
+
+  const [centredModal, setCentredModal] = useState(true);
+  const toggleOpen = () => setCentredModal(!centredModal);
 
   const createSprings = (number) => {
     const springs = [];
@@ -283,6 +294,38 @@ const Home = () => {
           </MDBRow>
         </MDBContainer>
       </div>
+      <MDBModal
+        tabIndex="-1"
+        open={centredModal}
+        onClose={() => setCentredModal(false)}
+      >
+        <MDBModalDialog centered>
+          <MDBModalContent>
+            <MDBModalHeader>
+              <MDBModalTitle>Notification !</MDBModalTitle>
+              <MDBBtn
+                className="btn-close"
+                color="none"
+                onClick={toggleOpen}
+              ></MDBBtn>
+            </MDBModalHeader>
+            <MDBModalBody>
+              <MDBTypography>
+                To test the application, head over to auctions. An auction is
+                made with name{" "}
+                <MDBTypography tag="mark">Test Auction</MDBTypography>with
+                password <MDBTypography tag="mark">123</MDBTypography>.
+              </MDBTypography>
+            </MDBModalBody>
+            <MDBModalFooter>
+              <MDBBtn color="secondary" onClick={toggleOpen}>
+                Close
+              </MDBBtn>
+              <MDBBtn onClick={() => navigate("/auctions")}>Auctions</MDBBtn>
+            </MDBModalFooter>
+          </MDBModalContent>
+        </MDBModalDialog>
+      </MDBModal>
       <Footer />
     </>
   );

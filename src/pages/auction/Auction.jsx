@@ -24,6 +24,7 @@ import defaultPlayersApi from "../../api/players";
 import Footer from "../Footer";
 import { setQueryData } from "../../feature/query";
 import { AlertContext } from "../../context/AlertContext";
+import { MDBTypography } from "mdb-react-ui-kit";
 
 const Auction = () => {
   const { state } = useLocation();
@@ -300,6 +301,13 @@ const Auction = () => {
           </div>
           {auctionData ? (
             <div className="col-10">
+              {auctionData.freeze ? (
+                <MDBTypography note noteColor="warning" className="mt-3">
+                  <strong>Warning : </strong>This auction has been freezed by
+                  admin! It will operate in read only mode. Contact admin for
+                  any clearances!
+                </MDBTypography>
+              ) : null}
               {currentComponent === "Options" ? <Option /> : null}
               {currentComponent === "Teams" ? <Teams /> : null}
               {currentComponent === "Players" ? <Players /> : null}

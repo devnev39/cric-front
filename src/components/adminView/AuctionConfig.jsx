@@ -112,6 +112,7 @@ const AuctionConfig = () => {
                     <th scope="col">Allow Login</th>
                     <th scope="col">Allow Public Team View</th>
                     <th scope="col">Allow Real Time Updates</th>
+                    <th scope="col">Freeze</th>
                     <th scope="col">Max Players</th>
                     <th scope="col">Max Budget</th>
                     <th scope="col">Actions</th>
@@ -140,6 +141,9 @@ const AuctionConfig = () => {
                             disabled
                             checked={a.allowRealtimeUpdates}
                           />
+                        </td>
+                        <td>
+                          <MDBCheckbox disabled checked={a.freeze} />
                         </td>
                         <td>{a.maxPlayers}</td>
                         <td>{a.maxBudget}</td>
@@ -243,6 +247,15 @@ const AuctionConfig = () => {
                       formik.errors.allowRealtimeUpdates ? (
                         <MDBTypography note noteColor="danger">
                           {formik.errors.allowRealtimeUpdates}
+                        </MDBTypography>
+                      ) : null}
+                    </div>
+                    <div>
+                      <Field className="mx-2" type="checkbox" name="freeze" />
+                      <label>Freeze</label>
+                      {formik.touched.freeze && formik.errors.freeze ? (
+                        <MDBTypography note noteColor="danger">
+                          {formik.errors.freeze}
                         </MDBTypography>
                       ) : null}
                     </div>

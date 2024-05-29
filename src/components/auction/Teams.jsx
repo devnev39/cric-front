@@ -22,7 +22,7 @@ import { Formik } from "formik";
 import { addTeam, removeTeam, updateTeam } from "../../feature/team";
 import { AlertContext } from "../../context/AlertContext";
 
-function Teams(props) {
+function Teams() {
   // Fetch team data and set to store if not set
   const [basicModal, setBasicModal] = useState(false);
 
@@ -170,7 +170,7 @@ function Teams(props) {
         </div>
       </div>
       <div className="d-flex justify-content-center my-3">
-        <MDBBtn size="sm" onClick={toggleOpen}>
+        <MDBBtn size="sm" onClick={toggleOpen} disabled={auction.freeze}>
           Add Team
         </MDBBtn>
       </div>

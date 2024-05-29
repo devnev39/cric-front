@@ -162,6 +162,7 @@ function Option(props) {
                     className="mx-3"
                     type="button"
                     onClick={() => setAuctionEditEnabled(!auctionEditEnabled)}
+                    disabled={a.freeze}
                   >
                     Update
                   </MDBBtn>
@@ -229,7 +230,12 @@ function Option(props) {
             </div>
           </div>
           <div className="d-flex justify-content-center">
-            <MDBBtn onClick={toggleOpen} size="sm" className="mt-3">
+            <MDBBtn
+              onClick={toggleOpen}
+              size="sm"
+              className="mt-3"
+              disabled={a.freeze}
+            >
               Add Rule
             </MDBBtn>
           </div>

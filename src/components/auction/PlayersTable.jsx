@@ -189,6 +189,7 @@ function PlayersTable() {
               onClick={() => checkAndEditPlayer(i.row.index)}
               rounded
               className="mx-1"
+              disabled={auction.freeze}
             >
               edit
             </MDBBtn>
@@ -198,6 +199,7 @@ function PlayersTable() {
                 color="link"
                 rounded
                 className="text-warning"
+                disabled={auction.freeze}
                 onClick={() => unbidPlayerHard(players[i.row.index])}
               >
                 Unbid
@@ -207,6 +209,7 @@ function PlayersTable() {
                 size="sm"
                 color="success"
                 rounded
+                disabled={auction.freeze}
                 onClick={() => toggleIncludeAuctionPlayer(i.row.index, true)}
               >
                 include
@@ -217,6 +220,7 @@ function PlayersTable() {
                 color="link"
                 rounded
                 className="text-danger"
+                disabled={auction.freeze}
                 onClick={() => toggleIncludeAuctionPlayer(i.row.index, false)}
               >
                 exclude
@@ -463,13 +467,14 @@ function PlayersTable() {
             </div>
           </div>
           <div className="d-flex justify-content-evenly mt-5">
-            <MDBBtn size="sm" onClick={toggleOpen}>
+            <MDBBtn size="sm" onClick={toggleOpen} disabled={auction.freeze}>
               Add Player
             </MDBBtn>
             <MDBBtn
               size="sm"
               className="btn btn-warning"
               onClick={unbidAllPlayersHard}
+              disabled={auction.freeze}
             >
               Unbid All Players
             </MDBBtn>
