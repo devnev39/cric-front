@@ -1,49 +1,90 @@
-# Getting started with cric-front
+# Cric Auction - Backend
 
-This is a front-end application written in react js for cric auction.
+Cric Auction is a platform designed to simulate cricket player auctions. It is currently used annually by a few colleges in the Pune region of Maharashtra, India. 
 
-## Contributing
-
-* Fork the repo to your github
-* Clone to your local system and run locally.
-* Commit to only main branch.
-* Don't merge to the production branch any changes.
-* Don't push any changes to the production branch.
+This is the third revision of this platform. It offers many features, including player and team data management, team evaluation based on provided metrics, security through a simple authentication system, and real-time updates with MQTT service, among others.
 
 
+
+
+## Table of content
+
+- [Features](#Features)
+- [Demo](#Demo)
+- [Installation](#Installation)
+- [Configure Env File](#Configure-env-file)
+- [Run Locally](#Run-Locally)
+- [Usage](#Usage)
+- [Contact](#Contact)
+
+## Features
+
+- Auction authentication with session management
+- Custom players dataset and default dataset option
+- Stats display for the teams
+- Realtime updates for all the auction screens
+- Automatic metric evaluation based on provided rules
+
+
+## Demo
+
+Vist https://cric-front.vercel.app
+
+
+## Installation
+
+- Backend Github Repo - [Click Here](https://github.com/devnev39/cric-back)
+
+- Fork both front-end and backend repos.
+
+- Build env files according to the instructions given in each repo
+
+- Build and run each repo by configuring the project as given in run locally section
+
+
+## Configure Env File
+
+To configure the env file for project please take a look at **.env.sample** file in the repo
 
 ## Run Locally
 
-#### Fork the project on your git repo and then clone it from there
+Clone the project
 
 ```bash
-  git clone https://link-to-project
+  git clone https://github.com/devnev39/cric-front
 ```
 
-#### Go to the project directory
+Go to the project directory
 
 ```bash
-  cd my-project
+  cd cric-front
 ```
 
-#### Install dependencies
+Install dependencies
 
 ```bash
-  npm ci
+  npm install
 ```
 
-#### Run the backend server 
-```
-  curl https://cric-render.ddnsking.com
-```
-                                    or 
-
-[click here](https://cric-render.ddnsking.com)
-#### Start the server
+Start the server
 
 ```bash
-  npm run start
+  npm run dev
 ```
 
 
- 
+## Usage/Examples
+
+- Used to host simulated cricket player auction in college fest.
+
+- [click here](https://feedback-delta.vercel.app/feedback) to see the feedback received from organizers (First login with any google account to see the feedbacks)
+
+## Contact
+
+Bhuvanesh Bonde
+
+[LinkedIn](https://linkedin.com/in/bhuvanesh-bonde)
+
+devnev39@gmail.com
+
+bhuvaneshbonde9@gmail.com
