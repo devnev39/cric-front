@@ -88,3 +88,13 @@ Bhuvanesh Bonde
 devnev39@gmail.com
 
 bhuvaneshbonde9@gmail.com
+
+## Frameworks
+
+### Frontend
+[![My Skills](https://skillicons.dev/icons?i=react,redux,vite)](https://skillicons.dev)
+
+
+### Backend
+
+[![My Skills](https://skillicons.dev/icons?i=gcp,mongodb,docker,expressjs,nodejs)](https://skillicons.dev)
