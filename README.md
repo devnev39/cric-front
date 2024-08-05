@@ -1,4 +1,4 @@
-# Cric Auction - Backend
+# Cric Auction - Frontend
 
 Cric Auction is a platform designed to simulate cricket player auctions. It is currently used annually by a few colleges in the Pune region of Maharashtra, India. 
 
