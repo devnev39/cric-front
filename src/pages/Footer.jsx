@@ -15,7 +15,7 @@ export default function Footer() {
           Developed and managed by
           <a
             className="text-reset fw-bold ms-2"
-            href="https://mdbootstrap.com/"
+            href="https://bhuvan-psi.vercel.app"
           >
             @DevNev
           </a>
