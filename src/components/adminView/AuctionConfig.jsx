@@ -208,6 +208,17 @@ const AuctionConfig = () => {
                         {formik.errors.name}
                       </MDBTypography>
                     ) : null}
+                    <MDBInput
+                      id="Status"
+                      label="Status"
+                      className="my-2"
+                      {...formik.getFieldProps("status")}
+                    />
+                    {formik.touched.status && formik.errors.status ? (
+                      <MDBTypography note noteColor="danger">
+                        {formik.errors.status}
+                      </MDBTypography>
+                    ) : null}
                     <div>
                       <Field
                         className="mx-2"
